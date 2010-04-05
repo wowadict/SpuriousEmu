@@ -1,0 +1,10 @@
+ALTER TABLE `npc_gossip_textid` MODIFY  `creatureid` mediumint(9) NOT NULL;
+ALTER TABLE `items` MODIFY  `dmg_min3` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_max3` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_type3` smallint(6) NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_min4` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_max4` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_type4` smallint(6) NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_min5` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_max5` float NOT NULL default '0';
+ALTER TABLE `items` MODIFY  `dmg_type5` smallint(6) NOT NULL default '0';

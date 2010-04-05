@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--generated at 12:00:22-->
+<?xml-stylesheet type="text/xsl" href="stats.xsl"?>
+<server>
+	<cluster>
+		<platform>Spurious rev0 v0.3.3287.22601</platform>
+		<uptime>0d 0h 2m 0s 577ms</uptime>
+		<onlineplayers>0</onlineplayers>
+		<gmcount>0</gmcount>
+		<alliance>0</alliance>
+		<horde>0</horde>
+		<cpu>0,00</cpu>
+		<ram>25</ram>
+		<latency>0</latency>
+		<connaccepted>0</connaccepted>
+		<connpeak>0</connpeak>
+		<conncurrent>0</conncurrent>
+		<networkin>0</networkin>
+		<networkout>0</networkout>
+		<threadsw>499</threadsw>
+		<threadsc>1000</threadsc>
+		<lastupdate>10-07-2009 00:00:22</lastupdate>
+	</cluster>
+	
+	<world>
+		<instance>
+			<uptime>0d 0h 1m 57s 965ms</uptime>
+			<players>-</players>
+			<maps>1, 0, 530, 571, 609</maps>
+			<cpu>0,00</cpu>
+			<ram>28</ram>
+			<latency>2</latency>
+		</instance>
+	</world>
+	
+	<users />
+	
+	<sessions />
+</server>

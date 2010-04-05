@@ -1,0 +1,1 @@
+"C:\Program Files\TortoiseSVN\bin\SubWCRev.exe" "%CD%" Revision.tmp.vb Revision.vb

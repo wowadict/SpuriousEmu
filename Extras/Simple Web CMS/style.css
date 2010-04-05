@@ -1,0 +1,247 @@
+body {
+	background: #000000;
+	color: #534834;
+	font-family: tahoma, arial;
+	font-size: 11px;
+	line-height: 15px;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+* html body {
+	line-height: 13px;
+}
+
+a:link { 
+	color: #B00000;
+	font-weight: bold;
+	text-decoration: none;
+}
+	
+a:visited { 
+	color: #B00000;
+	font-weight: bold;
+	text-decoration: none;	
+}
+	
+a:hover, a:active { 
+	color: #000000;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#footer a:link { 
+	color: #F1D6AC;
+	font-weight: bold;
+	text-decoration: none;
+}
+	
+#footer a:visited { 
+	color: #F1D6AC;
+	font-weight: bold;
+	text-decoration: none;	
+}
+	
+#footer a:hover, #footer a:active { 
+	color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#nav a:link { 
+	color: #F1D6AC;
+	font-weight: bold;
+	text-decoration: none;
+}
+	
+#nav a:visited { 
+	color: #F1D6AC;
+	font-weight: bold;
+	text-decoration: none;	
+}
+	
+#nav a:hover, #nav a:active { 
+	color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#right a:link { 
+	color: #73613B;
+	font-weight: bold;
+	text-decoration: underline;
+}
+	
+#right a:visited { 
+	color: #73613B;
+	font-weight: bold;
+	text-decoration: underline;	
+}
+	
+#right a:hover, #right a:active { 
+	color: #000000;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+/* ------------------------------------------------------------------  DIV ID's ------- */
+
+#container {
+	margin: 0 auto;
+	margin-top: 20px;
+	text-align: left;
+	width: 900px;
+}
+
+#content1 {
+	background: url(images/elf-bg.jpg) no-repeat 2px;
+	clear: both;
+	display: block;
+	height: 450px;
+	padding-left: 130px;
+	padding-top: 38px;
+	width: 770px;
+}
+
+#footer {
+	background: url(images/footer-bg.jpg) no-repeat;
+	clear: both;
+	color: #F1D6AC;
+	display: block;
+	height: 99px;
+	padding-top: 20px;
+	text-align: center;
+	width: 900px;
+}
+
+#headers {
+	background: url(images/header-bg.jpg) no-repeat;
+	display: block;
+	height: 197px;
+	width: 900px;
+}
+
+#left {
+	background: url(images/btm-left-bg.gif) no-repeat;
+	display: block;
+	float: left;
+	height: 494px;
+	width: 558px;
+}
+
+#pagebottom {
+	clear: both;
+	width: 900px;
+}
+
+#nav {
+	padding-left: 175px;
+	padding-top: 68px;
+}
+
+#nav ul {
+	float: left;
+	list-style: none;
+	margin: 0;
+	margin-right: 70px;
+	padding: 0;
+}
+
+* html #nav ul {
+	margin-right: 40px;
+}
+
+#nav li {
+	float: left;
+	list-style: none;
+	margin: 0;
+	margin-right: 30px;
+	padding: 0;
+}
+
+#right {
+	background: url(images/btm-right-bg.gif) no-repeat;
+	display: block;
+	float: left;
+	height: 464px;
+	padding-left: 25px;
+	padding-top: 30px;
+	width: 314px;
+}
+
+#text1 {
+	width: 430px;
+}
+
+#text2 {
+	margin-left: 110px;
+	margin-top: 28px;
+	width: 410px;
+}
+
+#quicklinks {
+	background: url(images/quicklinks-bg.gif) no-repeat;
+	display: block;
+	height: 165px;
+	margin-bottom: 10px;
+	padding-top: 5px;
+	width: 210px;
+}
+
+#quicklinks ul {
+	list-style: none;
+	margin: 0;
+	margin-left: 40px;
+	padding: 0;
+}
+
+* html #quicklinks ul {
+	margin-top: 22px;
+}
+
+#quicklinks li {
+	list-style: none;
+	margin: 0;
+	margin-top: 15px;
+	padding: 0;
+}
+
+* html #quicklinks li {
+	margin-top: 16px;
+}
+
+/* ------------------------------------------------------------------  CLASSE'S ------- */
+
+.flt-lft {
+	float: left;
+	margin-right: 10px;
+}
+
+.flt-rgt {
+	float: right;
+}
+
+.heading {
+	color: #413727;
+	font-family: arial;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: -10px;
+}
+
+* html .heading {
+	margin-bottom: -16px;
+}
+
+.heading2 {
+	color: #413727;
+	font-family: arial;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.small {
+	font-size: 10px;
+}

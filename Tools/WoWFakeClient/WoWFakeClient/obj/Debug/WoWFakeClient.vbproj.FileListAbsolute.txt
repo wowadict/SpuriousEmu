@@ -1,0 +1,21 @@
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.exe
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.pdb
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.xml
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\ResolveAssemblyReference.cache
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.Resources.resources
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.vbproj.GenerateResource.Cache
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.exe
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.xml
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.pdb
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.exe
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.xml
+G:\Program\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.pdb
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.exe
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.xml
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.pdb
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.exe
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.pdb
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\bin\Debug\WoWFakeClient.xml
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.Resources.resources
+C:\Documents and Settings\eMatEdl\Skrivbord\Ny mapp\Spurious\trunk\Tools\WoWFakeClient\WoWFakeClient\obj\Debug\WoWFakeClient.vbproj.GenerateResource.Cache

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PacketLogger xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<RSPort>3724</RSPort>
+	<RSHost>127.0.0.1</RSHost>
+	<WSPort>8080</WSPort>
+	<WSHost>127.0.0.1</WSHost>
+	<KeyPort>8086</KeyPort>
+	<KeyHost>127.0.0.1</KeyHost>
+
+	<RSConnectPort>3725</RSConnectPort>
+	<RSConnectHost>127.0.0.1</RSConnectHost>
+	<WSConnectPort>8085</WSConnectPort>
+	<WSConnectHost>127.0.0.1</WSConnectHost>
+
+	<userPassword>TEST</userPassword>
+	<RSConnectHost>eu.logon.worldofwarcraft.com</RSConnectHost>
+</PacketLogger>
