@@ -288,8 +288,8 @@ Enum AuthResponseCodes
     ACCOUNT_CREATE_FAILED = &H2A                'Account creation failed
 
     CHAR_LIST_RETRIEVED = &H2B                  'Retrieving character list
-    CHAR_LIST_SUCCESS = &H2B                    'Character list retrieved
-    CHAR_LIST_FAILED = &H2D                     'Error retrieving character list
+    CHAR_LIST_SUCCESS = &H2C                    'Character list retrieved
+    CHAR_LIST_FAILED = &H2D                    'Error retrieving character list
 
     CHAR_CREATE_IN_PROGRESS = &H2E              'Creating character
     CHAR_CREATE_SUCCESS = &H2F                  'Character created
@@ -303,45 +303,55 @@ Enum AuthResponseCodes
     CHAR_CREATE_SERVER_QUEUE = &H37             'The server is currently queued
     CHAR_CREATE_ONLY_EXISTING = &H38            'Only players who have characters on this realm..
     CHAR_CREATE_EXPANSION = &H39
-    CHAR_CREATE_EXPANSION_CLASS = &H3A            'Creation of that race requires an account that has been upgraded to the approciate expansion
+    CHAR_CREATE_EXPANSION_CLASS = &H3A          'Creation of that race requires an account that has been upgraded to the approciate expansion
     CHAR_CREATE_NEED_LVL_55_CHAR = &H3B
     CHAR_CREATE_UNIQUE_CLASS_LIMIT = &H3C
+    CHAR_CREATE_CHARACTER_IN_GUILD = &H3D
+    CHAR_CREATE_RESTRICTED_RACECLASS = &H3E
+    CHAR_CREATE_CHARACTER_CHOOSE_RACE = &H3F
+    CHAR_CREATE_CHARACTER_ARENA_LEADER = &H40
+    CHAR_CREATE_CHARACTER_DELETE_MAIL = &H41
+    CHAR_CREATE_CHARACTER_SWAP_FACTION = &H42
+    CHAR_CREATE_CHARACTER_RACE_ONLY = &H43
+    CHAR_CREATE_CHARACTER_GOLD_LIMIT = &H44
+    CHAR_CREATE_FORCE_LOGIN = &H45
 
-    CHAR_DELETE_IN_PROGRESS = &H3D         'Deleting character
-    CHAR_DELETE_SUCCESS = &H3E                  'Character deleted
-    CHAR_DELETE_FAILED = &H3F                   'Char deletion failed
-    CHAR_DELETE_FAILED_LOCKED_FOR_TRANSFER = &H40 'You cannot log in until the character update process is complete
-    CHAR_DELETE_FAILED_GUILD_LEADER = &H41        'This character is Guild Master and cannot be deleted
-    CHAR_DELETE_FAILED_ARENA_CAPTAIN = &H42    'This character is Arena Captain and cannot be deleted
+    CHAR_DELETE_IN_PROGRESS = &H46                'Deleting character
+    CHAR_DELETE_SUCCESS = &H47                    'Character deleted
+    CHAR_DELETE_FAILED = &H48                     'Char deletion failed
+    CHAR_DELETE_FAILED_LOCKED_FOR_TRANSFER = &H49 'You cannot log in until the character update process is complete
+    CHAR_DELETE_FAILED_GUILD_LEADER = &H4A        'This character is Guild Master and cannot be deleted
+    CHAR_DELETE_FAILED_ARENA_CAPTAIN = &H4B       'This character is Arena Captain and cannot be deleted
 
-    CHAR_LOGIN_IN_PROGRESS = &H43               'Entering the World of Warcraft
-    CHAR_LOGIN_SUCCESS = &H44                   'Login successful
-    CHAR_LOGIN_NO_WORLD = &H45                  'World server is down
-    CHAR_LOGIN_DUPLICATE_CHARACTER = &H46       'A character with that name already exists
-    CHAR_LOGIN_NO_INSTANCES = &H47              'No instance servers are available
-    CHAR_LOGIN_FAILED = &H48                    'Login failed
-    CHAR_LOGIN_DISABLED = &H49                  'Login for that race and/or class is currently disabled
-    CHAR_LOGIN_NO_CHARACTER = &H4A              'Character not found
-    CHAR_LOGIN_LOCKED_FOR_TRANSFER = &H4B
-    CHAR_LOGIN_LOCKED_BY_BILLING = &H4C
+    CHAR_LOGIN_IN_PROGRESS = &H4C               'Entering the World of Warcraft
+    CHAR_LOGIN_SUCCESS = &H4D                   'Login successful
+    CHAR_LOGIN_NO_WORLD = &H4E                  'World server is down
+    CHAR_LOGIN_DUPLICATE_CHARACTER = &H4F       'A character with that name already exists
+    CHAR_LOGIN_NO_INSTANCES = &H50              'No instance servers are available
+    CHAR_LOGIN_FAILED = &H51                    'Login failed
+    CHAR_LOGIN_DISABLED = &H52                  'Login for that race and/or class is currently disabled
+    CHAR_LOGIN_NO_CHARACTER = &H53              'Character not found
+    CHAR_LOGIN_LOCKED_FOR_TRANSFER = &H54
+    CHAR_LOGIN_LOCKED_BY_BILLING = &H55
+    CHAR_LOGIN_LOCKED_BY_MOBILE_AH = &H56
 
-    CHAR_NAME_SUCCESS = &H4D
-    CHAR_NAME_FAILURE = &H4E                    'Invalid character name
-    CHAR_NAME_NO_NAME = &H4F                    'Enter a name for your character
-    CHAR_NAME_TOO_SHORT = &H50                  'Names must be atleast 2 characters long
-    CHAR_NAME_TOO_LONG = &H51                   'Names must be no more then 12 characters
-    CHAR_NAME_INVALID_CHARACTER = &H52          'Names can only contain letters
-    CHAR_NAME_MIXED_LANGUAGES = &H53            'Names must contain only one language
-    CHAR_NAME_PROFANE = &H54                    'That name contains mature language
-    CHAR_NAME_RESERVED = &H55                   'That name is unavailable
-    CHAR_NAME_INVALID_APOSTROPHE = &H56         'You cannot use an apostrophe
-    CHAR_NAME_MULTIPLE_APOSTROPHES = &H57       'You can only have one apostrophe
-    CHAR_NAME_THREE_CONSECUTIVE = &H58          'You cannot use the same letter three times consecutively
-    CHAR_NAME_INVALID_SPACE = &H59              'You cannot use space as the first or last character of your name
-    CHAR_NAME_CONSECUTIVE_SPACES = &H5A
-    CHAR_NAME_RUSSIAN_CONSECUTIVE_SILENT_CHARACTERS = &H5B
-    CHAR_NAME_RUSSIAN_SILENT_CHARACTER_AT_BEGINNING_OR_END = &H5C
-    CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME = &H5D
+    CHAR_NAME_SUCCESS = &H57
+    CHAR_NAME_FAILURE = &H58                    'Invalid character name
+    CHAR_NAME_NO_NAME = &H59                    'Enter a name for your character
+    CHAR_NAME_TOO_SHORT = &H5A                  'Names must be atleast 2 characters long
+    CHAR_NAME_TOO_LONG = &H5B                   'Names must be no more then 12 characters
+    CHAR_NAME_INVALID_CHARACTER = &H5C          'Names can only contain letters
+    CHAR_NAME_MIXED_LANGUAGES = &H5D            'Names must contain only one language
+    CHAR_NAME_PROFANE = &H5E                    'That name contains mature language
+    CHAR_NAME_RESERVED = &H5F                   'That name is unavailable
+    CHAR_NAME_INVALID_APOSTROPHE = &H60         'You cannot use an apostrophe
+    CHAR_NAME_MULTIPLE_APOSTROPHES = &H61       'You can only have one apostrophe
+    CHAR_NAME_THREE_CONSECUTIVE = &H62          'You cannot use the same letter three times consecutively
+    CHAR_NAME_INVALID_SPACE = &H63              'You cannot use space as the first or last character of your name
+    CHAR_NAME_CONSECUTIVE_SPACES = &H64
+    CHAR_NAME_RUSSIAN_CONSECUTIVE_SILENT_CHARACTERS = &H65
+    CHAR_NAME_RUSSIAN_SILENT_CHARACTER_AT_BEGINNING_OR_END = &H66
+    CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME = &H67
 End Enum
 #End Region
 

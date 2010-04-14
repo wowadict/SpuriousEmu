@@ -49,7 +49,7 @@ Public Module WC_Handlers_Auth
         Dim i As Integer
         'Log.WriteLine(LogType.DEBUG, "[{0}] [{1}:{2}] CMSG_AUTH_SESSION", Format(TimeOfDay, "hh:mm:ss"), Client.IP, Client.Port)
 
-        'packet.GetInt16()
+        packet.GetInt16()
         Dim clientVersion As Integer = packet.GetInt32
         'Dim clientSesionID As Integer = packet.GetInt32
         Dim unk As Integer = packet.GetInt32
@@ -172,10 +172,19 @@ Public Module WC_Handlers_Auth
                 addOnsEnable.AddInt8(0)                    'Hash       [0-NoData, 1-256bytes of data]
                 addOnsEnable.AddInt32(0)
                 addOnsEnable.AddInt8(0) ' 3.0.8 Unknown
+                addOnsEnable.AddInt32(0) ' Some additional count for additional records?????
             End If
         Next
         Client.Send(addOnsEnable)
         addOnsEnable.Dispose()
+
+        ''DONE: Send SMSG_CLIENTCACHE_VERSION
+        'Dim SMSG_CLIENTCACHE_VERSION As New PacketClass(OPCODES.SMSG_CLIENTCACHE_VERSION)
+        'SMSG_CLIENTCACHE_VERSION.AddInt32(0)
+        'Client.Send(SMSG_CLIENTCACHE_VERSION)
+
+        ''DONE: Send tutorial flags (don't know why, official seems to do it here nowadays)
+        'SendTutorialFlags(Client)
     End Sub
     Public Sub On_CMSG_PING(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub

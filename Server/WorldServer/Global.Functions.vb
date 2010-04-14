@@ -326,6 +326,14 @@ Public Module Functions
         packet.Dispose()
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] SMSG_TRIGGER_CINEMATIC", Client.IP, Client.Port)
     End Sub
+    Public Sub SendTutorialFlags(ByRef Client As ClientClass)
+        Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
+        For i As Integer = 0 To 7
+            SMSG_TUTORIAL_FLAGS.AddUInt32(UInteger.MaxValue)
+        Next
+        Client.Send(SMSG_TUTORIAL_FLAGS)
+        SMSG_TUTORIAL_FLAGS.Dispose()
+    End Sub
     Public Sub SendTimeSyncReq(ByRef Client As ClientClass)
         Dim packet As New PacketClass(OPCODES.SMSG_TIME_SYNC_REQ)
         packet.AddInt32(0)

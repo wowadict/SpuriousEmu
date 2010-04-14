@@ -802,8 +802,13 @@ Public Module WC_Network
 #Region "AUTH Crypt"
     Public Class AuthCrypt
 
-        Public ServerEncryptionKey() As Byte = {&H22, &HBE, &HE5, &HCF, &HBB, &H7, &H64, &HD9, &H0, &H45, &H1B, &HD0, &H24, &HB8, &HD5, &H45}
-        Public ServerDecryptionKey() As Byte = {&HF4, &H66, &H31, &H59, &HFC, &H83, &H6E, &H31, &H31, &H2, &H51, &HD5, &H44, &H31, &H67, &H98}
+        '3.3.3 updates / dont enable unless you know what you're doing 
+        Public ServerEncryptionKey() As Byte = {&HCC, &H98, &HAE, &H4, &HE8, &H97, &HEA, &HCA, &H12, &HDD, &HC0, &H93, &H42, &H91, &H53, &H57}
+        Public ServerDecryptionKey() As Byte = {&HC2, &HB3, &H72, &H3C, &HC6, &HAE, &HD9, &HB5, &H34, &H3C, &H53, &HEE, &H2F, &H43, &H67, &HCE}
+
+        '3.3.2 Network codes below 
+        'Public ServerEncryptionKey() As Byte = {&H22, &HBE, &HE5, &HCF, &HBB, &H7, &H64, &HD9, &H0, &H45, &H1B, &HD0, &H24, &HB8, &HD5, &H45}
+        'Public ServerDecryptionKey() As Byte = {&HF4, &H66, &H31, &H59, &HFC, &H83, &H6E, &H31, &H31, &H2, &H51, &HD5, &H44, &H31, &H67, &H98}
 
         Private ServerEncrypt As RC4
         Private ServerDecrypt As RC4

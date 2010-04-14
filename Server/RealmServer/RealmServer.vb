@@ -48,9 +48,9 @@ Public Module RS_Main
     'Version
     Public Const REQUIRED_VERSION_1 As Integer = 3
     Public Const REQUIRED_VERSION_2 As Integer = 3
-    Public Const REQUIRED_VERSION_3 As Integer = 2
-    Const REQUIRED_BUILD_LOW As Integer = 11403
-    Const REQUIRED_BUILD_HIGH As Integer = 11403
+    Public Const REQUIRED_VERSION_3 As Integer = 3
+    Const REQUIRED_BUILD_LOW As Integer = 11723
+    Const REQUIRED_BUILD_HIGH As Integer = 11723
     Const CONNETION_SLEEP_TIME As Integer = 100
 
     'RealmServ OP Codes
@@ -94,6 +94,29 @@ Public Module RS_Main
         LOGIN_DOWNLOADFILE = &HA
         LOGIN_SUSPENDED = &HC                  'This World Of Warcraft account has been temporarily suspended. Please go to http://www.wow-europe.com/en/misc/banned.html for furhter information.
         LOGIN_PARENTALCONTROL = &HF            'Access to this account has been blocked by parental controls.  Your settings may be changed in your account preferences at http://www.worldofwarcraft.com.
+        ''LOGIN_OK = &HB
+        ''LOGIN_FAILED = &HC                     'Unable to connect
+        ''LOGIN_REJECT = &HD
+        ''LOGIN_BAD_SERVER_PROOF = &HE
+        ''LOGIN_UNAVAILABLE = &HF
+        ''LOGIN_SYSTEM_ERROR = &H10
+        ''LOGIN_BILLING_ERROR = &H11
+        ''LOGIN_BILLING_EXPIRED = &H12
+        ''LOGIN_BADVERSION = &H13                'Unable to validate game version.  This may be caused by file corruption or the interference of another program.  Please visit www.blizzard.com/support/wow/ for more information and possible solutions to this issue.
+        ''LOGIN_UNKNOWN_ACCOUNT = &H14           'The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account, see www.worldofwarcraft.com for more information.
+        ''LOGIN_BAD_PASS = &H15                  'The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account, see www.worldofwarcraft.com for more information.
+        ''LOGIN_SESSION_EXPIRED = &H16
+        ''LOGIN_SERVER_SHUTTING_DOWN = &H17
+        ''LOGIN_ALREADY_LOGGING_IN = &H18
+        ''LOGIN_LOGIN_SERVER_NOT_FOUND = &H19
+        ''LOGIN_WAIT_QUEUE = &H1A
+        ''LOGIN_BANNED = &H1B                    'This World of Warcraft account has been closed and is no longer in service -- Please check the registered email address of this account for further information.
+        ''LOGIN_ALREADYONLINE = &H1C             'This account is already logged into World of Warcraft.  Please check the spelling and try again.
+        ''LOGIN_NOTIME = &H1D                    'You have used up your prepaid time for this account. Please purchase more to continue playing.
+        ''LOGIN_DBBUSY = &H1E                     'Could not log in to World of Warcraft at this time.  Please try again later.
+        ''LOGIN_SUSPENDED = &H1F                 'This World Of Warcraft account has been temporarily suspended. Please go to http://www.wow-europe.com/en/misc/banned.html for furhter information.
+        ''LOGIN_PARENTALCONTROL = &H20           'Access to this account has been blocked by parental controls.  Your settings may be changed in your account preferences at http://www.worldofwarcraft.com.
+        ''LOGIN_LOCKED_ENFORCED = &H21
     End Enum
 
 #End Region
