@@ -15,22 +15,3 @@
 ' along with this program; if not, write to the Free Software
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
-
-
-Imports System.Threading
-Imports System.Net.Sockets
-Imports System.Xml.Serialization
-Imports System.IO
-Imports System.Net
-Imports System.Reflection
-Imports System.Runtime.CompilerServices
-Imports Spurious.Common.BaseWriter
-Imports Spurious.Common
-
-
-Public Module WC_Handlers_Petition
-
-
-
-
-End Module
