@@ -1177,6 +1177,26 @@ Public Module WS_Creatures
             Catch
             End Try
         End Sub
+        Public Sub New(ByVal GUID_ As ULong, ByVal ID_ As Integer)
+            'WARNING: Use only for spawning new crature
+
+            If Not CREATURESDatabase.ContainsKey(ID_) Then
+                Dim baseCreature As New CreatureInfo(ID_)
+            End If
+
+            ID = ID_
+            GUID = GUID_
+
+            Initialize()
+
+            Try
+                WORLD_CREATUREs_Lock.AcquireWriterLock(DEFAULT_LOCK_TIMEOUT)
+                WORLD_CREATUREs.Add(GUID, Me)
+                WORLD_CREATUREsKeys.Add(GUID)
+                WORLD_CREATUREs_Lock.ReleaseWriterLock()
+            Catch
+            End Try
+        End Sub
         Public Sub New(ByVal ID_ As Integer)
             'WARNING: Use only for spawning new crature
 

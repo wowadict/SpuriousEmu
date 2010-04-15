@@ -939,6 +939,9 @@ Public Module WS_CharManagment
         Public Spell_Language As LANGUAGES = -1
         Public Spell_PET As PetObject = Nothing
 
+        'Pets
+        Public Pet As PetObject = Nothing
+
         'Honor And Arena
         Public HonorCurrency As Integer = 0
         Public ArenaCurrency As Integer = 0
@@ -4852,6 +4855,7 @@ CheckXPAgain:
 
         'Party/Raid
         Public Group As Group = Nothing
+        Public GroupUpdateFlag As UInteger = 0
         Public ReadOnly Property IsInGroup() As Boolean
             Get
                 Return Not (Group Is Nothing)

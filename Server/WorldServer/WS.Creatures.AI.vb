@@ -499,6 +499,10 @@ Public Module WS_Creatures_AI
         Protected aiCreature As CreatureObject = Nothing
         Protected aiTimer As Integer = 0
 
+        Protected AllowedAttack As Boolean = True
+        Protected AllowedMove As Boolean = True
+        Protected IsWaypoint As Boolean = False
+
         Protected Const AI_INTERVAL_MOVE As Integer = 3000
         Protected Const AI_INTERVAL_SLEEP As Integer = 6000
         Protected Const AI_INTERVAL_DEAD As Integer = 60000
