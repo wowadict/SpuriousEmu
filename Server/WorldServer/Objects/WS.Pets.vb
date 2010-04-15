@@ -17,6 +17,7 @@
 '
 
 Imports System.Threading
+Imports System.Linq
 Imports Spurious.Common
 
 Public Module WS_Pets
@@ -85,6 +86,28 @@ SPELL_CHANGED		= 1
 SPELL_NEW 			= 2
 SPELL_REMOVED		= 3
 End Enum	
+
+Public Enum PetTalentType As Byte
+None = -1
+Ferocity = 0
+Tenacity = 1
+Cunning = 2
+End Enum
+
+Public Enum TameFailReason As Byte
+InvalidCreature = 1
+TooManyPets = 2
+CreatureAlreadyOwned = 3
+NotTamable = 4
+SummonActive = 5
+UnitCantTame = 6
+NotAvailable = 7
+Internal = 8
+TooHighLevel = 9
+TargetDead = 10
+TargetNotDead = 11
+CantControlExotic = 12
+End Enum
 
 Public Enum ActionFeedback As Byte
 FEEDBACK_NONE		= 0
