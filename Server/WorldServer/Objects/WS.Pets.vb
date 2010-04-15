@@ -80,6 +80,13 @@ FAITHFUL    	= 5
 BEST_FRIEND 	= 6
 End Enum
 
+Public Enum PetAction As Byte
+STAY = 0,
+FOLLOW = 1,
+ATTACK = 2,
+ABANDON = 3
+End Enum
+
 Public Enum PetSpellState As Byte
 SPELL_UNCHANGED 	= 0
 SPELL_CHANGED		= 1
