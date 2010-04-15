@@ -15,3 +15,17 @@
 ' along with this program; if not, write to the Free Software
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
+
+Imports System.Threading
+Imports System.Reflection
+Imports System.Collections.Generic
+Imports Spurious.Common.BaseWriter
+
+
+    Public Class Achievements
+        Public Sub New(ByVal Player As Player)
+        End Sub
+        Const pl As pl, ChatMsg As pl = msgtype, int32 As pl = textId, uint32 As pl = ach_id
+    End Class
+
+End Module
