@@ -23,6 +23,7 @@ Imports System.IO
 Imports System.Net
 Imports System.Security.Cryptography
 Imports System.Reflection
+Imports System.Collections.Generic
 Imports Spurious.Common
 
 Public Module RS_Main
@@ -178,6 +179,7 @@ Public Module RS_Main
 #End Region
 
 #Region "RS.Sockets"
+    Public LastConnections As New Dictionary(Of UInteger, Date)
     Public RS As RealmServerClass
     Class RealmServerClass
         Public _flagStopListen As Boolean = False
@@ -297,6 +299,20 @@ Public Module RS_Main
             IP = CType(Socket.RemoteEndPoint, IPEndPoint).Address
             Port = CType(Socket.RemoteEndPoint, IPEndPoint).Port
 
+            'DONE: Connection spam protection
+            Dim IpInt As UInteger = IP2Int(IP.ToString)
+            If LastConnections.ContainsKey(IpInt) Then
+                If Now > LastConnections(IpInt) Then
+                    LastConnections(IpInt) = Now.AddSeconds(5)
+                Else
+                    Socket.Close()
+                    Me.Dispose()
+                    Exit Sub
+                End If
+            Else
+                LastConnections.Add(IpInt, Now.AddSeconds(5))
+            End If
+
             Dim Buffer() As Byte
             Dim bytes As Integer
 
@@ -351,9 +367,9 @@ Public Module RS_Main
             End Try
         End Sub
         Public Sub Dispose() Implements System.IDisposable.Dispose
-            Console.ForegroundColor = System.ConsoleColor.DarkGray
-            Console.WriteLine("[{0}] Connection from [{1}:{2}] deleted", Format(TimeOfDay, "hh:mm:ss"), IP, Port)
-            Console.ForegroundColor = System.ConsoleColor.Gray
+            'Console.ForegroundColor = System.ConsoleColor.DarkGray
+            'Console.WriteLine("[{0}] Connection from [{1}:{2}] deleted", Format(TimeOfDay, "hh:mm:ss"), IP, Port)
+            'Console.ForegroundColor = System.ConsoleColor.Gray
         End Sub
     End Class
 
@@ -919,4 +935,19 @@ Public Module RS_Main
             Next
         End While
     End Sub
+
+    Function IP2Int(ByVal IP As String) As UInteger
+        Dim IpSplit() As String = IP.Split(".")
+        If IpSplit.Length <> 4 Then Return 0
+        Dim IpBytes(3) As Byte
+        Try
+            IpBytes(0) = CByte(IpSplit(3))
+            IpBytes(1) = CByte(IpSplit(2))
+            IpBytes(2) = CByte(IpSplit(1))
+            IpBytes(3) = CByte(IpSplit(0))
+            Return BitConverter.ToUInt32(IpBytes, 0)
+        Catch
+            Return 0
+        End Try
+    End Function
 End Module

@@ -1219,6 +1219,14 @@ Public Module WS_Items
                 UpdateDurability(Client)
             End If
         End Sub
+        Public Sub ModifyToDurability(ByVal percent As Single, ByRef Client As ClientClass)
+            If ITEMDatabase(ItemEntry).Durability > 0 Then
+                Durability = Fix(ITEMDatabase(ItemEntry).Durability * percent)
+                If Durability < 0 Then Durability = 0
+                If Durability > ITEMDatabase(ItemEntry).Durability Then Durability = ITEMDatabase(ItemEntry).Durability
+                UpdateDurability(Client)
+            End If
+        End Sub
         Public Sub UpdateDurability(ByRef Client As ClientClass)
             Dim packet As New PacketClass(OPCODES.SMSG_UPDATE_OBJECT)
             packet.AddInt32(1)      'Operations.Count
@@ -1228,15 +1236,19 @@ Public Module WS_Items
             tmpUpdate.Dispose()
             Client.Send(packet)
         End Sub
-        Public ReadOnly Property GetDurabulityCost() As Byte
+        Public ReadOnly Property GetDurabulityCost() As UInteger
             Get
-                If ITEMDatabase(ItemEntry).Durability - Durability > DurabilityCosts_MAX Then
-                    Log.WriteLine(LogType.DEBUG, "Durability Cost: {0}", DurabilityCosts(DurabilityCosts_MAX, ITEMDatabase(ItemEntry).InventoryType))
-                    Return DurabilityCosts(DurabilityCosts_MAX, ITEMDatabase(ItemEntry).InventoryType)
-                Else
-                    Log.WriteLine(LogType.DEBUG, "Durability Cost: {0}", DurabilityCosts(ITEMDatabase(ItemEntry).Durability - Durability, ITEMDatabase(ItemEntry).InventoryType))
-                    Return DurabilityCosts(ITEMDatabase(ItemEntry).Durability - Durability, ITEMDatabase(ItemEntry).InventoryType)
-                End If
+                Try
+                    Dim LostDurability As Integer = ITEMDatabase(ItemEntry).Durability - Durability
+                    If LostDurability > DurabilityCosts_MAX Then LostDurability = DurabilityCosts_MAX
+                    Dim SubClass As Integer = 0
+                    If ItemInfo.ObjectClass = ITEM_CLASS.ITEM_CLASS_WEAPON Then SubClass = ItemInfo.SubClass Else SubClass = ItemInfo.SubClass + 21
+                    Dim DurabilityCost As UInteger = (LostDurability * ((DurabilityCosts(ItemInfo.Level, SubClass) / 40) * 100))
+                    Log.WriteLine(LogType.DEBUG, "Durability cost: {0}", DurabilityCost)
+                    Return DurabilityCost
+                Catch
+                    Return 0
+                End Try
             End Get
         End Property
 
@@ -2074,6 +2086,8 @@ Public Module WS_Items
         Else
             itemGUID = Client.Character.Items(bag).Items(slot).GUID
         End If
+
+        If itemGUID = 0 OrElse WORLD_ITEMs.ContainsKey(itemGUID) = False Then Exit Sub
 
         If itemGUID <> 0 Then
             If GenerateLoot(Client.Character, itemGUID, WS_Loot.LootType.LOOTTYPE_CORPSE) Then

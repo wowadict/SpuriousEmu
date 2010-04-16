@@ -53,9 +53,6 @@ Public Module WS_Handlers_Misc
 
     End Function
 
-
-
-
     Public Sub On_CMSG_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
             If (packet.Data.Length - 1) < 13 Then Exit Sub
@@ -391,7 +388,6 @@ Public Module WS_Handlers_Misc
         End If
     End Sub
 
-
     Public Sub On_CMSG_TOGGLE_PVP(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TOGGLE_PVP", Client.IP, Client.Port)
 
@@ -487,7 +483,6 @@ Public Module WS_Handlers_Misc
         End Try
     End Sub
 
-
     Public Sub On_CMSG_MOVE_FALL_RESET(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOVE_FALL_RESET", Client.IP, Client.Port)
         DumpPacket(packet.Data)
@@ -504,5 +499,32 @@ Public Module WS_Handlers_Misc
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MEETINGSTONE_INFO", Client.IP, Client.Port)
     End Sub
 
+    Public Sub On_CMSG_SET_FACTION_ATWAR(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        packet.GetInt16()
+        Dim faction As Integer = packet.GetInt32
+        Dim enabled As Byte = packet.GetInt8
+        Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_FACTION_ATWAR [faction={2:X} enabled={3}]", Client.IP, Client.Port, faction, enabled)
+        If enabled > 1 Then Exit Sub
+
+        If enabled = 1 Then
+            Client.Character.Reputation(faction).Flags = Client.Character.Reputation(faction).Flags Or 2
+        Else
+            Client.Character.Reputation(faction).Flags = Client.Character.Reputation(faction).Flags And (Not 2)
+        End If
+
+        Dim response As New PacketClass(OPCODES.SMSG_SET_FACTION_STANDING)
+        response.AddInt32(Client.Character.Reputation(faction).Flags)
+        response.AddInt32(faction)
+        response.AddInt32(Client.Character.Reputation(faction).Value)
+        Client.Send(response)
+        response.Dispose()
+    End Sub
+    Public Sub On_CMSG_SET_FACTION_INACTIVE(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        packet.GetInt16()
+        Dim faction As Integer = packet.GetInt32
+        Dim enabled As Byte = packet.GetInt8
+        Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_FIELD_WATCHED_FACTION_INACTIVE [faction={2:X} enabled={3}]", Client.IP, Client.Port, faction, enabled)
+        If enabled > 1 Then Exit Sub
+    End Sub
 
 End Module

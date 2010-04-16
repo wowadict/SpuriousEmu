@@ -3473,6 +3473,38 @@ CheckXPAgain:
             Client.Send(SMSG_GOSSIP_POI)
             SMSG_GOSSIP_POI.Dispose()
         End Sub
+        Public Sub SendTalking(ByVal TextID As Integer)
+            'TODO: Load it into the memory instead
+
+            If NPCTexts.ContainsKey(TextID) = False Then
+                Dim tmpText As New NPCText(TextID)
+            End If
+
+            'DONE: Load TextID
+            Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
+            response.AddInt32(TextID)
+
+            For i As Integer = 0 To 7
+                response.AddSingle(NPCTexts(TextID).Probability(i))     'Probability
+                response.AddString(NPCTexts(TextID).TextLine1(i))       'Text1
+                If NPCTexts(TextID).TextLine2(i) = "" Then
+                    response.AddString(NPCTexts(TextID).TextLine1(i))   'Text2
+                Else
+                    response.AddString(NPCTexts(TextID).TextLine2(i))   'Text2
+                End If
+                response.AddInt32(NPCTexts(TextID).Language(i))         'Language
+                response.AddInt32(NPCTexts(TextID).EmoteDelay1(i))      'Emote1.Delay
+                response.AddInt32(NPCTexts(TextID).Emote1(i))           'Emote1.Emote
+                response.AddInt32(NPCTexts(TextID).EmoteDelay2(i))      'Emote2.Delay
+                response.AddInt32(NPCTexts(TextID).Emote2(i))           'Emote2.Emote
+                response.AddInt32(NPCTexts(TextID).EmoteDelay3(i))      'Emote3.Delay
+                response.AddInt32(NPCTexts(TextID).Emote3(i))           'Emote3.Emote
+            Next
+
+
+            Client.Send(response)
+            response.Dispose()
+        End Sub
         Public Sub BindPlayer(ByVal cGUID As ULong)
             bindpoint_positionX = positionX
             bindpoint_positionY = positionY
@@ -3877,11 +3909,11 @@ CheckXPAgain:
 
             'DONE: Hostile by reputation
             Dim Rank As ReputationRank = GetReputation(FactionTemplatesInfo(FactionID).FactionID)
-            If Rank >= ReputationRank.Hostile Then
+            If Rank <= ReputationRank.Hostile Then
                 Return TReaction.HOSTILE
-            ElseIf Rank <= ReputationRank.Revered Then
+            ElseIf Rank >= ReputationRank.Revered Then
                 Return TReaction.FIGHT_SUPPORT
-            ElseIf Rank <= ReputationRank.Friendly Then
+            ElseIf Rank >= ReputationRank.Friendly Then
                 Return TReaction.FRIENDLY
             Else
                 Return TReaction.NEUTRAL
@@ -3928,8 +3960,12 @@ CheckXPAgain:
             End Select
         End Function
         Public Sub SetReputation(ByVal FactionID As Integer, ByVal Value As Integer)
-            If FactionInfo(FactionID).VisibleID > -1 Then
-                Reputation(FactionInfo(FactionID).VisibleID).Value = Reputation(FactionInfo(FactionID).VisibleID).Value + Value
+            If FactionInfo(FactionID).VisibleID = -1 Then Exit Sub
+
+            Reputation(FactionInfo(FactionID).VisibleID).Value += Value
+
+            If (Reputation(FactionInfo(FactionID).VisibleID).Flags And 1) = 0 Then
+                Reputation(FactionInfo(FactionID).VisibleID).Flags = Reputation(FactionInfo(FactionID).VisibleID).Flags Or 1
             End If
 
             If Not Client Is Nothing Then
@@ -3943,8 +3979,8 @@ CheckXPAgain:
         End Sub
         Public Function GetDiscountMod(ByVal FactionID As Integer) As Single
             Dim Rank As ReputationRank = GetReputation(FactionID)
-            If Rank <= ReputationRank.Neutral Then Return 1
-            Return (1 - 0.05 * (Rank - ReputationRank.Neutral))
+            If Rank >= ReputationRank.Honored Then Return 0.9F
+            Return 1.0F
         End Function
         'Death
         Public Overrides Sub Die(ByRef Attacker As BaseUnit)
@@ -4062,6 +4098,19 @@ CheckXPAgain:
                         CType(Attacker, CharacterObject).SendCharacterUpdate()
                     End If
                 End If
+
+                'DONE: Fight support by NPCs
+                For Each cGUID As ULong In creaturesNear.ToArray
+                    If WORLD_CREATUREs.ContainsKey(cGUID) AndAlso WORLD_CREATUREs(cGUID).aiScript IsNot Nothing AndAlso WORLD_CREATUREs(cGUID).isGuard Then
+                        If WORLD_CREATUREs(cGUID).isDead = False AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                            If inCombatWith.Contains(cGUID) Then Continue For
+                            If GetReaction(WORLD_CREATUREs(cGUID).Faction) = TReaction.FIGHT_SUPPORT AndAlso GetDistance(WORLD_CREATUREs(cGUID), Me) <= WORLD_CREATUREs(cGUID).AggroRange(Me) Then
+                                WORLD_CREATUREs(cGUID).aiScript.OnGenerateHate(Attacker, Damage)
+                            End If
+                        End If
+                    End If
+                Next
+
             End If
 
             'TODO: Enter combat for PvP combat, and then remove it after a 10 seconds non combat period (remember incombatwith array)
@@ -4070,6 +4119,7 @@ CheckXPAgain:
 
             If Life.Current = 0 Then
                 Me.Die(Attacker)
+                Exit Sub
             Else
                 SetUpdateFlag(EUnitFields.UNIT_FIELD_HEALTH, CType(Life.Current, Integer))
                 SendCharacterUpdate()
@@ -4085,6 +4135,8 @@ CheckXPAgain:
         End Sub
         Public Overrides Sub Heal(ByVal Damage As Integer, Optional ByRef Attacker As BaseUnit = Nothing)
             If DEAD Then Exit Sub
+
+            'TODO: Healing generates thread on the NPCs that has this character in their combat array
 
             Life.Current += Damage
             SetUpdateFlag(EUnitFields.UNIT_FIELD_HEALTH, CType(Life.Current, Integer))
@@ -4168,7 +4220,12 @@ CheckXPAgain:
 
             'Loading map cell if not loaded
             GetMapTile(positionX, positionY, CellX, CellY)
-            If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            'If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            Try
+                If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            Catch ex As Exception
+                Log.WriteLine(LogType.CRITICAL, "Failed loading maps at character logging in.{0}{1}", vbNewLine, ex.ToString())
+            End Try
 
             'DONE: SMSG_BINDPOINTUPDATE
             SendBindPointUpdate(Client, Me)
@@ -5662,21 +5719,21 @@ CheckXPAgain:
             c.LearnSpell(SpellRow.Item("spellid"))
         Next
 
-        ' Set Player Reputation
-        If c.Side = False Then 'Alliance
-            c.InitializeReputation(Factions.Stormwind)
-            c.InitializeReputation(Factions.GnomereganExiles)
-            c.InitializeReputation(Factions.Darnassus)
-            c.InitializeReputation(Factions.Ironforge)
-            c.InitializeReputation(Factions.Exodar)
+        ''' Set Player Reputation
+        ''If c.Side = False Then 'Alliance
+        ''    c.InitializeReputation(Factions.Stormwind)
+        ''    c.InitializeReputation(Factions.GnomereganExiles)
+        ''    c.InitializeReputation(Factions.Darnassus)
+        ''    c.InitializeReputation(Factions.Ironforge)
+        ''    c.InitializeReputation(Factions.Exodar)
 
-        Else 'Horde
-            c.InitializeReputation(Factions.Orgrimmar)
-            c.InitializeReputation(Factions.Undercity)
-            c.InitializeReputation(Factions.ThunderBluff)
-            c.InitializeReputation(Factions.DarkspearTrolls)
-            c.InitializeReputation(Factions.SilvermoonCity)
-        End If
+        ''Else 'Horde
+        ''    c.InitializeReputation(Factions.Orgrimmar)
+        ''    c.InitializeReputation(Factions.Undercity)
+        ''    c.InitializeReputation(Factions.ThunderBluff)
+        ''    c.InitializeReputation(Factions.DarkspearTrolls)
+        ''    c.InitializeReputation(Factions.SilvermoonCity)
+        ''End If
 
         ' Set Player Taxi Zones (May have to change this in the future)
         Select Case c.Race
@@ -5699,8 +5756,11 @@ CheckXPAgain:
             Case Races.RACE_UNDEAD
                 c.TaxiZones.Set(11, True)
 
-            Case Races.RACE_DRAENEI, Races.RACE_BLOOD_ELF
-                'TODO: Get taxi flags
+            Case Races.RACE_DRAENEI
+                c.TaxiZones.Set(94, True)
+
+            Case Races.RACE_BLOOD_ELF
+                c.TaxiZones.Set(82, True)
 
         End Select
 

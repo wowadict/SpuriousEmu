@@ -491,7 +491,8 @@ Public Module WS_DBCDatabase
 
         For Each TaxiNode As KeyValuePair(Of Integer, TTaxiNode) In TaxiNodes
             If TaxiNode.Value.MapID = map Then
-                tmp = Math.Sqrt((x - TaxiNode.Value.x) ^ 2 + (y - TaxiNode.Value.y) ^ 2)
+                'tmp = Math.Sqrt((x - TaxiNode.Value.x) ^ 2 + (y - TaxiNode.Value.y) ^ 2)
+                tmp = GetDistance(x, TaxiNode.Value.x, y, TaxiNode.Value.y)
                 If tmp < minDistance Then
                     minDistance = tmp
                     selectedTaxiNode = TaxiNode.Key

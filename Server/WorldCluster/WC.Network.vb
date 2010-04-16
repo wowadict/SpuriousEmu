@@ -195,7 +195,8 @@ Public Module WC_Network
                         Else
                             MyTime = timeGetTime
                             ServerTime = w.Value.Ping(MyTime)
-                            Latency = Math.Abs(MyTime - ServerTime)
+                            'Latency = Math.Abs(MyTime - ServerTime)
+                            Latency = Math.Abs(MyTime - timeGetTime)
 
                             WorldsInfo(w.Key).Latency = Latency
                             SentPingTo(WorldsInfo(w.Key)) = Latency
@@ -533,6 +534,7 @@ Public Module WC_Network
         Developer = 4
     End Enum
 
+    Public LastConnections As New Dictionary(Of UInteger, Date)
     Class ClientClass
         Inherits ClientInfo
         Implements IDisposable
@@ -568,6 +570,21 @@ Public Module WC_Network
         Public Sub OnConnect(ByVal state As Object)
             IP = CType(Socket.RemoteEndPoint, IPEndPoint).Address
             Port = CType(Socket.RemoteEndPoint, IPEndPoint).Port
+
+            'DONE: Connection spam protection
+            'TODO: Connection spamming still increases a lot of CPU. How do we protect against this?
+            Dim IpInt As UInteger = IP2Int(IP.ToString)
+            If LastConnections.ContainsKey(IpInt) Then
+                If Now > LastConnections(IpInt) Then
+                    LastConnections(IpInt) = Now.AddSeconds(5)
+                Else
+                    Socket.Close()
+                    Me.Dispose()
+                    Exit Sub
+                End If
+            Else
+                LastConnections.Add(IpInt, Now.AddSeconds(5))
+            End If
 
             Log.WriteLine(LogType.DEBUG, "Incoming connection from [{0}:{1}]", IP, Port)
 
@@ -645,6 +662,8 @@ Public Module WC_Network
                     p = Queue.Dequeue
                 End SyncLock
 
+                If Config.PacketLogging Then LogPacket(p.Data, False, Me)
+
                 If PacketHandlers.ContainsKey(p.OpCode) = True Then
                     Try
                         PacketHandlers(p.OpCode).Invoke(p, Me)
@@ -673,6 +692,7 @@ Public Module WC_Network
             If Not Socket.Connected Then Exit Sub
 
             Try
+                If Config.PacketLogging Then LogPacket(data, True, Me)
                 'If Encryption Then Encode(data)
                 If Encryption Then Crypt.Encrypt(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
@@ -689,6 +709,7 @@ Public Module WC_Network
 
             Try
                 Dim data As Byte() = packet.Data
+                If Config.PacketLogging Then LogPacket(data, True, Me)
                 'If Encryption Then Encode(data)
                 If Encryption Then Crypt.Encrypt(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
@@ -708,6 +729,7 @@ Public Module WC_Network
 
             Try
                 Dim data As Byte() = packet.Data.Clone
+                If Config.PacketLogging Then LogPacket(data, True, Me)
                 'If Encryption Then Encode(data)
                 If Encryption Then Crypt.Encrypt(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
@@ -729,7 +751,7 @@ Public Module WC_Network
         End Sub
 
         Private Sub Dispose() Implements System.IDisposable.Dispose
-            Log.WriteLine(LogType.NETWORK, "Connection from [{0}:{1}] disposed", IP, Port)
+            'Log.WriteLine(LogType.NETWORK, "Connection from [{0}:{1}] disposed", IP, Port)
 
             On Error Resume Next
 
@@ -780,12 +802,12 @@ Public Module WC_Network
         'End Sub
 
         Public Sub EnQueue(ByVal state As Object)
-            While CHARACTERS.Count > Config.ServerLimit
+            While CHARACTERs.Count > Config.ServerLimit
                 If Not Me.Socket.Connected Then Exit Sub
 
                 Dim response_full As New PacketClass(OPCODES.SMSG_AUTH_RESPONSE)
                 response_full.AddInt8(AuthResponseCodes.AUTH_WAIT_QUEUE)
-                response_full.AddInt32(CLIENTs.Count - CHARACTERS.Count)            'amount of players in queue
+                response_full.AddInt32(CLIENTs.Count - CHARACTERs.Count)            'amount of players in queue
                 Me.Send(response_full)
 
                 Log.WriteLine(LogType.INFORMATION, "[{1}:{2}] AUTH_WAIT_QUEUE: Server limit reached!", Me.IP, Me.Port)
@@ -900,5 +922,20 @@ Public Module WC_Network
         End Sub
     End Class
 #End Region
+
+    Function IP2Int(ByVal IP As String) As UInteger
+        Dim IpSplit() As String = IP.Split(".")
+        If IpSplit.Length <> 4 Then Return 0
+        Dim IpBytes(3) As Byte
+        Try
+            IpBytes(0) = CByte(IpSplit(3))
+            IpBytes(1) = CByte(IpSplit(2))
+            IpBytes(2) = CByte(IpSplit(1))
+            IpBytes(3) = CByte(IpSplit(0))
+            Return BitConverter.ToUInt32(IpBytes, 0)
+        Catch
+            Return 0
+        End Try
+    End Function
 
 End Module

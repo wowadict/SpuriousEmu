@@ -274,6 +274,21 @@ Public Module WS_Handlers
 
         PacketHandlers(OPCODES.CMSG_ALTER_APPEARANCE) = CType(AddressOf On_CMSG_ALTER_APPEARANCE, HandlePacket)
 
+
+        PacketHandlers(OPCODES.CMSG_SET_FACTION_ATWAR) = CType(AddressOf On_CMSG_SET_FACTION_ATWAR, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_SET_FACTION_INACTIVE) = CType(AddressOf On_CMSG_SET_FACTION_INACTIVE, HandlePacket)
+
+        PacketHandlers(OPCODES.CMSG_PET_NAME_QUERY) = CType(AddressOf On_CMSG_PET_NAME_QUERY, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_REQUEST_PET_INFO) = CType(AddressOf On_CMSG_REQUEST_PET_INFO, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_ACTION) = CType(AddressOf On_CMSG_PET_ACTION, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_CANCEL_AURA) = CType(AddressOf On_CMSG_PET_CANCEL_AURA, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_ABANDON) = CType(AddressOf On_CMSG_PET_ABANDON, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_RENAME) = CType(AddressOf On_CMSG_PET_RENAME, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_SET_ACTION) = CType(AddressOf On_CMSG_PET_SET_ACTION, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_SPELL_AUTOCAST) = CType(AddressOf On_CMSG_PET_SPELL_AUTOCAST, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_STOP_ATTACK) = CType(AddressOf On_CMSG_PET_STOP_ATTACK, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_PET_UNLEARN) = CType(AddressOf On_CMSG_PET_UNLEARN, HandlePacket)
+
         'NOTE: These opcodes are partialy handled by cluster
         '   none
 

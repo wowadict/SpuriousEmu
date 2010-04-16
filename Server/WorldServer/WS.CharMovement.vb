@@ -480,7 +480,9 @@ Module WS_CharMovement
         'DONE: Aggro range
         For Each cGUID As ULong In Client.Character.creaturesNear.ToArray
             If WORLD_CREATUREs.ContainsKey(cGUID) AndAlso WORLD_CREATUREs(cGUID).aiScript IsNot Nothing AndAlso ((TypeOf WORLD_CREATUREs(cGUID).aiScript Is DefaultAI) OrElse (TypeOf WORLD_CREATUREs(cGUID).aiScript Is GuardAI)) Then
-                If WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_DEAD AndAlso WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_RESPAWN AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                'If WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_DEAD AndAlso WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_RESPAWN AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                If WORLD_CREATUREs(cGUID).isDead = False AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                    If Client.Character.inCombatWith.Contains(cGUID) Then Continue For
                     If Client.Character.GetReaction(WORLD_CREATUREs(cGUID).Faction) = TReaction.HOSTILE AndAlso GetDistance(WORLD_CREATUREs(cGUID), Client.Character) <= WORLD_CREATUREs(cGUID).AggroRange(Client.Character) Then
                         WORLD_CREATUREs(cGUID).aiScript.aiHateTable.Add(Client.Character, 0)
                         SetPlayerInCombat(Client.Character)
@@ -496,9 +498,12 @@ Module WS_CharMovement
         For Each CombatUnit As ULong In Client.Character.inCombatWith.ToArray
             If GuidIsCreature(CombatUnit) AndAlso WORLD_CREATUREs.ContainsKey(CombatUnit) AndAlso CType(WORLD_CREATUREs(CombatUnit), CreatureObject).aiScript IsNot Nothing Then
                 With CType(WORLD_CREATUREs(CombatUnit), CreatureObject)
-                    If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget.GUID = Client.Character.GUID Then
+                    'If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget.GUID = Client.Character.GUID Then
+                    If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget Is Client.Character Then
+                        .GetPosition(.positionX, .positionY, .positionZ) 'Make sure it moves from it's location and not from where it was already heading before this
                         .aiScript.State = TBaseAI.AIState.AI_MOVE_FOR_ATTACK
-                        .aiScript.DoThink()
+                        '.aiScript.DoThink()
+                        .aiScript.DoMove()
                     End If
                 End With
             End If

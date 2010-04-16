@@ -437,7 +437,7 @@ Public Module Packets
         Public Sub CompressUpdatePacket()
             Dim startTime As Integer = timeGetTime
             If OpCode <> OPCODES.SMSG_UPDATE_OBJECT Then Exit Sub 'Wrong packet type
-            If Data.Length < 400 Then Exit Sub 'Too small packet
+            If Data.Length < 200 Then Exit Sub 'Too small packet
 
             Dim UncompressedSize As Integer = Data.Length
             Dim CompressedBuffer() As Byte = Compress(Data, 4, Data.Length - 4)

@@ -44,6 +44,8 @@ Public Module WS_Network
         Private m_RemoteChannel As Channels.IChannel = Nothing
         Private m_RemoteURI As String = ""
         Private m_LocalURI As String = ""
+        Private LastPing As Integer = 0
+        Private m_Connection As Timer
         Private m_TimerCPU As Timer
         Private LastInfo As Date
         Private LastCPUTime As Double = 0.0F
@@ -72,6 +74,10 @@ Public Module WS_Network
 
                 'Notify Cluster About Us
                 ClusterConnect()
+
+                'Creating connection timer
+                LastPing = timeGetTime
+                m_Connection = New Timer(AddressOf CheckConnection, Nothing, 10000, 10000)
 
                 'Creating CPU check timer
                 m_TimerCPU = New Timer(AddressOf CheckCPU, Nothing, 1000, 1000)
@@ -187,8 +193,20 @@ Public Module WS_Network
 
         Public Function Ping(ByVal Timestamp As Integer) As Integer Implements Common.IWorld.Ping
             'Log.WriteLine(LogType.DEBUG, "Cluster ping: [{0}ms]", timeGetTime - Timestamp)
+            LastPing = timeGetTime
             Return timeGetTime
         End Function
+
+        Public Sub CheckConnection(ByVal State As Object)
+            If (timeGetTime - LastPing) > 40000 Then
+                If Cluster IsNot Nothing Then
+                    Log.WriteLine(LogType.FAILED, "Cluster timed out. Reconnecting")
+                    ClusterDisconnect()
+                End If
+                ClusterConnect()
+                LastPing = timeGetTime
+            End If
+        End Sub
 
         Public Sub CheckCPU(ByVal State As Object)
             Dim TimeSinceLastCheck As TimeSpan = Now.Subtract(LastInfo)

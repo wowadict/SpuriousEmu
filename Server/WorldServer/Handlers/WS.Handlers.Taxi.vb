@@ -356,7 +356,8 @@ Public Module WS_Handlers_Taxi
                     If TaxiPathNode.Value.Path = Path Then
                         WaypointNodes.Add(TaxiPathNode.Value.Seq, TaxiPathNode.Value)
 
-                        TotalDistance += Math.Sqrt((LastX - TaxiPathNode.Value.x) ^ 2 + (LastY - TaxiPathNode.Value.y) ^ 2 + (LastZ - TaxiPathNode.Value.z) ^ 2)
+                        'TotalDistance += Math.Sqrt((LastX - TaxiPathNode.Value.x) ^ 2 + (LastY - TaxiPathNode.Value.y) ^ 2 + (LastZ - TaxiPathNode.Value.z) ^ 2)
+                        TotalDistance += GetDistance(LastX, TaxiPathNode.Value.x, LastY, TaxiPathNode.Value.y, LastZ, TaxiPathNode.Value.z)
                         LastX = TaxiPathNode.Value.x
                         LastY = TaxiPathNode.Value.y
                         LastZ = TaxiPathNode.Value.z
@@ -388,7 +389,8 @@ Public Module WS_Handlers_Taxi
 
 
                 For i As Integer = 0 To WaypointNodes.Count - 1
-                    MoveDistance = Math.Sqrt((LastX - WaypointNodes(i).x) ^ 2 + (LastY - WaypointNodes(i).y) ^ 2 + (LastZ - WaypointNodes(i).z) ^ 2)
+                    'MoveDistance = Math.Sqrt((LastX - WaypointNodes(i).x) ^ 2 + (LastY - WaypointNodes(i).y) ^ 2 + (LastZ - WaypointNodes(i).z) ^ 2)
+                    MoveDistance = GetDistance(LastX, WaypointNodes(i).x, LastY, WaypointNodes(i).y, LastZ, WaypointNodes(i).z)
 
                     LastX = WaypointNodes(i).x
                     LastY = WaypointNodes(i).y

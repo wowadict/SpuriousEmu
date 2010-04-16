@@ -248,11 +248,13 @@ Public Module WS_Combat
 
         'DONE: Glancing blow (only VS Creatures)
         Dim chanceToGlancingBlow As Short = 0
-        If TypeOf Victim Is CreatureObject AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
+        'If TypeOf Victim Is CreatureObject AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
+        If (TypeOf Attacker Is CharacterObject) AndAlso (TypeOf Victim Is CreatureObject) AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
 
         'DONE: Crushing blow, fix real damage (only for Creatures)
         Dim chanceToCrushingBlow As Short = 0
-        If TypeOf Attacker Is CreatureObject AndAlso TypeOf Victim Is CharacterObject AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
+        '        If TypeOf Attacker Is CreatureObject AndAlso TypeOf Victim Is CharacterObject AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
+        If (TypeOf Attacker Is CreatureObject) AndAlso (TypeOf Victim Is CharacterObject) AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
 
         'DONE: Some limitations
         If chanceToMiss > 60.0F Then chanceToMiss = 60.0F
