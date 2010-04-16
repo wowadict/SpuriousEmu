@@ -97,37 +97,37 @@
         '
         Me.mnuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuKalimdor, Me.mnuEasternK, Me.mnuOutlands, Me.mnuNorthrend})
         Me.mnuFile.Name = "mnuFile"
-        Me.mnuFile.Size = New System.Drawing.Size(37, 20)
+        Me.mnuFile.Size = New System.Drawing.Size(35, 20)
         Me.mnuFile.Text = "File"
         '
         'mnuKalimdor
         '
         Me.mnuKalimdor.Name = "mnuKalimdor"
-        Me.mnuKalimdor.Size = New System.Drawing.Size(169, 22)
+        Me.mnuKalimdor.Size = New System.Drawing.Size(170, 22)
         Me.mnuKalimdor.Text = "Kalimdor"
         '
         'mnuEasternK
         '
         Me.mnuEasternK.Name = "mnuEasternK"
-        Me.mnuEasternK.Size = New System.Drawing.Size(169, 22)
+        Me.mnuEasternK.Size = New System.Drawing.Size(170, 22)
         Me.mnuEasternK.Text = "Eastern Kingdoms"
         '
         'mnuOutlands
         '
         Me.mnuOutlands.Name = "mnuOutlands"
-        Me.mnuOutlands.Size = New System.Drawing.Size(169, 22)
+        Me.mnuOutlands.Size = New System.Drawing.Size(170, 22)
         Me.mnuOutlands.Text = "Outlands"
         '
         'mnuNorthrend
         '
         Me.mnuNorthrend.Name = "mnuNorthrend"
-        Me.mnuNorthrend.Size = New System.Drawing.Size(169, 22)
+        Me.mnuNorthrend.Size = New System.Drawing.Size(170, 22)
         Me.mnuNorthrend.Text = "Northrend"
         '
         'mnuCoords
         '
         Me.mnuCoords.Name = "mnuCoords"
-        Me.mnuCoords.Size = New System.Drawing.Size(57, 20)
+        Me.mnuCoords.Size = New System.Drawing.Size(53, 20)
         Me.mnuCoords.Text = "Coords"
         '
         'imgNorthrend
@@ -158,7 +158,7 @@
         Me.Location = New System.Drawing.Point(11, 57)
         Me.Name = "frmMain"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.Text = "WoWMap By Hex00010"
+        Me.Text = "WoWMap By Unix Updated By Hex00010"
         CType(Me.imgOutlands, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imgAzeroth, System.ComponentModel.ISupportInitialize).EndInit()
         Me.MainMenu1.ResumeLayout(False)
