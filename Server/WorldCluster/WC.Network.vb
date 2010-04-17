@@ -592,7 +592,12 @@ Public Module WC_Network
 
             'Send Auth Challenge
             Dim p As New PacketClass(OPCODES.SMSG_AUTH_CHALLENGE)
+            p.AddInt32(1)
             p.AddInt32(Index)
+            p.AddInt32(&HC0FFEEEE)
+            p.AddInt32(&HBABE00)
+            p.AddInt32(&HDF1697E5)
+            p.AddInt32(&H1234ABCD)
             Me.Send(p)
 
             Me.Index = Interlocked.Increment(CLIETNIDs)
@@ -808,6 +813,7 @@ Public Module WC_Network
                 Dim response_full As New PacketClass(OPCODES.SMSG_AUTH_RESPONSE)
                 response_full.AddInt8(AuthResponseCodes.AUTH_WAIT_QUEUE)
                 response_full.AddInt32(CLIENTs.Count - CHARACTERs.Count)            'amount of players in queue
+                'response_full.AddInt8(0)                                            '3.3.0
                 Me.Send(response_full)
 
                 Log.WriteLine(LogType.INFORMATION, "[{1}:{2}] AUTH_WAIT_QUEUE: Server limit reached!", Me.IP, Me.Port)
