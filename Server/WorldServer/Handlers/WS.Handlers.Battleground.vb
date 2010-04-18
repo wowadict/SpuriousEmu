@@ -208,7 +208,7 @@ Public Enum BattleGroundStatus As Integer
 End Enum
 
 Public Class BattleGroundPlayer
-    Public OfflineRemoveTime As time_t
+    'Public OfflineRemoveTime As time_t
     ' for tracking and removing offline players from queue after 5 minutes
     Public Team As UInt32
     ' Player's team
@@ -221,7 +221,7 @@ Public Class BattleGroundObjectInfo
         spellid = 0
     End Sub
 
-    Public [object] As GameObject
+    Public [object] As BaseObject
     Public timer As Int32
     Public spellid As UInt32
 End Class
@@ -289,7 +289,7 @@ Public Enum BattleGroundTeamId As Integer
     BG_TEAM_ALLIANCE = 0
     BG_TEAM_HORDE = 1
 End Enum
-#Define BG_TEAMS_COUNT
+'#Define BG_TEAMS_COUNT
 
 Public Enum BattleGroundStartingEvents As Integer
     BG_STARTING_EVENT_NONE = &H0
@@ -305,7 +305,7 @@ Public Enum BattleGroundStartingEventsIds As Integer
     BG_STARTING_EVENT_THIRD = 2
     BG_STARTING_EVENT_FOURTH = 3
 End Enum
-#Define BG_STARTING_EVENT_COUNT
+'#Define BG_STARTING_EVENT_COUNT
 
 Public Enum GroupJoinBattlegroundResult As Integer
     ERR_GROUP_JOIN_BATTLEGROUND_FAIL = 0
@@ -370,4 +370,4 @@ Public Enum BGHonorMode As Integer
 End Enum
 
 
-End Module
+'End Module
