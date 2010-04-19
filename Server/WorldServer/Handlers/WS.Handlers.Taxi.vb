@@ -16,16 +16,13 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Collections.Generic
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Handlers_Taxi
-
 
     Private Enum ActivateTaxiReplies As Byte
         ERR_TAXIOK = 0
@@ -90,7 +87,6 @@ Public Module WS_Handlers_Taxi
             SMSG_TAXINODE_STATUS.Dispose()
             Exit Sub
         End If
-
 
         Dim SMSG_SHOWTAXINODES As New PacketClass(OPCODES.SMSG_SHOWTAXINODES)
         SMSG_SHOWTAXINODES.AddInt32(1)
@@ -282,7 +278,6 @@ Public Module WS_Handlers_Taxi
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOVE_SPLINE_DONE", Client.IP, Client.Port)
     End Sub
 
-
     Private Sub TaxiLand(ByVal Character As CharacterObject)
         Character.TaxiNodes.Clear()
         Character.Mount = 0
@@ -312,7 +307,6 @@ Public Module WS_Handlers_Taxi
         Dim WaypointPaths As New List(Of Integer)
         Dim WaypointNodes As New Dictionary(Of Integer, TTaxiPathNode)
 
-
         Try
             'DONE: Generate paths
             Dim srcNode As Integer
@@ -328,7 +322,6 @@ Public Module WS_Handlers_Taxi
                     End If
                 Next
             End While
-
 
             'DONE: Do move on paths
             For Each Path As Integer In WaypointPaths
