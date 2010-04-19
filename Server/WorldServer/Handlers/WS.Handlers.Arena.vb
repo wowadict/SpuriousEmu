@@ -52,6 +52,7 @@ Public Module WS_Handlers_Arena
         Client.Send(packet)
         packet.Dispose()
     End Sub
+
     Public Sub SendArenaRoster(ByRef Client As ClientClass, ByVal ArenaTeamID As UInteger)
         Dim q As New DataTable
         Database.Query(String.Format("SELECT * FROM arena_members WHERE member_team = {0}", ArenaTeamID), q)
@@ -143,8 +144,6 @@ NextMember:
         Client.Send(response)
         response.Dispose()
     End Sub
-
-
 
     Public Sub On_CMSG_ARENA_TEAM_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub
