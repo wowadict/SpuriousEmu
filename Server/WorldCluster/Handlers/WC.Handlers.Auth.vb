@@ -101,7 +101,7 @@ Public Module WC_Handlers_Auth
             Client.Send(response_no_acc)
             Exit Sub
         End If
-        ReDim Client.SS_Hash(19)
+        ReDim Client.SS_Hash(39)
         For i = 0 To Len(tmp) - 1 Step 2
             Client.SS_Hash(i \ 2) = Val("&H" & Mid(tmp, i + 1, 2))
         Next
@@ -413,8 +413,8 @@ Public Module WC_Handlers_Auth
                     playerState += CharacterFlagState.CHARACTER_FLAG_GHOST
                 End If
 
-                response.AddUInt32(0)    'added in WoTLK
-                response.AddUInt32(playerState)
+                response.AddUInt32(playerState) ' Character Flags
+                response.AddUInt32(0)    'added in WoTLK (Character Customize Flags)
                 response.AddInt8(MySQLQuery.Rows(i).Item("char_restState"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_infoId"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_level"))
@@ -455,6 +455,19 @@ Public Module WC_Handlers_Auth
                     End If
                 Next
             Next i
+
+            response.AddInt32(0)  ' Bag 1 Item Model
+            response.AddInt8(0)   ' Bag 1 Item Slot
+            response.AddInt32(0)  ' Bag 1 Enchant?
+            response.AddInt32(0)  ' Bag 2 Item Model
+            response.AddInt8(0)   ' Bag 2 Item Slot
+            response.AddInt32(0)  ' Bag 2 Enchant?
+            response.AddInt32(0)  ' Bag 3 Item Model
+            response.AddInt8(0)   ' Bag 3 Item Slot
+            response.AddInt32(0)  ' Bag 3 Enchant?
+            response.AddInt32(0)  ' Bag 4 Item Model
+            response.AddInt8(0)   ' Bag 4 Item Slot
+            response.AddInt32(0)  ' Bag 4 Enchant?
 
         Catch e As Exception
             Log.WriteLine(LogType.FAILED, "[{0}:{1}] Unable to enum characters. [{2}]", Client.IP, Client.Port, e.Message)

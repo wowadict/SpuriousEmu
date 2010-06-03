@@ -562,7 +562,7 @@ Public Module RS_Main
                 data_response(0) = CMD_AUTH_LOGON_PROOF
                 data_response(1) = AccountState.LOGIN_OK
                 Array.Copy(Client.AuthEngine.M2, 0, data_response, 2, 20)
-                data_response(22) = 0
+                data_response(22) = 1 ' <-- ARENA TOURNAMENT ACC FLAG!
                 data_response(23) = 0
                 data_response(24) = 0
                 data_response(25) = 0
@@ -577,8 +577,8 @@ Public Module RS_Main
                 Client.Send(data_response)
                 'Set SSHash in DB
                 Dim sshash As String = ""
-                'For i = 0 To Client.AuthEngine.SS_Hash.Length - 1
-                For i = 0 To 20 - 1
+                For i = 0 To Client.AuthEngine.SS_Hash.Length - 1
+                    'For i = 0 To 20 - 1
                     If Client.AuthEngine.SS_Hash(i) < 16 Then
                         sshash = sshash + "0" + Hex(Client.AuthEngine.SS_Hash(i))
                     Else
