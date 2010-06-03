@@ -414,7 +414,7 @@ Public Module WC_Handlers_Auth
                 End If
 
                 response.AddUInt32(playerState) ' Character Flags
-                response.AddUInt32(0)    'added in WoTLK (Character Customize Flags)
+                response.AddUInt32(0)    'added in WoTLK (Character Re-Customize Flags)
                 response.AddInt8(MySQLQuery.Rows(i).Item("char_restState"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_infoId"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_level"))
@@ -431,7 +431,8 @@ Public Module WC_Handlers_Auth
                 Dim r As DataRow = e.Current
 
                 'DONE: Add model info
-                For slot As Byte = 0 To EQUIPMENT_SLOT_END '- 1
+                'For slot As Byte = 0 To EQUIPMENT_SLOT_END '- 1
+                For slot As Byte = 0 To INVENTORY_SLOT_BAG_END - 1
                     If r Is Nothing OrElse CInt(r.Item("item_slot")) <> slot Then
                         'No equiped item in this slot
                         response.AddInt32(0) 'Item Model
@@ -455,19 +456,6 @@ Public Module WC_Handlers_Auth
                     End If
                 Next
             Next i
-
-            response.AddInt32(0)  ' Bag 1 Item Model
-            response.AddInt8(0)   ' Bag 1 Item Slot
-            response.AddInt32(0)  ' Bag 1 Enchant?
-            response.AddInt32(0)  ' Bag 2 Item Model
-            response.AddInt8(0)   ' Bag 2 Item Slot
-            response.AddInt32(0)  ' Bag 2 Enchant?
-            response.AddInt32(0)  ' Bag 3 Item Model
-            response.AddInt8(0)   ' Bag 3 Item Slot
-            response.AddInt32(0)  ' Bag 3 Enchant?
-            response.AddInt32(0)  ' Bag 4 Item Model
-            response.AddInt8(0)   ' Bag 4 Item Slot
-            response.AddInt32(0)  ' Bag 4 Enchant?
 
         Catch e As Exception
             Log.WriteLine(LogType.FAILED, "[{0}:{1}] Unable to enum characters. [{2}]", Client.IP, Client.Port, e.Message)
