@@ -519,8 +519,8 @@ Public Module WS_CharManagment
         Dim packet As New PacketClass(OPCODES.SMSG_INITIALIZE_FACTIONS)
         Dim i As Byte
 
-        packet.AddInt32(64)
-        For i = 0 To 63
+        packet.AddInt32(128)
+        For i = 0 To 127
             packet.AddInt8(Character.Reputation(i).Flags)                               'Flags
             packet.AddInt32(Character.Reputation(i).Value)                              'Standing
         Next i

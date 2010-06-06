@@ -164,6 +164,10 @@ Public Module WS_Main
             Database.SQLPass = Config.SQLPass
             Database.SQLTypeServer = Config.SQLDBType
 
+            RESOLUTION_ZMAP = Config.MapResolution - 1
+            If RESOLUTION_ZMAP < 64 Then RESOLUTION_ZMAP = 64
+            If RESOLUTION_ZMAP > 256 Then RESOLUTION_ZMAP = 256
+
             'DONE: Creating logger
             Common.BaseWriter.CreateLog(Config.LogType, Config.LogConfig, Log)
             Log.LogLevel = Config.LogLevel

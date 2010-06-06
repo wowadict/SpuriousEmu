@@ -80,11 +80,12 @@ Public Module WS_Maps
     End Class
 #End Region
 
+    Public RESOLUTION_ZMAP As Integer = 0
 
 #Region "Continents"
 
     'NOTE: Map resolution. The resolution of your map files in your maps folder.
-    Public Const RESOLUTION_ZMAP As Integer = 64 - 1
+    'Public Const RESOLUTION_ZMAP As Integer = 256 - 1
 
     Public Class TMapTile
         Implements IDisposable
@@ -98,10 +99,12 @@ Public Module WS_Maps
         Public AreaFlag(RESOLUTION_FLAGS, RESOLUTION_FLAGS) As UShort
         Public AreaTerrain(RESOLUTION_TERRAIN, RESOLUTION_TERRAIN) As Byte
         Public WaterLevel(RESOLUTION_WATER, RESOLUTION_WATER) As Single
-        Public ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        'Public ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        Public ZCoord(,) As Single
 
 #If ENABLE_PPOINTS Then
-        Public ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        'Public ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        Public ZCoord_PP(,) As Single
         Public ZCoord_PP_ModTimes As Integer = 0
 
         Public Sub ZCoord_PP_Save()
@@ -136,6 +139,7 @@ Public Module WS_Maps
 
         Public Sub New(ByVal tileX As Byte, ByVal tileY As Byte, ByVal tileMap As Integer)
             ReDim ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP)
+            ReDim ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP)
 
             CellX = tileX
             CellY = tileY
