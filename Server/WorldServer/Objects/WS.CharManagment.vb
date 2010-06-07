@@ -3868,7 +3868,7 @@ CheckXPAgain:
 
         'Reputation
         Public WatchedFactionIndex As Byte = &HFF
-        Public Reputation(63) As TReputation
+        Public Reputation(127) As TReputation
         Public Sub InitializeReputation(ByVal FactionID As Integer)
             If FactionInfo(FactionID).VisibleID > -1 Then
                 Reputation(FactionInfo(FactionID).VisibleID).Value = 0
