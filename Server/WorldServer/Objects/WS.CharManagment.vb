@@ -257,7 +257,7 @@ Public Module WS_CharManagment
 
     Public Sub InitializeReputations(ByRef c As CharacterObject)
         Dim i As Byte
-        For i = 0 To 63
+        For i = 0 To 127
             c.Reputation(i) = New TReputation
             c.Reputation(i).Value = 0
             c.Reputation(i).Flags = 0
@@ -4532,7 +4532,7 @@ CheckXPAgain:
 
             'DONE: Get ReputationPoints -> Saved as STRING like "Flags1:Standing1 Flags2:Standing2"
             tmp = Split(CType(MySQLQuery.Rows(0).Item("char_reputation"), String), " ")
-            For i = 0 To 63
+            For i = 0 To 127
                 Dim tmp2() As String
                 tmp2 = Split(tmp(i), ":")
                 Reputation(i) = New TReputation
