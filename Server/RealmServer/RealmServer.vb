@@ -440,7 +440,13 @@ Public Module RS_Main
 
                     Client.Language = ClientLanguage
                     Client.Expansion = result.Rows(0).Item("expansion")
-                    Client.AuthEngine = New AuthEngineClass
+                    Try
+                        Client.AuthEngine = New AuthEngineClass
+                    Catch ex As Exception
+                        Console.ForegroundColor = System.ConsoleColor.Red
+                        Console.WriteLine("[{0}] [{1}:{2}] Error loading AuthEngine: {3}{4}", Format(TimeOfDay, "hh:mm:ss"), Client.IP, Client.Port, vbNewLine, ex)
+                        Console.ForegroundColor = System.ConsoleColor.White
+                    End Try
                     Client.AuthEngine.CalculateX(account, password)
 
                     Dim data_response(118) As Byte
