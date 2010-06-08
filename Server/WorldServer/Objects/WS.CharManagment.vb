@@ -521,7 +521,7 @@ Public Module WS_CharManagment
 
         packet.AddInt32(128)
         For i = 0 To 127
-            packet.AddInt8(Character.Reputation(i).Flags)                               'Flags
+            packet.AddInt8(Character.Reputation(i).Flags And &HFF)                      'Flags
             packet.AddInt32(Character.Reputation(i).Value)                              'Standing
         Next i
 
