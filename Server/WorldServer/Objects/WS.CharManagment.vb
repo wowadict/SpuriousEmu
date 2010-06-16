@@ -1773,7 +1773,7 @@ Public Module WS_CharManagment
             End If
 
             If UPDATETYPE = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT Or UPDATETYPE = ObjectUpdateType.UPDATETYPE_MOVEMENT Or UPDATETYPE = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF Then
-                packet.AddInt8(&H71) 'flags
+                packet.AddInt16(&H71) 'flags
                 packet.AddInt32(0) 'flags2
                 packet.AddInt16(0) ' When was this added?
                 packet.AddInt32(timeGetTime)

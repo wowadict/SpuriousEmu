@@ -42,10 +42,11 @@ Public Module WS_Corpses
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, 1.0F)
 
             Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_OWNER, Owner)
-            Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_FACING, orientation)
-            Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_X, positionX)
-            Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_Y, positionY)
-            Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_Z, positionZ)
+            ' TODO: Fix These Remarked for 3.3.3a
+            ''Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_FACING, orientation)
+            ''Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_X, positionX)
+            ''Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_Y, positionY)
+            ''Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_POS_Z, positionZ)
             Update.SetUpdateFlag(ECorpseFields.CORPSE_FIELD_DISPLAY_ID, Model)
 
             Dim i As Integer

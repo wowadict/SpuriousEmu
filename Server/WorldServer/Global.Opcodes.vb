@@ -16,6 +16,7 @@
 ' Foundation Inc. 59 Temple Place Suite 330 Boston MA  02111-1307  USA
 '
 #Region "OPCODES"
+' For Client Version 3.3.3 11723
 Public Enum OPCODES
     MSG_NULL_ACTION = &H0
     CMSG_BOOTME = &H1
@@ -1418,6 +1419,7 @@ Public Enum EItemFields
     ITEM_FIELD_MAXDURABILITY = EObjectFields.OBJECT_END + &H37 ' Size: 1 Type: INT Flags: OWNER_ONLY UNK2
     ITEM_FIELD_CREATE_PLAYED_TIME = EObjectFields.OBJECT_END + &H38 ' Size: 1 Type: INT Flags: NONE
     ITEM_FIELD_ITEM_TEXT_ID = EObjectFields.OBJECT_END + &H39 ' Size: 1 Type: INT Flags: OWNER_ONLY - This is Wrong, but we shall store the dataz???
+    ITEM_FIELD_PAD = EObjectFields.OBJECT_END + &H39
     ITEM_END = EObjectFields.OBJECT_END + &H3A
 End Enum
 #End Region
@@ -1864,12 +1866,13 @@ Public Enum EPlayerFields
     PLAYER_FIELD_GLYPH_SLOTS_1 = EUnitFields.UNIT_END + &H48C ' Size: 6, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_GLYPHS_1 = EUnitFields.UNIT_END + &H492 ' Size: 6, Type: INT, Flags: PRIVATE
     PLAYER_GLYPHS_ENABLED = EUnitFields.UNIT_END + &H498 ' Size: 1, Type: INT, Flags: PRIVATE
+    PLAYER_PET_SPELL_POWER = EUnitFields.UNIT_END + &H499 ' Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_PADDING = EUnitFields.UNIT_END + &H499 ' Size: 1, Type: INT, Flags: NONE
     PLAYER_END = EUnitFields.UNIT_END + &H49A
 End Enum
 #End Region
 #Region "Game Object Fields"
-Public Enum EGameObjectFields
+Public Enum EGameObjectFieldsOld
     OBJECT_FIELD_CREATED_BY = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     GAMEOBJECT_DISPLAYID = EObjectFields.OBJECT_END + &H2 ' Size: 1 Type: INT Flags: PUBLIC
     GAMEOBJECT_FLAGS = EObjectFields.OBJECT_END + &H3 ' Size: 1 Type: TWO_SHORT Flags: PUBLIC
@@ -1889,7 +1892,7 @@ Public Enum EGameObjectFields
     GAMEOBJECT_END = EObjectFields.OBJECT_END + &H12
 End Enum
 
-Public Enum EGameObjectFieldsNEW
+Public Enum EGameObjectFields
     OBJECT_FIELD_CREATED_BY = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     GAMEOBJECT_DISPLAYID = EObjectFields.OBJECT_END + &H2 ' Size: 1 Type: INT Flags: PUBLIC
     GAMEOBJECT_FLAGS = EObjectFields.OBJECT_END + &H3 ' Size: 1 Type: TWO_SHORT Flags: PUBLIC
@@ -1902,7 +1905,7 @@ Public Enum EGameObjectFieldsNEW
 End Enum
 #End Region
 #Region "Dynamic Object Fields"
-Public Enum EDynamicObjectFields
+Public Enum EDynamicObjectFieldsOld
     DYNAMICOBJECT_CASTER = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     DYNAMICOBJECT_BYTES = EObjectFields.OBJECT_END + &H2 ' Size: 1 Type: BYTES Flags: PUBLIC
     DYNAMICOBJECT_SPELLID = EObjectFields.OBJECT_END + &H3 ' Size: 1 Type: INT Flags: PUBLIC
@@ -1915,7 +1918,7 @@ Public Enum EDynamicObjectFields
     DYNAMICOBJECT_END = EObjectFields.OBJECT_END + &HA
 End Enum
 
-Public Enum EDynamicObjectFieldsNEW
+Public Enum EDynamicObjectFields
     DYNAMICOBJECT_CASTER = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     DYNAMICOBJECT_BYTES = EObjectFields.OBJECT_END + &H2 ' Size: 1 Type: BYTES Flags: PUBLIC
     DYNAMICOBJECT_SPELLID = EObjectFields.OBJECT_END + &H3 ' Size: 1 Type: INT Flags: PUBLIC
@@ -1926,7 +1929,7 @@ End Enum
 
 #End Region
 #Region "Corpse Fields"
-Public Enum ECorpseFields
+Public Enum ECorpseFieldsOld
     CORPSE_FIELD_OWNER = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     CORPSE_FIELD_PARTY = EObjectFields.OBJECT_END + &H2 ' Size: 2 Type: LONG Flags: PUBLIC
     CORPSE_FIELD_FACING = EObjectFields.OBJECT_END + &H4 ' Size: 1 Type: FLOAT Flags: PUBLIC
@@ -1962,7 +1965,7 @@ Public Enum ECorpseFields
     CORPSE_END = EObjectFields.OBJECT_END + &H22
 End Enum
 
-Public Enum ECorpseFieldsNEW
+Public Enum ECorpseFields
     CORPSE_FIELD_OWNER = EObjectFields.OBJECT_END + &H0 ' Size: 2 Type: LONG Flags: PUBLIC
     CORPSE_FIELD_PARTY = EObjectFields.OBJECT_END + &H2 ' Size: 2 Type: LONG Flags: PUBLIC
     CORPSE_FIELD_DISPLAY_ID = EObjectFields.OBJECT_END + &H4 ' Size: 1 Type: INT Flags: PUBLIC

@@ -499,6 +499,32 @@ Public Module WS_Handlers_Misc
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MEETINGSTONE_INFO", Client.IP, Client.Port)
     End Sub
 
+    Public Sub On_CMSG_LFD_PLAYER_LOCK_INFO_REQUEST(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_LFD_PLAYER_LOCK_INFO_REQUEST", Client.IP, Client.Port)
+    End Sub
+
+    Public Sub On_MSG_GUILD_BANK_MONEY_WITHDRAWN(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_GUILD_BANK_MONEY_WITHDRAWN", Client.IP, Client.Port)
+    End Sub
+
+    Public Sub On_CMSG_CALENDAR_GET_NUM_PENDING(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Dim response As New PacketClass(OPCODES.SMSG_CALENDAR_SEND_NUM_PENDING)
+        response.AddInt32(0)
+        Client.Send(response)
+        response.Dispose()
+    End Sub
+
+    Public Sub On_CMSG_MOVE_TIME_SKIPPED(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOVE_TIME_SKIPPED", Client.IP, Client.Port)
+    End Sub
+
+    Public Sub On_CMSG_WORLD_STATE_UI_TIMER_UPDATE(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Dim response As New PacketClass(OPCODES.SMSG_WORLD_STATE_UI_TIMER_UPDATE)
+        response.AddUInt32(GetTimestamp(Now))
+        Client.Send(response)
+        response.Dispose()
+    End Sub
+
     Public Sub On_CMSG_SET_FACTION_ATWAR(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
         Dim faction As Integer = packet.GetInt32

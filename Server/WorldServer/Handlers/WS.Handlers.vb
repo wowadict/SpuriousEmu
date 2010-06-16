@@ -289,6 +289,12 @@ Public Module WS_Handlers
         'PacketHandlers(OPCODES.CMSG_PET_STOP_ATTACK) = CType(AddressOf On_CMSG_PET_STOP_ATTACK, HandlePacket)
         'PacketHandlers(OPCODES.CMSG_PET_UNLEARN) = CType(AddressOf On_CMSG_PET_UNLEARN, HandlePacket)
 
+        PacketHandlers.Add(OPCODES.CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, AddressOf On_CMSG_LFD_PLAYER_LOCK_INFO_REQUEST)
+        PacketHandlers.Add(OPCODES.MSG_GUILD_BANK_MONEY_WITHDRAWN, AddressOf On_MSG_GUILD_BANK_MONEY_WITHDRAWN)
+        PacketHandlers.Add(OPCODES.CMSG_CALENDAR_GET_NUM_PENDING, AddressOf On_CMSG_CALENDAR_GET_NUM_PENDING)
+        PacketHandlers.Add(OPCODES.CMSG_MOVE_TIME_SKIPPED, AddressOf On_CMSG_MOVE_TIME_SKIPPED)
+        PacketHandlers.Add(OPCODES.CMSG_WORLD_STATE_UI_TIMER_UPDATE, AddressOf On_CMSG_WORLD_STATE_UI_TIMER_UPDATE)
+
         'NOTE: These opcodes are partialy handled by cluster
         '   none
 

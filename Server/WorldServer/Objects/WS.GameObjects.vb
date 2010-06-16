@@ -182,10 +182,11 @@ Public Module WS_GameObjects
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
 
             If Owner Then Update.SetUpdateFlag(EGameObjectFields.OBJECT_FIELD_CREATED_BY, Owner)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_X, positionX)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Y, positionY)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Z, positionZ)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
+            ' TODO: Fix These Remarked for 3.3.3a
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_X, positionX)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Y, positionY)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Z, positionZ)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
 
             Dim Rotation As Long = 0
             Dim f_rot1 As Single = Math.Sin(orientation / 2)
@@ -217,10 +218,11 @@ Public Module WS_GameObjects
             ''''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_LEVEL, ObjectInfo.Level)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FLAGS, Flags)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_DISPLAYID, ObjectInfo.Model)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_1, Rotations(1))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_2, Rotations(2))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_3, Rotations(3))
+            ' TODO: Fix These Remarked for 3.3.3a
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_1, Rotations(1))
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_2, Rotations(2))
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_3, Rotations(3))
             'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_TIMESTAMP, 0)
         End Sub
         Private Sub Dispose() Implements System.IDisposable.Dispose
@@ -504,7 +506,8 @@ Public Module WS_GameObjects
                 packet.AddInt32(2)
                 'packet.AddInt8(0)
                 Dim tmpUpdate As New UpdateClass(FIELD_MASK_SIZE_GAMEOBJECT)
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
+                ' TODO: Fix This Remarked for 3.3.3a                
+                ''tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
                 tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotations(0))
                 tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 1, Rotations(1))
                 tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 2, Rotations(2))
