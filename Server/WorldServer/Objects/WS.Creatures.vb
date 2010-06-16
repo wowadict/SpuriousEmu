@@ -53,13 +53,19 @@ Public Module WS_Creatures
 
             Model = MySQLQuery.Rows(0).Item("creature_model")
             FemaleModel = MySQLQuery.Rows(0).Item("creature_femalemodel")
+            Model2 = MySQLQuery.Rows(0).Item("creature_model2")
+            FemaleModel2 = MySQLQuery.Rows(0).Item("creature_femalemodel2")
             Name = MySQLQuery.Rows(0).Item("creature_name")
             Guild = MySQLQuery.Rows(0).Item("creature_guild")
             Info_Str = MySQLQuery.Rows(0).Item("info_str")
+            KillCredit1 = MySQLQuery.Rows(0).Item("KillCredit1")
+            KillCredit2 = MySQLQuery.Rows(0).Item("KillCredit2")
             Size = MySQLQuery.Rows(0).Item("creature_size")
 
-            Life = MySQLQuery.Rows(0).Item("creature_life")
-            Mana = MySQLQuery.Rows(0).Item("creature_mana")
+            MinLife = MySQLQuery.Rows(0).Item("creature_minlife")
+            Life = MySQLQuery.Rows(0).Item("creature_maxlife")
+            MinMana = MySQLQuery.Rows(0).Item("creature_minmana")
+            Mana = MySQLQuery.Rows(0).Item("creature_maxmana")
             ManaType = MySQLQuery.Rows(0).Item("creature_manaType")
             Faction = MySQLQuery.Rows(0).Item("creature_faction")
             Elite = MySQLQuery.Rows(0).Item("creature_elite")
@@ -98,6 +104,23 @@ Public Module WS_Creatures
             EquipSlot(2) = MySQLQuery.Rows(0).Item("creature_equipslot3")
 
             AIScriptSource = MySQLQuery.Rows(0).Item("creature_aiScript")
+
+            MinGold = MySQLQuery.Rows(0).Item("creature_minGold")
+            MaxGold = MySQLQuery.Rows(0).Item("creature_maxGold")
+            TrainerType = MySQLQuery.Rows(0).Item("creature_trainerType")
+            TrainerSpell = MySQLQuery.Rows(0).Item("creature_trainerSpell")
+            TrainerClass = MySQLQuery.Rows(0).Item("creature_trainerClass")
+            TrainerRace = MySQLQuery.Rows(0).Item("creature_trainerRace")
+            MovementType = MySQLQuery.Rows(0).Item("creature_movementType")
+            RegenHealth = MySQLQuery.Rows(0).Item("creature_regenHealth")
+            MechanicImmuneMask = MySQLQuery.Rows(0).Item("creature_mechanicImmuneMask")
+            FlagsExtra = MySQLQuery.Rows(0).Item("creature_flagsExtra")
+            QuestItem1 = MySQLQuery.Rows(0).Item("questItem1")
+            QuestItem2 = MySQLQuery.Rows(0).Item("questItem2")
+            QuestItem3 = MySQLQuery.Rows(0).Item("questItem3")
+            QuestItem4 = MySQLQuery.Rows(0).Item("questItem4")
+            QuestItem5 = MySQLQuery.Rows(0).Item("questItem5")
+            QuestItem6 = MySQLQuery.Rows(0).Item("questItem6")
 
             Id = CreatureID
 
@@ -140,8 +163,10 @@ Public Module WS_Creatures
             tmp = tmp & ", creature_name='" & Name & "'"
             tmp = tmp & ", creature_guild=""" & Guild & """"
             tmp = tmp & ", creature_size=""" & Trim(Str(Size)) & """"
-            tmp = tmp & ", creature_life=""" & Life & """"
-            tmp = tmp & ", creature_mana=""" & Mana & """"
+            tmp = tmp & ", creature_minlife=""" & MinLife & """"
+            tmp = tmp & ", creature_maxlife=""" & Life & """"
+            tmp = tmp & ", creature_minmana=""" & MinMana & """"
+            tmp = tmp & ", creature_maxmana=""" & Mana & """"
             tmp = tmp & ", creature_manaType=""" & ManaType & """"
             tmp = tmp & ", creature_elite=""" & Elite & """"
             tmp = tmp & ", creature_faction=""" & Faction & """"
@@ -182,10 +207,16 @@ Public Module WS_Creatures
         Public Name As String = "MISSING_CREATURE_INFO"
         Public Guild As String = ""
         Public Info_Str As String = ""
+        Public KillCredit1 As Integer = 0
+        Public KillCredit2 As Integer = 0
         Public Size As Single = 1
         Public Model As Integer = 262
         Public FemaleModel As Integer = 0
+        Public Model2 As Integer = 0
+        Public FemaleModel2 As Integer = 0
+        Public MinLife As Integer = 1
         Public Life As Integer = 1
+        Public MinMana As Integer = 1
         Public Mana As Integer = 1
         Public ManaType As Byte = 0
         Public Faction As Short = FactionTemplates.None
@@ -225,6 +256,23 @@ Public Module WS_Creatures
         Public EquipSlot() As Byte = {0, 0, 0}
 
         Public AIScriptSource As String = ""
+
+        Public MinGold As Integer = 0
+        Public MaxGold As Integer = 0
+        Public TrainerType As Integer = 0
+        Public TrainerSpell As Integer = 0
+        Public TrainerClass As Integer = 0
+        Public TrainerRace As Integer = 0
+        Public MovementType As Integer = 0
+        Public RegenHealth As Integer = 0
+        Public MechanicImmuneMask As Integer = 0
+        Public FlagsExtra As Integer = 0
+        Public QuestItem1 As Integer = 0
+        Public QuestItem2 As Integer = 0
+        Public QuestItem3 As Integer = 0
+        Public QuestItem4 As Integer = 0
+        Public QuestItem5 As Integer = 0
+        Public QuestItem6 As Integer = 0
 
         Public SpellDataID As Integer = 0
         Public SpellsTable As Integer = 0
@@ -479,7 +527,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -596,7 +644,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -621,7 +669,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -1166,7 +1214,7 @@ Public Module WS_Creatures
             'WARNING: Use only for loading creature from DB
             If Info Is Nothing Then
                 Dim MySQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawned_id = {0};", GUID_), MySQLQuery)
+                Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawn_id = {0};", GUID_), MySQLQuery)
                 If MySQLQuery.Rows.Count > 0 Then
                     Info = MySQLQuery.Rows(0)
                 Else
@@ -1495,14 +1543,26 @@ Public Module WS_Creatures
             response.AddInt32(Creature.CreatureType)
             response.AddInt32(Creature.CreatureFamily)
             response.AddInt32(Creature.Elite)           'Rank
-            response.AddInt32(0)                        'Unk1
-            response.AddInt32(Creature.SpellDataID)
+            response.AddInt32(Creature.KillCredit1)                        'Quest Kill Credit 1
+            response.AddInt32(Creature.KillCredit2)                        'Quest Kill Credit 2
+            ''response.AddInt32(Creature.SpellDataID)
             response.AddInt32(Creature.Model)           'Male model
             response.AddInt32(Creature.FemaleModel)     'Female Model
-            response.AddInt32(0)                        'Unkint1
+            response.AddInt32(Creature.Model2)                        'Male Model 2
+            response.AddInt32(Creature.FemaleModel2)                        'Female Model 2
             response.AddSingle(Creature.UnkFloat1)      'UnkFloat1
             response.AddSingle(Creature.UnkFloat2)      'UnkFloat2
             response.AddInt8(Creature.Leader)           'Leader
+
+            ' Allow Up to 6 Quest Items (quest drop)
+            response.AddInt32(Creature.QuestItem1)
+            response.AddInt32(Creature.QuestItem2)
+            response.AddInt32(Creature.QuestItem3)
+            response.AddInt32(Creature.QuestItem4)
+            response.AddInt32(Creature.QuestItem5)
+            response.AddInt32(Creature.QuestItem6)
+
+            response.AddInt32(Creature.MovementType)  ' CreatureMovementInfo.dbc
 
             Client.Send(response)
             response.Dispose()
