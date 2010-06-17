@@ -34,6 +34,8 @@ Public Module WS_GameObjects
         Public Name As String = ""
         Public RespawnTime As Integer = 0
         Public Fields(23) As Integer
+        Public Size As Single = 0.0F
+        Public QuestItem(5) As Integer
         Private found_ As Boolean = False
 
         Public Sub New(ByVal ID_ As Integer)
@@ -58,6 +60,12 @@ Public Module WS_GameObjects
                 Fields(i) = MySQLQuery.Rows(0).Item("gameObject_Field" & i)
             Next
 
+            Size = MySQLQuery.Rows(0).Item("gameObject_Size")
+
+            For i As Byte = 0 To 5
+                QuestItem(i) = MySQLQuery.Rows(0).Item("gameObject_QuestItem" & i)
+            Next
+
             GAMEOBJECTSDatabase.Add(ID, Me)
         End Sub
 
@@ -75,9 +83,14 @@ Public Module WS_GameObjects
             tmp = tmp & ", gameObject_Type=""" & Type & """"
             tmp = tmp & ", gameObject_Name='" & Name & "'"
             tmp = tmp & ", gameObject_RespawnTime='" & RespawnTime & "'"
+            tmp = tmp & ", gameObject_Size=""" & Size & """"
 
             For i As Byte = 0 To 23
                 tmp = tmp & ", gameObject_Field" & i & " =""" & Fields(i) & """"
+            Next
+
+            For i As Byte = 0 To 5
+                tmp = tmp & ", gameObject_QuestItem" & i & " =""" & QuestItem(i) & """"
             Next
 
             tmp = tmp + String.Format(" WHERE gameObject_id = ""{0}"";", ID)
@@ -218,11 +231,10 @@ Public Module WS_GameObjects
             ''''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_LEVEL, ObjectInfo.Level)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FLAGS, Flags)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_DISPLAYID, ObjectInfo.Model)
-            ' TODO: Fix These Remarked for 3.3.3a
-            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
-            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_1, Rotations(1))
-            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_2, Rotations(2))
-            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_3, Rotations(3))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotations(0))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 1, Rotations(1))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 2, Rotations(2))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 3, Rotations(3))
             'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_TIMESTAMP, 0)
         End Sub
         Private Sub Dispose() Implements System.IDisposable.Dispose
@@ -589,7 +601,7 @@ Public Module WS_GameObjects
     End Enum
 
     Public Sub On_CMSG_GAMEOBJECT_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 17 Then Exit Sub
+        If (packet.Data.Length - 1) < 11 Then Exit Sub
         Dim response As New PacketClass(OPCODES.SMSG_GAMEOBJECT_QUERY_RESPONSE)
 
         packet.GetInt16()
@@ -614,12 +626,17 @@ Public Module WS_GameObjects
             response.AddInt32(GameObject.Type)
             response.AddInt32(GameObject.Model)
             response.AddString(GameObject.Name)
-            response.AddInt32(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk)
+            response.AddInt32(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk) unk = IconName?
             response.AddInt16(0)                    'New in 2.0.3 - (1 = Cast Bar Text, 1 = unk)
 
             For i As Byte = 0 To 23
                 response.AddInt32(GameObject.Fields(i))
             Next i
+
+            response.AddSingle(GAMEOBJECTSDatabase(GameObjectGUID).Size)
+            For i As Integer = 0 To 5
+                response.AddInt32(GameObject.QuestItem(i)) 'QuestItem
+            Next
 
             Client.Send(response)
             response.Dispose()

@@ -55,7 +55,7 @@ Public Module WS_Handlers_Misc
 
     Public Sub On_CMSG_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
-            If (packet.Data.Length - 1) < 13 Then Exit Sub
+            If (packet.Data.Length - 1) < 7 Then Exit Sub
             packet.GetInt16()
             Dim GUID As ULong = packet.GetUInt64()
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NAME_QUERY [GUID={2:X}]", Client.IP, Client.Port, GUID)
@@ -64,12 +64,13 @@ Public Module WS_Handlers_Misc
             'RESERVED For Warden Bot
             If GUID = WardenGUID Then
                 SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
+                SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                 SMSG_NAME_QUERY_RESPONSE.AddString(WardenNAME)
                 SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
-                SMSG_NAME_QUERY_RESPONSE.AddInt32(1)
-                SMSG_NAME_QUERY_RESPONSE.AddInt32(1)
-                SMSG_NAME_QUERY_RESPONSE.AddInt32(1)
-                'SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
+                SMSG_NAME_QUERY_RESPONSE.AddInt8(1)
+                SMSG_NAME_QUERY_RESPONSE.AddInt8(1)
+                SMSG_NAME_QUERY_RESPONSE.AddInt8(1)
+                SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                 Client.Send(SMSG_NAME_QUERY_RESPONSE)
                 SMSG_NAME_QUERY_RESPONSE.Dispose()
                 Exit Sub
@@ -79,12 +80,13 @@ Public Module WS_Handlers_Misc
             If GuidIsPlayer(GUID) Then
                 If CHARACTERs.ContainsKey(GUID) = True Then
                     SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                     SMSG_NAME_QUERY_RESPONSE.AddString(CType(CHARACTERs(GUID), CharacterObject).Name)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Realm Name I think( if player from another realm)?
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(CHARACTERs(GUID), CharacterObject).Race)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(CHARACTERs(GUID), CharacterObject).Gender)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(CHARACTERs(GUID), CharacterObject).Classe)
-                    'SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Race)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Gender)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Classe)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
                     Client.Send(SMSG_NAME_QUERY_RESPONSE)
                     SMSG_NAME_QUERY_RESPONSE.Dispose()
                     Exit Sub
@@ -94,12 +96,13 @@ Public Module WS_Handlers_Misc
 
                     If MySQLQuery.Rows.Count > 0 Then
                         SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
+                        SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                         SMSG_NAME_QUERY_RESPONSE.AddString(CType(MySQLQuery.Rows(0).Item("char_name"), String))
                         SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
-                        SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(MySQLQuery.Rows(0).Item("char_race"), Integer))
-                        SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(MySQLQuery.Rows(0).Item("char_gender"), Integer))
-                        SMSG_NAME_QUERY_RESPONSE.AddInt32(CType(MySQLQuery.Rows(0).Item("char_class"), Integer))
-                        'SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
+                        SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(MySQLQuery.Rows(0).Item("char_race"), Integer))
+                        SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(MySQLQuery.Rows(0).Item("char_gender"), Integer))
+                        SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(MySQLQuery.Rows(0).Item("char_class"), Integer))
+                        SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
                         Client.Send(SMSG_NAME_QUERY_RESPONSE)
                         SMSG_NAME_QUERY_RESPONSE.Dispose()
                     Else
@@ -115,12 +118,13 @@ Public Module WS_Handlers_Misc
             If GuidIsCreature(GUID) Then
                 If WORLD_CREATUREs.ContainsKey(GUID) Then
                     SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                     SMSG_NAME_QUERY_RESPONSE.AddString(CType(WORLD_CREATUREs(GUID), CreatureObject).Name)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(0)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(0)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt32(0)
-                    'SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
                     Client.Send(SMSG_NAME_QUERY_RESPONSE)
                     SMSG_NAME_QUERY_RESPONSE.Dispose()
                 Else

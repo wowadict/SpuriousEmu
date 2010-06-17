@@ -1396,7 +1396,7 @@ Public Module WS_Quests
     End Function
     Public Sub On_CMSG_QUESTGIVER_STATUS_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
-            If (packet.Data.Length - 1) < 9 Then Exit Sub
+            If (packet.Data.Length - 1) < 7 Then Exit Sub
             packet.GetInt16()
             Dim GUID As ULong = packet.GetUInt64
             Dim status As QuestgiverStatus = GetQuestgiverStatus(Client.Character, GUID)
