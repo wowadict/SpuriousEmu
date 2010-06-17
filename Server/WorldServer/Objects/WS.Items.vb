@@ -1430,7 +1430,7 @@ Public Module WS_Items
         response.AddInt32(Item.Id)
         response.AddInt32(Item.ObjectClass)
         response.AddInt32(Item.SubClass)
-        response.AddInt32(-1)
+        response.AddInt32(Item.Field4)  ' new 2.0.3, not exist in wdb cache?
         response.AddString(Item.Name)
         response.AddInt8(0)     'Item.Name2
         response.AddInt8(0)     'Item.Name3

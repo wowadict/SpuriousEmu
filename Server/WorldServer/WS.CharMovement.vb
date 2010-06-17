@@ -442,11 +442,12 @@ Module WS_CharMovement
 
         'DONE: Send weather
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM weather WHERE weather_zone = {0};", Client.Character.ZoneID), MySQLQuery)
+        Database.Query(String.Format("SELECT * FROM weather WHERE zone = {0};", Client.Character.ZoneID), MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then
             SendWeather(0, 0, Client)
         Else
-            SendWeather(MySQLQuery.Rows(0).Item("weather_type"), MySQLQuery.Rows(0).Item("weather_intensity"), Client)
+            SendWeather(0, 0, Client)
+            'SendWeather(MySQLQuery.Rows(0).Item("weather_type"), MySQLQuery.Rows(0).Item("weather_intensity"), Client)
         End If
     End Sub
     Public Sub On_MSG_MOVE_HEARTBEAT(ByRef packet As PacketClass, ByRef Client As ClientClass)

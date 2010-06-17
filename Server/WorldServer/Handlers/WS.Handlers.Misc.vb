@@ -55,7 +55,7 @@ Public Module WS_Handlers_Misc
 
     Public Sub On_CMSG_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
-            If (packet.Data.Length - 1) < 7 Then Exit Sub
+            'If (packet.Data.Length - 1) < 7 Then Exit Sub
             packet.GetInt16()
             Dim GUID As ULong = packet.GetUInt64()
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NAME_QUERY [GUID={2:X}]", Client.IP, Client.Port, GUID)
@@ -86,7 +86,7 @@ Public Module WS_Handlers_Misc
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Race)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Gender)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(CType(CHARACTERs(GUID), CharacterObject).Classe)
-                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK
+                    SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Unknown (came in 2.4) | Removed in WoTLK - Name Declined?
                     Client.Send(SMSG_NAME_QUERY_RESPONSE)
                     SMSG_NAME_QUERY_RESPONSE.Dispose()
                     Exit Sub

@@ -1508,7 +1508,7 @@ Public Module WS_Creatures
 #End Region
 #Region "WS.Creatures.HelperSubs"
     Public Sub On_CMSG_CREATURE_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 17 Then Exit Sub
+        'If (packet.Data.Length - 1) < 17 Then Exit Sub
         Dim response As New PacketClass(OPCODES.SMSG_CREATURE_QUERY_RESPONSE)
 
         packet.GetInt16()

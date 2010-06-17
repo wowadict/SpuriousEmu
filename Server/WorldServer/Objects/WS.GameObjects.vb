@@ -32,6 +32,8 @@ Public Module WS_GameObjects
         Public Model As Integer = 0
         Public Type As Byte = 0
         Public Name As String = ""
+        Public IconName As String = ""
+        Public CastBarCaption As String = ""
         Public RespawnTime As Integer = 0
         Public Fields(23) As Integer
         Public Size As Single = 0.0F
@@ -54,6 +56,8 @@ Public Module WS_GameObjects
             Model = MySQLQuery.Rows(0).Item("gameObject_Model")
             Type = MySQLQuery.Rows(0).Item("gameObject_Type")
             Name = MySQLQuery.Rows(0).Item("gameObject_Name")
+            IconName = MySQLQuery.Rows(0).Item("gameObject_IconName")
+            CastBarCaption = MySQLQuery.Rows(0).Item("gameObject_CastBarCaption")
             RespawnTime = MySQLQuery.Rows(0).Item("gameObject_RespawnTime")
 
             For i As Byte = 0 To 23
@@ -82,6 +86,8 @@ Public Module WS_GameObjects
             tmp = tmp & " gameObject_Model=""" & Model & """"
             tmp = tmp & ", gameObject_Type=""" & Type & """"
             tmp = tmp & ", gameObject_Name='" & Name & "'"
+            tmp = tmp & ", gameObject_IconName='" & IconName & "'"
+            tmp = tmp & ", gameObject_CastBarCaption='" & CastBarCaption & "'"
             tmp = tmp & ", gameObject_RespawnTime='" & RespawnTime & "'"
             tmp = tmp & ", gameObject_Size=""" & Size & """"
 
@@ -601,12 +607,14 @@ Public Module WS_GameObjects
     End Enum
 
     Public Sub On_CMSG_GAMEOBJECT_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 11 Then Exit Sub
+        'If (packet.Data.Length - 1) < 11 Then Exit Sub
         Dim response As New PacketClass(OPCODES.SMSG_GAMEOBJECT_QUERY_RESPONSE)
 
         packet.GetInt16()
         Dim GameObjectID As Integer = packet.GetInt32
         Dim GameObjectGUID As ULong = packet.GetUInt64
+
+        Dim UnknownString As String = ""
 
         Try
             Dim GameObject As GameObjectInfo
@@ -626,16 +634,21 @@ Public Module WS_GameObjects
             response.AddInt32(GameObject.Type)
             response.AddInt32(GameObject.Model)
             response.AddString(GameObject.Name)
-            response.AddInt32(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk) unk = IconName?
-            response.AddInt16(0)                    'New in 2.0.3 - (1 = Cast Bar Text, 1 = unk)
+            response.AddInt8(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk) unk = IconName?
+            response.AddInt8(0)
+            response.AddInt8(0)
+            response.AddString(GameObject.IconName)       ' 2.0.3, string. Icon name to use instead of default icon for go's (ex: "Attack" makes sword)
+            response.AddString(GameObject.CastBarCaption) ' 2.0.3, string. Text will appear in Cast Bar when using GO (ex: "Collecting")
+            response.AddString(UnknownString)             ' 2.0.3, string.
+            'response.AddInt16(0)                    'New in 2.0.3 - (1 = Cast Bar Text, 1 = unk)
 
             For i As Byte = 0 To 23
                 response.AddInt32(GameObject.Fields(i))
             Next i
 
-            response.AddSingle(GAMEOBJECTSDatabase(GameObjectGUID).Size)
+            response.AddSingle(GameObject.Size)
             For i As Integer = 0 To 5
-                response.AddInt32(GameObject.QuestItem(i)) 'QuestItem
+                response.AddInt32(GameObject.QuestItem(i)) 'QuestItem, quest drop
             Next
 
             Client.Send(response)
