@@ -57,6 +57,7 @@ Module WS_CharMovement
     Public Sub OnMovementPacket(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
 
+        Dim movGUID As ULong = packet.GetPackGUID()
         Client.Character.movementFlags = packet.GetInt32()
         Dim unkFlags As Integer = packet.GetInt16()
         Dim Time As UInteger = packet.GetUInt32()
@@ -79,7 +80,7 @@ Module WS_CharMovement
 
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_ONTRANSPORT) Then
-            Dim transportGUID As ULong = packet.GetUInt64
+            Dim transportGUID As ULong = packet.GetPackGUID
             Dim transportX As Single = packet.GetFloat
             Dim transportY As Single = packet.GetFloat
             Dim transportZ As Single = packet.GetFloat
