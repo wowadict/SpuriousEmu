@@ -439,7 +439,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_GUID, GUID)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_TYPE, CType(ObjectType.TYPE_OBJECT + ObjectType.TYPE_UNIT, Integer))
-            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(ID, Integer))
+            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer))
+            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, GuidLOW(GUID))
 
             If (Not aiScript Is Nothing) AndAlso (Not aiScript.aiTarget Is Nothing) Then
                 Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_TARGET, aiScript.aiTarget.GUID)
@@ -450,7 +451,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EUnitFields.UNIT_CREATED_BY_SPELL, CreatedBySpell)
 
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_DISPLAYID, Me.Model)
-            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, CREATURESDatabase(ID).Model)
+            'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, CREATURESDatabase(ID).Model)
+            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, Me.Model)
             If Mount > 0 Then Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_MOUNTDISPLAYID, Mount)
 
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_0, CType(CType(CREATURESDatabase(ID).ManaType, Integer) << 24, Integer))
@@ -492,16 +494,16 @@ Public Module WS_Creatures
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4 + 1, 0)
             Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, CreatureInfo.EquipModel(0))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1, CreatureInfo.EquipInfo(0))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, CreatureInfo.EquipSlot(0))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1, CreatureInfo.EquipInfo(0))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, CreatureInfo.EquipSlot(0))
 
             Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 1, CreatureInfo.EquipModel(1))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2, CreatureInfo.EquipInfo(1))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2 + 1, CreatureInfo.EquipSlot(1))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2, CreatureInfo.EquipInfo(1))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2 + 1, CreatureInfo.EquipSlot(1))
 
             Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 2, CreatureInfo.EquipModel(2))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4, CreatureInfo.EquipInfo(2))
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4 + 1, CreatureInfo.EquipSlot(2))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4, CreatureInfo.EquipInfo(2))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4 + 1, CreatureInfo.EquipSlot(2))
 
 
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BASEATTACKTIME, CREATURESDatabase(ID).BaseAttackTime)

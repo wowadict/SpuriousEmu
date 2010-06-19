@@ -137,7 +137,7 @@ Public Module WS_Handlers_Misc
     End Sub
 
     Public Sub On_CMSG_TUTORIAL_FLAG(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 9 Then Exit Sub
+        'If (packet.Data.Length - 1) < 9 Then Exit Sub
         packet.GetInt16()
         Dim Flag As Integer = packet.GetInt32()
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TUTORIAL_FLAG [flag={2}]", Client.IP, Client.Port, Flag)

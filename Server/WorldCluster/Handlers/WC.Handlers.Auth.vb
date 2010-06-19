@@ -119,72 +119,73 @@ Public Module WC_Handlers_Auth
 
 
         'DONE: Addons info reading
-        Dim decompressBuffer(packet.Data.Length - packet.Offset) As Byte
-        Array.Copy(packet.Data, packet.Offset, decompressBuffer, 0, packet.Data.Length - packet.Offset)
-        packet.Data = DeCompress(decompressBuffer)
-        packet.Offset = 0
-        'DumpPacket(packet.Data)
+        If clientAddOnsSize > 0 AndAlso clientAddOnsSize < &HFFFFF Then
+            'DONE: Addons info reading
+            Dim decompressBuffer((packet.Data.Length - packet.Offset) - 1) As Byte
+            Array.Copy(packet.Data, packet.Offset, decompressBuffer, 0, decompressBuffer.Length)
+            packet.Data = DeCompress(decompressBuffer)
+            packet.Offset = 0
+            'DumpPacket(packet.Data)
+            If packet.Data Is Nothing Then
+                Log.WriteLine(LogType.WARNING, "[{0}:{1}] Failed to decompress addon data.", Client.IP, Client.Port)
+                Exit Sub
+            End If
 
-        Dim AddOnsNames As New List(Of String)
-        Dim AddOnsHashes As New List(Of UInteger)
-        Dim AddOnsCount As Integer
+            Dim AddOnsNames As New List(Of String)
+            Dim AddOnsHashes As New List(Of UInteger)
+            Dim AddOnsCount As Integer
 
-        AddOnsCount = packet.GetInt32()
+            AddOnsCount = packet.GetInt32()
 
-        'Log.WriteLine(LogType.DEBUG, String.Format("AddOnsCount = {0}....", AddOnsCount))
+            For i = 0 To AddOnsCount - 1
+                If (packet.Offset + 1) > packet.Data.Length Then Exit For
+                AddOnsNames.Add(packet.GetString)
+                packet.GetInt8() 'Enable
+                AddOnsHashes.Add(packet.GetUInt32)
+                packet.GetInt32() 'Unk1
+            Next
 
-        'Dim AddOnsConsoleWrite As String = String.Format("[{0}:{1}] Client addons loaded:", Client.IP, Client.Port)
-        ''''While packet.Offset < clientAddOnsSize
-        For i = 0 To AddOnsCount - 1
-            AddOnsNames.Add(packet.GetString)
-            packet.GetInt8() 'Enable
-            AddOnsHashes.Add(packet.GetUInt32)
-            packet.GetInt32() 'Unk
-            'AddOnsConsoleWrite &= String.Format("{0}{1} AddOnName: [{2,-30}], AddOnHash: [{3:X}]", vbNewLine, vbTab, AddOnsNames(AddOnsNames.Count - 1), AddOnsHashes(AddOnsHashes.Count - 1))
-        Next
-        ''''End While
-        'Log.WriteLine(LogType.DEBUG, AddOnsConsoleWrite)
-
-        'DONE: Build mysql addons query
-        'Not needed already - in 1.11 addons list is removed.
-
-        'DONE: Send packet
-        Dim addOnsEnable As New PacketClass(OPCODES.SMSG_ADDON_INFO)
-        For i = 0 To AddOnsNames.Count - 1
-            If IO.File.Exists(String.Format("interface\{0}.pub", AddOnsNames(i))) And (AddOnsHashes(i) <> &H4C1C776D) Then
+            'DONE: Send packet
+            Dim addOnsEnable As New PacketClass(OPCODES.SMSG_ADDON_INFO)
+            For i = 0 To AddOnsNames.Count - 1
                 'We have hash data
                 addOnsEnable.AddInt8(2)                    'AddOn Type [1-enabled, 0-banned, 2-blizzard]
                 addOnsEnable.AddInt8(1)                    'Unk
 
-                Dim fs As New IO.FileStream(String.Format("interface\{0}.pub", AddOnsNames(i)), IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read, 258, IO.FileOptions.SequentialScan)
-                Dim fb(256) As Byte
-                fs.Read(fb, 0, 257)
+                If IO.File.Exists(String.Format("interface\{0}.pub", AddOnsNames(i))) And (AddOnsHashes(i) <> &H4C1C776DUI) Then ' If we should add the addon signature
+                    addOnsEnable.AddInt8(1)
+                    Dim fs As New IO.FileStream(String.Format("interface\{0}.pub", AddOnsNames(i)), IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read, 258, IO.FileOptions.SequentialScan)
+                    Dim fb(256) As Byte
+                    fs.Read(fb, 0, 257)
 
-                'NOTE: Read from file
-                addOnsEnable.AddByteArray(fb)
-                'addOnsEnable.AddInt8(0)
-                'addOnsEnable.AddInt32(0)
-                'addOnsEnable.AddInt8(0) ' 3.0.8 Unknown
-            Else
-                'We don't have hash data or already sent to client
-                addOnsEnable.AddInt8(2)                    'AddOn Type [1-enabled, 0-banned, 2-blizzard]
-                addOnsEnable.AddInt8(1)                    'Unk
-                addOnsEnable.AddInt8(0)                    'Hash       [0-NoData, 1-256bytes of data]
+                    'NOTE: Read from file
+                    addOnsEnable.AddByteArray(fb)
+                Else
+                    addOnsEnable.AddInt8(0)
+                End If
+
                 addOnsEnable.AddInt32(0)
                 addOnsEnable.AddInt8(0) ' 3.0.8 Unknown
-                addOnsEnable.AddInt32(0) ' Some additional count for additional records?????
-            End If
-        Next
-        Client.Send(addOnsEnable)
-        addOnsEnable.Dispose()
+            Next
+            addOnsEnable.AddInt32(0) ' 'Banned addon count?
+            'for each banned addon
+            '  uint32
+            '  string (16 bytes)
+            '  string (16 bytes)
+            '  uint32
+            '  uint32
+            'next
+            Client.Send(addOnsEnable)
+            addOnsEnable.Dispose()
+        End If
 
-        ''DONE: Send SMSG_CLIENTCACHE_VERSION
-        'Dim SMSG_CLIENTCACHE_VERSION As New PacketClass(OPCODES.SMSG_CLIENTCACHE_VERSION)
-        'SMSG_CLIENTCACHE_VERSION.AddInt32(0)
-        'Client.Send(SMSG_CLIENTCACHE_VERSION)
+        'DONE: Send SMSG_CLIENTCACHE_VERSION
+        Dim SMSG_CLIENTCACHE_VERSION As New PacketClass(OPCODES.SMSG_CLIENTCACHE_VERSION)
+        SMSG_CLIENTCACHE_VERSION.AddInt32(0)
+        Client.Send(SMSG_CLIENTCACHE_VERSION)
 
-        ''DONE: Send tutorial flags (don't know why, official seems to do it here nowadays)
-        'SendTutorialFlags(Client)
+        'DONE: Send tutorial flags (don't know why, official seems to do it here nowadays)
+        SendTutorialFlags(Client)
     End Sub
     Public Sub On_CMSG_PING(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub

@@ -1526,14 +1526,14 @@ Public Module WS_Items
         response.Dispose()
     End Sub
     Public Sub On_CMSG_ITEM_QUERY_SINGLE(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 3 Then Exit Sub
+        'If (packet.Data.Length - 1) < 3 Then Exit Sub
         packet.GetInt16()
         Dim ItemID As Integer = packet.GetInt32
 
         SendItemInfo(Client, ItemID)
     End Sub
     Public Sub On_CMSG_ITEM_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 9 Then Exit Sub
+        'If (packet.Data.Length - 1) < 9 Then Exit Sub
         packet.GetInt16()
         Dim ItemID As Integer = packet.GetInt32
 
