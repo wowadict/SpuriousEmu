@@ -40,7 +40,10 @@ Public Module WS_Mail
         NOT_ENOUGHT_MONEY = 3
         CHARACTER_NOT_FOUND = 4
         NOT_YOUR_ALLIANCE = 5
-        INTERNAL_ERROR = 6
+		RECIPIENT_CAP_REACHED = 6
+		CANT_SEND_WRAPPED_COD = 7
+		MAIL_AND_CHAT_SUSPENDED = 8
+        INTERNAL_ERROR = 9
     End Enum
 
     Private Enum MailReadInfo As Byte
