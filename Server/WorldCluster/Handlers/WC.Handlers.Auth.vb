@@ -234,6 +234,12 @@ Public Module WC_Handlers_Auth
             'DONE: Clear the entry
             If UncompressedSize = 0 Then
                 Database.Update(String.Format("UPDATE account_data SET account_time{0} = 0, account_data{0} = '' WHERE account_id = {1}", DataID, AccID))
+
+                Dim responseClear As New PacketClass(OPCODES.SMSG_UPDATE_ACCOUNT_DATA_COMPLETE)
+                responseClear.AddInt32(DataID)
+                responseClear.AddInt32(0)
+                Client.Send(responseClear)
+                responseClear.Dispose()
                 Exit Sub
             End If
 
@@ -295,6 +301,8 @@ Public Module WC_Handlers_Auth
         Else
             Dim AccountData() As Byte = AccData.Rows(0).Item("account_data" & DataID)
             If AccountData.Length > 0 Then
+                response.AddUInt64(Client.Index)
+                response.AddInt32(DataID)
                 response.AddUInt32(CType(AccData.Rows(0).Item("account_time" & DataID), UInteger)) 'unix time
                 response.AddInt32(AccountData.Length) 'Uncompressed buffer length
                 'DONE: Compress buffer if it's longer than 200 bytes

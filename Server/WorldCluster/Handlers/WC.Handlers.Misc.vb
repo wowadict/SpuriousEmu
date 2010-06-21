@@ -76,6 +76,16 @@ Public Module WC_Handlers_Misc
         Client.Send(response)
         response.Dispose()
     End Sub
+
+    Public Sub On_CMSG_SET_ACTIONBAR_TOGGLES(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Dim ActionBar As Byte = packet.GetInt8()
+    End Sub
+
+    Public Sub On_CMSG_READY_FOR_ACCOUNT_DATA_TIMES(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Console.WriteLine("CMSG_READY_FOR_ACCOUNT_DATA_TIMES")
+
+        SendAccountMD5(Client, Client.Character, GLOBAL_CACHE_MASK)
+    End Sub
     Public Sub On_CMSG_INSPECT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
         Dim GUID As ULong = packet.GetUInt64

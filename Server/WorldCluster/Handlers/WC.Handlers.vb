@@ -72,6 +72,8 @@ Public Module WC_Handlers
         PacketHandlers(OPCODES.CMSG_WHO) = CType(AddressOf On_CMSG_WHO, HandlePacket)
         PacketHandlers(OPCODES.CMSG_WHOIS) = CType(AddressOf On_CMSG_WHOIS, HandlePacket)
         PacketHandlers(OPCODES.CMSG_PLAYED_TIME) = CType(AddressOf On_CMSG_PLAYED_TIME, HandlePacket)
+        PacketHandlers.Add(OPCODES.CMSG_READY_FOR_ACCOUNT_DATA_TIMES, AddressOf On_CMSG_READY_FOR_ACCOUNT_DATA_TIMES)
+        PacketHandlers.Add(OPCODES.CMSG_SET_ACTIONBAR_TOGGLES, AddressOf On_CMSG_SET_ACTIONBAR_TOGGLES)
 
         PacketHandlers(OPCODES.CMSG_BUG) = CType(AddressOf On_CMSG_BUG, HandlePacket)
         PacketHandlers(OPCODES.CMSG_GMTICKET_GETTICKET) = CType(AddressOf On_CMSG_GMTICKET_GETTICKET, HandlePacket)

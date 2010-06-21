@@ -276,7 +276,7 @@ Public Module Functions
         packet.Dispose()
     End Sub
 
-    Public Sub SendAccountMD5(ByRef Client As ClientClass, ByRef Character As CharacterObject)
+    Public Sub SendAccountMD5(ByRef Client As ClientClass, ByRef Character As CharacterObject, Optional ByVal mask As UInteger = PER_CHARACTER_CACHE_MASK)
         Dim FoundData As Boolean = False
         Dim AccData As New DataTable
         Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
@@ -295,10 +295,12 @@ Public Module Functions
         Dim SMSG_ACCOUNT_DATA_TIMES As New PacketClass(OPCODES.SMSG_ACCOUNT_DATA_TIMES)
         SMSG_ACCOUNT_DATA_TIMES.AddUInt32(GetTimestamp(Now)) 'unix time now
         SMSG_ACCOUNT_DATA_TIMES.AddInt8(1) 'Unk (1)
-
+        SMSG_ACCOUNT_DATA_TIMES.AddUInt32(mask)
         For i As Integer = 0 To 7
             If FoundData Then
-                SMSG_ACCOUNT_DATA_TIMES.AddUInt32(CType(AccData.Rows(0).Item("account_time" & i), UInteger))
+                If (mask And (1 << i)) Then
+                    SMSG_ACCOUNT_DATA_TIMES.AddUInt32(CType(AccData.Rows(0).Item("account_time" & i), UInteger))
+                End If
             Else
                 SMSG_ACCOUNT_DATA_TIMES.AddUInt32(0)
             End If

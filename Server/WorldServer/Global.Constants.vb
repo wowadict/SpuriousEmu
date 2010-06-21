@@ -224,7 +224,8 @@ Public Module Constants
 
     Public Const KEYRING_SLOT_START As Byte = 86
     Public Const KEYRING_SLOT_END As Byte = 118
-
+    Public Const PER_CHARACTER_CACHE_MASK As UInteger = &HEA
+    Public Const GLOBAL_CACHE_MASK As UInteger = &H15
 End Module
 
 #Region "AUTH Codes"
