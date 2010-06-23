@@ -509,8 +509,8 @@ Public Module WS_CharManagment
     Public Sub SendTutorialFlags(ByRef Client As ClientClass, ByRef Character As CharacterObject)
         Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
         '[8*Int32] or [32 Bytes] or [256 Bits Flags] Total!!!
-        'SMSG_TUTORIAL_FLAGS.AddInt8(0)
-        'SMSG_TUTORIAL_FLAGS.AddInt8(Character.TutorialFlags.Length)
+        SMSG_TUTORIAL_FLAGS.AddInt32(0)
+        SMSG_TUTORIAL_FLAGS.AddInt32(Character.TutorialFlags.Length)
         SMSG_TUTORIAL_FLAGS.AddByteArray(Character.TutorialFlags)
         Client.Send(SMSG_TUTORIAL_FLAGS)
         SMSG_TUTORIAL_FLAGS.Dispose()
