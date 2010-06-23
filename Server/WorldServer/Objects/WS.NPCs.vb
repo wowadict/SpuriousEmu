@@ -123,12 +123,12 @@ Public Module WS_NPCs
         Catch e As Exception
             Log.WriteLine(LogType.FAILED, "Training Spell Error: Unable to cast spell. [{0}:{1}]", vbNewLine, e.ToString)
 
-            'TODO: Fix this opcode
-            'Dim errorPacket As New PacketClass(OPCODES.SMSG_TRAINER_BUY_FAILED)
-            'errorPacket.AddUInt64(cGUID)
-            'errorPacket.AddInt32(SpellID)
-            'Client.Send(errorPacket)
-            'errorPacket.Dispose()
+            'Done: Fix this opcode (uint64, uint32, uint32 (0...2))
+            Dim errorPacket As New PacketClass(OPCODES.SMSG_TRAINER_BUY_FAILED)
+            errorPacket.AddUInt64(cGUID)
+            errorPacket.AddInt32(SpellID)
+            Client.Send(errorPacket)
+            errorPacket.Dispose()
         End Try
 
         'DONE: Send response
@@ -243,7 +243,7 @@ Public Module WS_NPCs
                 'NOTE: Doesn't meet requirements, cannot learn that spell
                 packet.AddInt8(1)
             End If
-            ''packet.AddInt8(0) not sure what this was here for???
+            packet.AddInt8(0)
 
             packet.AddInt32(CType(SellRow.Item("spellcost"), Integer))              'SpellCost
             packet.AddInt32(0)
