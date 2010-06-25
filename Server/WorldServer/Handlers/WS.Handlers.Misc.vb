@@ -53,6 +53,62 @@ Public Module WS_Handlers_Misc
 
     End Function
 
+    Public Sub UpdateWeather(ByRef Client As ClientClass)
+        If Not Weather.ContainsKey(Client.Character.ZoneID) Then Exit Sub
+        ' From Mangos :)
+        ' 78 days between January 1st and March 20th; 365/4=91 days per season
+        Dim DaysSinceJan1 As TimeSpan = DateTime.Now.Subtract(New DateTime(DateTime.Now.Year, 1, 1))
+        Dim SeasonID As Integer = ((DaysSinceJan1.TotalDays - 78 + 365) / 91) Mod 4
+        Dim Season As String = Seasons(SeasonID)
+        Dim Type As Byte = WeatherType.WEATHER_FINE
+        Dim RainChance As Single = 0.0F
+        Dim SnowChance As Single = 0.0F
+        Dim StormChance As Single = 0.0F
+        Dim Chance As Single = 0.0F
+
+        ' Find Season Chance
+        Select Case Season
+            Case "spring"
+                RainChance = Weather(Client.Character.ZoneID).Spring_Rain_Chance
+                SnowChance = Weather(Client.Character.ZoneID).Spring_Snow_Chance
+                StormChance = Weather(Client.Character.ZoneID).Spring_Storm_Chance
+            Case "summer"
+                RainChance = Weather(Client.Character.ZoneID).Summer_Rain_Chance
+                SnowChance = Weather(Client.Character.ZoneID).Summer_Snow_Chance
+                StormChance = Weather(Client.Character.ZoneID).Summer_Storm_Chance
+            Case "fall"
+                RainChance = Weather(Client.Character.ZoneID).Fall_Rain_Chance
+                SnowChance = Weather(Client.Character.ZoneID).Fall_Snow_Chance
+                StormChance = Weather(Client.Character.ZoneID).Fall_Storm_Chance
+            Case "winter"
+                RainChance = Weather(Client.Character.ZoneID).Winter_Rain_Chance
+                SnowChance = Weather(Client.Character.ZoneID).Winter_Snow_Chance
+                StormChance = Weather(Client.Character.ZoneID).Winter_Storm_Chance
+            Case Else
+                RainChance = 0.0F
+                SnowChance = 0.0F
+                StormChance = 0.0F
+        End Select
+
+        ' Calculate Weather Type Based on Chance
+        Dim Rnd As New Random
+        Chance = Rnd.Next(0, 100)
+        If Chance <= RainChance Then
+            Type = WeatherType.WEATHER_RAIN
+        ElseIf Chance <= SnowChance Then
+            Type = WeatherType.WEATHER_SNOW
+        ElseIf Chance <= StormChance Then
+            Type = WeatherType.WEATHER_SANDSTORM
+        Else
+            Type = WeatherType.WEATHER_FINE
+            Chance = 0.0F
+        End If
+
+        'DONE: Send weather
+        SendWeather(Type, Chance, Client)
+
+    End Sub
+
     Public Sub On_CMSG_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
             'If (packet.Data.Length - 1) < 7 Then Exit Sub

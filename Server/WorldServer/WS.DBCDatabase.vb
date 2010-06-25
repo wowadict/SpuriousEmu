@@ -1810,6 +1810,21 @@ Public Module WS_DBCDatabase
         End Sub
     End Class
 
+    Public CharStartOutfit As New Dictionary(Of Integer, TCharStartOutfit)
+    Public Class TCharStartOutfit
+        Public ItemID(23) As Integer
+        Public ItemDisplayID(23) As Integer
+        Public ItemInventorySlot(23) As Integer
+
+        Public Sub New(ByVal _ItemIDs() As Integer, ByVal _ItemDisplayIDs() As Integer, ByVal _ItemInventorySlots() As Integer)
+            For i As Byte = 0 To 23
+                ItemID(i) = _ItemIDs(i)
+                ItemDisplayID(i) = _ItemDisplayIDs(i)
+                ItemInventorySlot(i) = _ItemInventorySlots(i)
+            Next
+        End Sub
+    End Class
+
     Public FactionInfo As New Dictionary(Of Integer, TFaction)
     Public Class TFaction
         Public ID As Short
@@ -2248,6 +2263,86 @@ Public Module WS_DBCDatabase
         End Sub
     End Class
 #End Region
+#Region "Weather"
+    Public Weather As New Dictionary(Of Integer, TWeather)
+    Public Class TWeather
+        Public Zone As Integer = 0
+        Public Spring_Rain_Chance As Single
+        Public Spring_Snow_Chance As Single
+        Public Spring_Storm_Chance As Single
+        Public Summer_Rain_Chance As Single
+        Public Summer_Snow_Chance As Single
+        Public Summer_Storm_Chance As Single
+        Public Fall_Rain_Chance As Single
+        Public Fall_Snow_Chance As Single
+        Public Fall_Storm_Chance As Single
+        Public Winter_Rain_Chance As Single
+        Public Winter_Snow_Chance As Single
+        Public Winter_Storm_Chance As Single
+
+        Public Sub New(ByVal Zone_ As Integer, ByVal Spring_Rain_Chance_ As Single, ByVal Spring_Snow_Chance_ As Single, ByVal Spring_Storm_Chance_ As Single, _
+                       ByVal Summer_Rain_Chance_ As Single, ByVal Summer_Snow_Chance_ As Single, ByVal Summer_Storm_Chance_ As Single, _
+                       ByVal Fall_Rain_Chance_ As Single, ByVal Fall_Snow_Chance_ As Single, ByVal Fall_Storm_Chance_ As Single, _
+                       ByVal Winter_Rain_Chance_ As Single, ByVal Winter_Snow_Chance_ As Single, ByVal Winter_Storm_Chance_ As Single)
+            Zone = Zone_
+            Spring_Rain_Chance = Spring_Rain_Chance_
+            Spring_Snow_Chance = Spring_Snow_Chance_
+            Spring_Storm_Chance = Spring_Storm_Chance_
+            Summer_Rain_Chance = Summer_Rain_Chance_
+            Summer_Snow_Chance = Summer_Snow_Chance_
+            Summer_Storm_Chance = Summer_Storm_Chance_
+            Fall_Rain_Chance = Fall_Rain_Chance_
+            Fall_Snow_Chance = Fall_Snow_Chance_
+            Fall_Storm_Chance = Fall_Storm_Chance_
+            Winter_Rain_Chance = Winter_Rain_Chance_
+            Winter_Snow_Chance = Winter_Snow_Chance_
+            Winter_Storm_Chance = Winter_Storm_Chance_
+        End Sub
+    End Class
+
+    Public Sub InitializeWeather()
+        ' Load the weather.
+        Dim Zone As Integer = 0
+        Dim Spring_Rain_Chance As Single = 0.0F
+        Dim Spring_Snow_Chance As Single = 0.0F
+        Dim Spring_Storm_Chance As Single = 0.0F
+        Dim Summer_Rain_Chance As Single = 0.0F
+        Dim Summer_Snow_Chance As Single = 0.0F
+        Dim Summer_Storm_Chance As Single = 0.0F
+        Dim Fall_Rain_Chance As Single = 0.0F
+        Dim Fall_Snow_Chance As Single = 0.0F
+        Dim Fall_Storm_Chance As Single = 0.0F
+        Dim Winter_Rain_Chance As Single = 0.0F
+        Dim Winter_Snow_Chance As Single = 0.0F
+        Dim Winter_Storm_Chance As Single = 0.0F
+        Dim Count As Integer = 0
+
+        Dim MySQLQuery As New DataTable
+        Database.Query(String.Format("SELECT * FROM weather"), MySQLQuery)
+        For Each MonsterRow As DataRow In MySQLQuery.Rows
+            Count = Count + 1
+            Zone = MonsterRow.Item("zone")
+            Spring_Rain_Chance = MonsterRow.Item("spring_rain_chance")
+            Spring_Snow_Chance = MonsterRow.Item("spring_snow_chance")
+            Spring_Storm_Chance = MonsterRow.Item("spring_storm_chance")
+            Summer_Rain_Chance = MonsterRow.Item("summer_rain_chance")
+            Summer_Snow_Chance = MonsterRow.Item("summer_snow_chance")
+            Summer_Storm_Chance = MonsterRow.Item("summer_storm_chance")
+            Fall_Rain_Chance = MonsterRow.Item("fall_rain_chance")
+            Fall_Snow_Chance = MonsterRow.Item("fall_snow_chance")
+            Fall_Storm_Chance = MonsterRow.Item("fall_storm_chance")
+            Winter_Rain_Chance = MonsterRow.Item("winter_rain_chance")
+            Winter_Snow_Chance = MonsterRow.Item("winter_snow_chance")
+            Winter_Storm_Chance = MonsterRow.Item("winter_storm_chance")
+
+            Weather(Zone) = New TWeather(Zone, Spring_Rain_Chance, Spring_Snow_Chance, Spring_Storm_Chance, Summer_Rain_Chance, Summer_Snow_Chance, Summer_Storm_Chance, Fall_Rain_Chance, Fall_Snow_Chance, Fall_Storm_Chance, Winter_Rain_Chance, Winter_Snow_Chance, Winter_Storm_Chance)
+
+        Next
+
+        Log.WriteLine(LogType.INFORMATION, "World: {0} Weather(s) Loaded.", Count)
+
+    End Sub
+#End Region
 #Region "Other"
 
     Public Sub InitializeInternalDatabase()
@@ -2263,6 +2358,7 @@ Public Module WS_DBCDatabase
             AIManager = New TAIManager
             SpellManager = New TSpellManager
             CharacterSaver = New TCharacterSaver
+            WeatherManager = New TWeatherManager
 
             Log.WriteLine(LogType.INFORMATION, "World: Loading Maps and Spawns....")
             Log.WriteLine(LogType.WARNING, "Initialized Maps: {0}", InitializedMaps)
@@ -2316,6 +2412,7 @@ Public Module WS_DBCDatabase
         InitializeFactionTemplates()
         InitializeCharRaces()
         InitializeCharClasses()
+        InitializeCharStartOutfit()
         InitializeSkillLines()
         InitializeLocks()
         InitializeGraveyards()
@@ -2344,6 +2441,7 @@ Public Module WS_DBCDatabase
         InitializeBattlegrounds()
         InitializeTeleportCoords()
         InitializeMonsterSay()
+        InitializeWeather()
 
         InitializeSpellRadius()
         InitializeSpellDuration()

@@ -441,15 +441,8 @@ Module WS_CharMovement
         'DONE: Update zone on cluster
         WS.Cluster.ClientUpdate(Client.Index, Client.Character.ZoneID, Client.Character.Level)
 
-        'DONE: Send weather
-        Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM weather WHERE zone = {0};", Client.Character.ZoneID), MySQLQuery)
-        If MySQLQuery.Rows.Count = 0 Then
-            SendWeather(0, 0, Client)
-        Else
-            SendWeather(0, 0, Client)
-            'SendWeather(MySQLQuery.Rows(0).Item("weather_type"), MySQLQuery.Rows(0).Item("weather_intensity"), Client)
-        End If
+        'DONE: Update Weather
+        UpdateWeather(Client)
     End Sub
     Public Sub On_MSG_MOVE_HEARTBEAT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         'Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_MOVE_HEARTBEAT", Client.IP, Client.Port)
@@ -987,21 +980,36 @@ Module WS_CharMovement
 #End Region
 
     Public Enum WeatherSounds As Integer
+        'WEATHER_SOUND_NOSOUND = 0
+        'WEATHER_SOUND_RAINLIGHT = 8533
+        'WEATHER_SOUND_RAINMEDIUM = 8534
+        'WEATHER_SOUND_RAINHEAVY = 8535
+        'WEATHER_SOUND_SNOWLIGHT = 8536
+        'WEATHER_SOUND_SNOWMEDIUM = 8537
+        'WEATHER_SOUND_SNOWHEAVY = 8538
+        'WEATHER_SOUND_SANDSTORMLIGHT = 8556
+        'WEATHER_SOUND_SANDSTORMMEDIUM = 8557
+        'WEATHER_SOUND_SANDSTORMHEAVY = 8558
         WEATHER_SOUND_NOSOUND = 0
-        WEATHER_SOUND_RAINLIGHT = 8533
-        WEATHER_SOUND_RAINMEDIUM = 8534
-        WEATHER_SOUND_RAINHEAVY = 8535
-        WEATHER_SOUND_SNOWLIGHT = 8536
-        WEATHER_SOUND_SNOWMEDIUM = 8537
-        WEATHER_SOUND_SNOWHEAVY = 8538
-        WEATHER_SOUND_SANDSTORMLIGHT = 8556
-        WEATHER_SOUND_SANDSTORMMEDIUM = 8557
-        WEATHER_SOUND_SANDSTORMHEAVY = 8558
+        WEATHER_SOUND_RAINLIGHT = 3
+        WEATHER_SOUND_RAINMEDIUM = 4
+        WEATHER_SOUND_RAINHEAVY = 5
+        WEATHER_SOUND_SNOWLIGHT = 6
+        WEATHER_SOUND_SNOWMEDIUM = 7
+        WEATHER_SOUND_SNOWHEAVY = 8
+        WEATHER_SOUND_SANDSTORMLIGHT = 22
+        WEATHER_SOUND_SANDSTORMMEDIUM = 41
+        WEATHER_SOUND_SANDSTORMHEAVY = 42
+        WEATHER_SOUND_THUNDERS = 86
+        WEATHER_SOUND_BLACKRAIN = 90
     End Enum
     Public Enum WeatherType As Integer
+        WEATHER_FINE = 0
         WEATHER_RAIN = 1
         WEATHER_SNOW = 2
         WEATHER_SANDSTORM = 3
+        WEATHER_TYPE_THUNDERS = 86
+        WEATHER_TYPE_BLACKRAIN = 90
     End Enum
     Public Sub SendWeather(ByVal Type As Byte, ByVal Intensity As Single, ByRef Client As ClientClass)
 
@@ -1009,22 +1017,55 @@ Module WS_CharMovement
         SMSG_WEATHER.AddInt32(Type)
         SMSG_WEATHER.AddSingle(Intensity)
         'SMSG_WEATHER.AddInt32(Sound)
-        Select Case Intensity
-            Case 0
-                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
-            Case Is <= 0.33
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
-            Case Is <= 0.66
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+        Select Case Type
+            Case WeatherType.WEATHER_RAIN
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
+                End If
+            Case WeatherType.WEATHER_SNOW
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
+                End If
+            Case WeatherType.WEATHER_SANDSTORM
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+                End If
+            Case WeatherType.WEATHER_TYPE_BLACKRAIN
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_BLACKRAIN)
+            Case WeatherType.WEATHER_TYPE_THUNDERS
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_THUNDERS)
             Case Else
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
         End Select
+
+        'Select Case Intensity
+        '    Case 0
+        '        SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
+        '    Case Is <= 0.33
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
+        '    Case Is <= 0.66
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+        '    Case Else
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+        'End Select
         Client.Send(SMSG_WEATHER)
         'Client.Character.SendToNearPlayers(SMSG_WEATHER)
         SMSG_WEATHER.Dispose()

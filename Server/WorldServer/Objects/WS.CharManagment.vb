@@ -532,8 +532,10 @@ Public Module WS_CharManagment
         Dim packet As New PacketClass(OPCODES.SMSG_ACTION_BUTTONS)
 
         Dim i As Byte
+
+        packet.AddInt8(1) ' talent spec amount (in packet)
         'TODO: There are now 132 action buttons in WotLK
-        For i = 0 To 119    'or 480 ?
+        For i = 0 To 144 - 1    'or 480 ?
             If Character.ActionButtons.ContainsKey(i) Then
                 packet.AddUInt16(Character.ActionButtons(i).Action)
                 packet.AddInt8(Character.ActionButtons(i).ActionType)
@@ -5775,16 +5777,64 @@ CheckXPAgain:
     End Sub
     Public Sub CreateCharacterItems(ByRef c As CharacterObject)
 
-        Dim CreateInfoItems As New DataTable
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoItems)
-        If CreateInfoItems.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
+        Dim RaceClassGender As Integer = 0
+        Dim ItemIDs(23) As Integer
+        Dim ItemDisplayIDs(23) As Integer
+        Dim ItemInventorySlots(23) As Integer
+
+        RaceClassGender = CType(CType(c.Race, Integer) + (CType(c.Classe, Integer) << 8) + (CType(c.Gender, Integer) << 16), Integer)
+
+        If CharStartOutfit.ContainsKey(RaceClassGender) Then
+            For i As Integer = 0 To 23
+
+                Dim ItemID As Integer = CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)
+                If ItemID <= 0 Then Continue For
+
+                Dim ItemTemplate As New DataTable
+                Database.Query(String.Format("SELECT * FROM items WHERE entry = {0}", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)), ItemTemplate)
+                ' Calculate Amount For This Item
+                If ItemTemplate.Rows.Count > 0 Then
+
+                    Dim ItemAmount As Integer = ItemTemplate.Rows(0).Item("buycount")
+                    Dim ItemClass As Integer = ItemTemplate.Rows(0).Item("class")
+                    Dim ItemSubClass As Integer = ItemTemplate.Rows(0).Item("subclass")
+                    Dim ItemSpellCategory As Integer = ItemTemplate.Rows(0).Item("spellcategory_1")
+                    Dim ItemStackable As Integer = ItemTemplate.Rows(0).Item("stackable")
+
+                    ' Special Amount For Food/Drink
+                    If ItemClass = ITEM_CLASS.ITEM_CLASS_CONSUMABLE And ItemSubClass = ITEM_SUBCLASS.ITEM_SUBCLASS_FOOD Then
+                        Select Case ItemSpellCategory
+
+                            Case 11 ' Food
+                                ItemAmount = 4
+                                If c.Classe = Classes.CLASS_DEATH_KNIGHT Then ItemAmount = 10
+
+                            Case 59 ' Drink
+                                ItemAmount = 2
+
+                        End Select
+                        If ItemStackable < ItemAmount Then ItemAmount = ItemStackable
+                    End If
+
+                    c.ItemADD(CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), CType(0, Byte), CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte), CType(ItemAmount, Integer))
+                Else
+                    Log.WriteLine(LogType.FAILED, "ItemID({0}) From CharStartOutfit({1}) NOT Found in items Table!", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), RaceClassGender)
+                End If
+            Next
+        Else
+            Log.WriteLine(LogType.FAILED, "No information found in CharStartOutfit for race={0}, class={1}, gender={2}", c.Race, c.Classe, c.Gender)
         End If
 
-        ' Set Player Create Items
-        For Each ItemRow As DataRow In CreateInfoItems.Rows
-            c.ItemADD(CType(ItemRow.Item("protoid"), Integer), CType(0, Byte), CType(ItemRow.Item("slotid"), Byte), CType(ItemRow.Item("amount"), Integer))
-        Next
+        'Dim CreateInfoItems As New DataTable
+        'Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoItems)
+        'If CreateInfoItems.Rows.Count <= 0 Then
+        '    Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
+        'End If
+
+        '' Set Player Create Items
+        'For Each ItemRow As DataRow In CreateInfoItems.Rows
+        '    c.ItemADD(CType(ItemRow.Item("protoid"), Integer), CType(0, Byte), CType(ItemRow.Item("slotid"), Byte), CType(ItemRow.Item("amount"), Integer))
+        'Next
 
     End Sub
 

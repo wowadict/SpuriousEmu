@@ -65,6 +65,7 @@ Public Module WS_Main
     Public DynamicObjectsGUIDCounter As ULong = GUID_DYNAMICOBJECT
     Public InitializedMaps As String = ""
     ''''Public CREATURE_AI_UPDATEs As New Dictionary(Of ULong, CreatureAIUpdate)
+    Public Seasons() As String = {"spring", "summer", "fall", "winter"}
 
     'System Things...
     Public Log As New BaseWriter
@@ -94,6 +95,7 @@ Public Module WS_Main
         <XmlElement(ElementName:="HealthRegenerationRate")> Public HealthRegenerationRate As Single = 1.0
         <XmlElement(ElementName:="GlobalAuction")> Public GlobalAuction As Boolean = False
         <XmlElement(ElementName:="SaveTimer")> Public SaveTimer As Integer = 120000
+        <XmlElement(ElementName:="WeatherTimer")> Public WeatherTimer As Integer = 600000 '10 Minutes
         <XmlElement(ElementName:="MapResolution")> Public MapResolution As Integer = 64
         <XmlElement(ElementName:="LogType")> Public LogType As String = "COLORCONSOLE"
         <XmlElement(ElementName:="LogLevel")> Public LogLevel As LogType = Spurious.Common.BaseWriter.LogType.NETWORK

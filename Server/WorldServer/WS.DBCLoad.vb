@@ -969,6 +969,37 @@ Public Module WS_DBCLoad
             Console.ForegroundColor = System.ConsoleColor.Gray
         End Try
     End Sub
+    Public Sub InitializeCharStartOutfit()
+        Try
+            Dim i As Integer
+
+            'Loading from DBC
+            Dim tmpDBC As DBC.BufferedDBC = New DBC.BufferedDBC("dbc\CharStartOutfit.dbc")
+
+            Dim RaceClassGender As Integer
+            Dim ItemID(23) As Integer
+            Dim ItemDisplayID(23) As Integer
+            Dim ItemInventorySlot(23) As Integer
+
+            For i = 0 To tmpDBC.Rows - 1
+                RaceClassGender = tmpDBC.Item(i, 1, DBCValueType.DBC_INTEGER)
+                For j As Byte = 0 To 23
+                    ItemID(j) = tmpDBC.Item(i, 2 + j, DBCValueType.DBC_INTEGER)
+                    ItemDisplayID(j) = tmpDBC.Item(i, 26 + j, DBCValueType.DBC_INTEGER)
+                    ItemInventorySlot(j) = tmpDBC.Item(i, 50 + j, DBCValueType.DBC_INTEGER)
+                Next
+
+                CharStartOutfit(RaceClassGender) = New TCharStartOutfit(ItemID, ItemDisplayID, ItemInventorySlot)
+            Next
+
+            tmpDBC.Dispose()
+            Log.WriteLine(LogType.INFORMATION, "DBC: {0} CharStartOutfits initialized.", i)
+        Catch ex As System.IO.DirectoryNotFoundException
+            Console.ForegroundColor = System.ConsoleColor.DarkRed
+            Console.WriteLine("DBC File : CharStartOutfit missing.")
+            Console.ForegroundColor = System.ConsoleColor.Gray
+        End Try
+    End Sub
 #End Region
 #Region "DurabilityCosts"
     Public Sub InitializeDurabilityCosts()
