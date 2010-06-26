@@ -209,9 +209,15 @@ Public Module WS_GameObjects
 
             Dim Rotation As Long = 0
             Dim f_rot1 As Single = Math.Sin(orientation / 2)
+            Dim f_rot2 As Single = Math.Cos(orientation / 2)
             Dim i_rot1 As Long = f_rot1 / Math.Atan(Math.Pow(2, -20))
             Rotation = Rotation Or ((CLng(i_rot1) << CLng(43) >> CLng(43)) And &H1FFFFFL)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotation)
+            'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotation)
+
+            If (Rotations(2) = 0 And Rotations(3) = 0) Then
+                Rotations(2) = f_rot1
+                Rotations(3) = f_rot2
+            End If
 
             'If a game object has bit 4 set in the flag it needs to be activated (used for quests)
             'DynFlags = Activate a game object (Chest = 9, Goober = 1)

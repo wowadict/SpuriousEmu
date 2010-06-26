@@ -39,11 +39,11 @@ Public Module WC_Handlers_Voice
         p.AddInt8(2)                         'unk
 
         'enable(1)/disable(0) voice chat interface in client
-        If VOICE_SERVER Is Nothing Then
-            p.AddInt8(0)
-        Else
-            p.AddInt8(1)
-        End If
+        '        If VOICE_SERVER Is Nothing Then
+        p.AddInt8(0)
+        '        Else
+        '        p.AddInt8(1)
+        '        End If
 
         Client.Send(p)
         p.Dispose()

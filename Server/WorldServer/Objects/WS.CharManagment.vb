@@ -533,10 +533,11 @@ Public Module WS_CharManagment
 
         Dim i As Byte
 
-        packet.AddInt8(1) ' talent spec amount (in packet)
+        'packet.AddInt8(1) ' talent spec amount (in packet)
         'TODO: There are now 132 action buttons in WotLK
         For i = 0 To 144 - 1    'or 480 ?
             If Character.ActionButtons.ContainsKey(i) Then
+                packet.AddInt8(i) ' button ?
                 packet.AddUInt16(Character.ActionButtons(i).Action)
                 packet.AddInt8(Character.ActionButtons(i).ActionType)
                 packet.AddInt8(Character.ActionButtons(i).ActionMisc)
@@ -1027,6 +1028,7 @@ Public Module WS_CharManagment
         Public HairColor As Byte = 0
         Public FacialHair As Byte = 0
         Public OutfitId As Byte = 0
+        Public PlayerCreateInfoID As Integer = 0
 
         Public ActionButtons As New Dictionary(Of Byte, TActionButton)
         Public TaxiZones As BitArray = New BitArray(8 * 32, False)
@@ -5629,17 +5631,19 @@ CheckXPAgain:
             Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo table for race={0}, class={1}", c.Race, c.Classe)
         End If
 
+        Dim PlayerInfoIndex As Integer = CreateInfo.Rows(0).Item("index")
+
         Database.Query(String.Format("SELECT * FROM playercreateinfo_bars WHERE race = {0} AND class = {1} ORDER BY button;", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoBars)
         If CreateInfoBars.Rows.Count <= 0 Then
             Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
         End If
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_skills WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoSkills)
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_skills WHERE indexid = {0};", PlayerInfoIndex), CreateInfoSkills)
         If CreateInfoSkills.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_skills table for race={0}, class={1}", c.Race, c.Classe)
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_skills table for indexid={0}", PlayerInfoIndex)
         End If
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_spells WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoSpells)
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_spells WHERE indexid = {0};", PlayerInfoIndex), CreateInfoSpells)
         If CreateInfoSpells.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_spells table for race={0}, class={1}", c.Race, c.Classe)
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_spells table for indexid={0}", PlayerInfoIndex)
         End If
 
         ' Initialize Character Variables
@@ -5657,7 +5661,7 @@ CheckXPAgain:
         c.RunicPower.Current = 0
         c.RunicPower.Base = 0
         c.ManaType = CreateInfo.Rows(0).Item("PowerType")
-
+        c.PlayerCreateInfoID = PlayerInfoIndex
 
         ' Set Character Create Information
         c.Model = GetRaceModel(c.Race, c.Gender)
@@ -5777,64 +5781,69 @@ CheckXPAgain:
     End Sub
     Public Sub CreateCharacterItems(ByRef c As CharacterObject)
 
-        Dim RaceClassGender As Integer = 0
-        Dim ItemIDs(23) As Integer
-        Dim ItemDisplayIDs(23) As Integer
-        Dim ItemInventorySlots(23) As Integer
+        'Dim RaceClassGender As Integer = 0
+        'Dim ItemIDs(23) As Integer
+        'Dim ItemDisplayIDs(23) As Integer
+        'Dim ItemInventorySlots(23) As Integer
 
-        RaceClassGender = CType(CType(c.Race, Integer) + (CType(c.Classe, Integer) << 8) + (CType(c.Gender, Integer) << 16), Integer)
+        'RaceClassGender = CType(CType(c.Race, Integer) + (CType(c.Classe, Integer) << 8) + (CType(c.Gender, Integer) << 16), Integer)
 
-        If CharStartOutfit.ContainsKey(RaceClassGender) Then
-            For i As Integer = 0 To 23
+        'If CharStartOutfit.ContainsKey(RaceClassGender) Then
+        '    For i As Integer = 0 To 23
 
-                Dim ItemID As Integer = CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)
-                If ItemID <= 0 Then Continue For
+        '        Dim ItemID As Integer = CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)
+        '        If ItemID <= 0 Then Continue For
 
-                Dim ItemTemplate As New DataTable
-                Database.Query(String.Format("SELECT * FROM items WHERE entry = {0}", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)), ItemTemplate)
-                ' Calculate Amount For This Item
-                If ItemTemplate.Rows.Count > 0 Then
+        '        Dim ItemSlot As Byte = CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte)
 
-                    Dim ItemAmount As Integer = ItemTemplate.Rows(0).Item("buycount")
-                    Dim ItemClass As Integer = ItemTemplate.Rows(0).Item("class")
-                    Dim ItemSubClass As Integer = ItemTemplate.Rows(0).Item("subclass")
-                    Dim ItemSpellCategory As Integer = ItemTemplate.Rows(0).Item("spellcategory_1")
-                    Dim ItemStackable As Integer = ItemTemplate.Rows(0).Item("stackable")
+        '        Dim ItemTemplate As New DataTable
+        '        Database.Query(String.Format("SELECT * FROM items WHERE entry = {0}", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)), ItemTemplate)
 
-                    ' Special Amount For Food/Drink
-                    If ItemClass = ITEM_CLASS.ITEM_CLASS_CONSUMABLE And ItemSubClass = ITEM_SUBCLASS.ITEM_SUBCLASS_FOOD Then
-                        Select Case ItemSpellCategory
+        '        Log.WriteLine(LogType.WARNING, "Found ItemID={0}, ItemName={1}, ItemSlot={2}", ItemID, ItemTemplate.Rows(0).Item("name1"), CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte))
 
-                            Case 11 ' Food
-                                ItemAmount = 4
-                                If c.Classe = Classes.CLASS_DEATH_KNIGHT Then ItemAmount = 10
+        '        If ItemTemplate.Rows.Count > 0 Then
 
-                            Case 59 ' Drink
-                                ItemAmount = 2
+        '            ' Calculate Amount For This Item
+        '            Dim ItemAmount As Integer = ItemTemplate.Rows(0).Item("buycount")
+        '            Dim ItemClass As Integer = ItemTemplate.Rows(0).Item("class")
+        '            Dim ItemSubClass As Integer = ItemTemplate.Rows(0).Item("subclass")
+        '            Dim ItemSpellCategory As Integer = ItemTemplate.Rows(0).Item("spellcategory_1")
+        '            Dim ItemStackable As Integer = ItemTemplate.Rows(0).Item("stackable")
 
-                        End Select
-                        If ItemStackable < ItemAmount Then ItemAmount = ItemStackable
-                    End If
+        '            ' Special Amount For Food/Drink
+        '            If ItemClass = ITEM_CLASS.ITEM_CLASS_CONSUMABLE And ItemSubClass = ITEM_SUBCLASS.ITEM_SUBCLASS_FOOD Then
+        '                Select Case ItemSpellCategory
 
-                    c.ItemADD(CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), CType(0, Byte), CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte), CType(ItemAmount, Integer))
-                Else
-                    Log.WriteLine(LogType.FAILED, "ItemID({0}) From CharStartOutfit({1}) NOT Found in items Table!", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), RaceClassGender)
-                End If
-            Next
-        Else
-            Log.WriteLine(LogType.FAILED, "No information found in CharStartOutfit for race={0}, class={1}, gender={2}", c.Race, c.Classe, c.Gender)
-        End If
+        '                    Case 11 ' Food
+        '                        ItemAmount = 4
+        '                        If c.Classe = Classes.CLASS_DEATH_KNIGHT Then ItemAmount = 10
 
-        'Dim CreateInfoItems As New DataTable
-        'Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoItems)
-        'If CreateInfoItems.Rows.Count <= 0 Then
-        '    Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
+        '                    Case 59 ' Drink
+        '                        ItemAmount = 2
+
+        '                End Select
+        '                If ItemStackable < ItemAmount Then ItemAmount = ItemStackable
+        '            End If
+
+        '            c.ItemADD(ItemID, CType(0, Byte), ItemSlot, ItemAmount)
+        '        Else
+        '            Log.WriteLine(LogType.FAILED, "ItemID({0}) From CharStartOutfit({1}) NOT Found in items Table!", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), RaceClassGender)
+        '        End If
+        '    Next
+        'Else
+        '    Log.WriteLine(LogType.FAILED, "No information found in CharStartOutfit for race={0}, class={1}, gender={2}", c.Race, c.Classe, c.Gender)
         'End If
 
-        '' Set Player Create Items
-        'For Each ItemRow As DataRow In CreateInfoItems.Rows
-        '    c.ItemADD(CType(ItemRow.Item("protoid"), Integer), CType(0, Byte), CType(ItemRow.Item("slotid"), Byte), CType(ItemRow.Item("amount"), Integer))
-        'Next
+        Dim CreateInfoItems As New DataTable
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE indexid = {0};", c.PlayerCreateInfoID), CreateInfoItems)
+        If CreateInfoItems.Rows.Count <= 0 Then
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for indexid={0}", c.PlayerCreateInfoID)
+        End If
+
+        ' Set Player Create Items
+        For Each ItemRow As DataRow In CreateInfoItems.Rows
+            c.ItemADD(CType(ItemRow.Item("protoid"), Integer), CType(0, Byte), CType(ItemRow.Item("slotid"), Byte), CType(ItemRow.Item("amount"), Integer))
+        Next
 
     End Sub
 
