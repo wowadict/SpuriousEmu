@@ -439,8 +439,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_GUID, GUID)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_TYPE, CType(ObjectType.TYPE_OBJECT + ObjectType.TYPE_UNIT, Integer))
-            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer))
-            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, GuidLOW(GUID))
+            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer))
+            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, GuidLOW(GUID))
 
             If (Not aiScript Is Nothing) AndAlso (Not aiScript.aiTarget Is Nothing) Then
                 Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_TARGET, aiScript.aiTarget.GUID)
@@ -968,8 +968,11 @@ Public Module WS_Creatures
             'TODO: Check if we're in a heroic instance!
             Dim Loot As New LootObject(GUID, LootType)
             For Each LootRow As DataRow In MySQLQuery.Rows
+                Dim lootmin As Integer = LootRow.Item("loot_min")
+                If lootmin < 1 Then lootmin = 1 'TODO: Find out why Mangos has Negative loot minimums
+
                 If CType(LootRow.Item("loot_chance"), Single) * 10000 > (Rnd.Next(1, 2000001) Mod 1000000) Then
-                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(LootRow.Item("loot_min"), Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
+                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(lootmin, Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
                     If ITEMDatabase.ContainsKey(CType(LootRow.Item("loot_item"), Integer)) = False Then Dim tmpItem As ItemInfo = New ItemInfo(CType(LootRow.Item("loot_item"), Integer))
                     If CType(ITEMDatabase(CType(LootRow.Item("loot_item"), Integer)), ItemInfo).ObjectClass = ITEM_CLASS.ITEM_CLASS_QUEST Then
                         'Check if this quest item can be looted

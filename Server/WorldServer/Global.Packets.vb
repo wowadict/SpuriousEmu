@@ -124,9 +124,9 @@ Public Module Packets
 
                 packet.AddSingle(CREATURESDatabase(updateObject.ID).WalkSpeed)
                 packet.AddSingle(CREATURESDatabase(updateObject.ID).RunSpeed)
-                packet.AddSingle(UNIT_NORMAL_SWIM_BACK_SPEED)
-                packet.AddSingle(UNIT_NORMAL_SWIM_SPEED)
                 packet.AddSingle(UNIT_NORMAL_WALK_BACK_SPEED)
+                packet.AddSingle(UNIT_NORMAL_SWIM_SPEED)
+                packet.AddSingle(UNIT_NORMAL_SWIM_BACK_SPEED)
                 packet.AddSingle(UNIT_NORMAL_FLY_SPEED)
                 packet.AddSingle(UNIT_NORMAL_FLY_BACK_SPEED)
                 packet.AddSingle(UNIT_NORMAL_TURN_RATE)

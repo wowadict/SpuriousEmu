@@ -501,10 +501,10 @@ Public Module WS_CharManagment
         SMSG_BINDPOINTUPDATE.Dispose()
     End Sub
     Public Sub Send_SMSG_SET_REST_START(ByRef Client As ClientClass, ByRef Character As CharacterObject)
-        Dim SMSG_SET_REST_START As New PacketClass(OPCODES.SMSG_SET_REST_START_OBSOLETE)
-        SMSG_SET_REST_START.AddInt32(timeGetTime)
-        Client.Send(SMSG_SET_REST_START)
-        SMSG_SET_REST_START.Dispose()
+        'Dim SMSG_SET_REST_START As New PacketClass(OPCODES.SMSG_SET_REST_START_OBSOLETE) ' Was &H21E - Mangos did not have this opcode, may not be used any more?
+        'SMSG_SET_REST_START.AddInt32(timeGetTime)
+        'Client.Send(SMSG_SET_REST_START)
+        'SMSG_SET_REST_START.Dispose()
     End Sub
     Public Sub SendTutorialFlags(ByRef Client As ClientClass, ByRef Character As CharacterObject)
         Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
@@ -1610,12 +1610,12 @@ Public Module WS_CharManagment
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_1 + i * 4, 0) 'ID
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + i * 4, 0) 'State
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + i * 4, 0) 'Counts
-                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + i * 4, 0) 'Timer
+                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + i * 4, 0) 'Timer
                 Else
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_1 + i * 4, TalkQuests(i).ID)
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + i * 4, 0)
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + i * 4, TalkQuests(i).GetState)
-                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + i * 4, 0) 'Timer
+                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + i * 4, 0) 'Timer
                 End If
             Next i
 
@@ -5003,7 +5003,7 @@ CheckXPAgain:
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_1 + i * 4, TalkQuests(i).ID)
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + i * 4, 0)
                     SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + i * 4, questState)
-                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + i * 4, 0) 'Timer
+                    SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + i * 4, 0) 'Timer
 
                     Database.Update(String.Format("INSERT INTO characters_quests (char_guid, quest_id, quest_status) VALUES ({0}, {1}, {2});", GUID, TalkQuests(i).ID, questState))
 
@@ -5025,7 +5025,7 @@ CheckXPAgain:
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_1 + QuestSlot * 4, 0)
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + QuestSlot * 4, 0)
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + QuestSlot * 4, 0)
-                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + QuestSlot * 4, 0)
+                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + QuestSlot * 4, 0)
 
                 Database.Update(String.Format("DELETE  FROM characters_quests WHERE char_guid = {0} AND quest_id = {1};", GUID, TalkQuests(QuestSlot).ID))
                 TalkQuests(QuestSlot) = Nothing
@@ -5044,7 +5044,7 @@ CheckXPAgain:
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_1 + QuestSlot * 4, 0)
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + QuestSlot * 4, 0)
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + QuestSlot * 4, 0)
-                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + QuestSlot * 4, 0)
+                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + QuestSlot * 4, 0)
 
                 If (TalkQuests(QuestSlot).SpecialFlags And QuestSpecialFlag.QUEST_SPECIALFLAGS_REPEATABLE) Then
                     Database.Update(String.Format("UPDATE characters_quests SET quest_status = -2 WHERE char_guid = {0} AND quest_id = {1};", GUID, TalkQuests(QuestSlot).ID))
@@ -5072,7 +5072,7 @@ CheckXPAgain:
 
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_2 + QuestSlot * 4, tmpState)
                 SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_3 + QuestSlot * 4, tmpProgress)
-                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_5 + QuestSlot * 4, tmpTimer)
+                SetUpdateFlag(EPlayerFields.PLAYER_QUEST_LOG_1_4 + QuestSlot * 4, tmpTimer)
                 SendCharacterUpdate(updateDataCount <> 0)
 
                 Return True

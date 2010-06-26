@@ -54,6 +54,41 @@ Module WS_CharMovement
         MOVEMENTFLAG_UNK3 = &H40000000
     End Enum
 
+    Public Enum MovementFlagsMangos As Integer
+        MOVEMENTFLAG_NONE = &H0
+        MOVEMENTFLAG_FORWARD = &H1
+        MOVEMENTFLAG_BACKWARD = &H2
+        MOVEMENTFLAG_STRAFE_LEFT = &H4
+        MOVEMENTFLAG_STRAFE_RIGHT = &H8
+        MOVEMENTFLAG_TURN_LEFT = &H10
+        MOVEMENTFLAG_TURN_RIGHT = &H20
+        MOVEMENTFLAG_PITCH_UP = &H40
+        MOVEMENTFLAG_PITCH_DOWN = &H80
+        MOVEMENTFLAG_WALK_MODE = &H100               ' Walking
+        MOVEMENTFLAG_ONTRANSPORT = &H200
+        MOVEMENTFLAG_LEVITATING = &H400
+        MOVEMENTFLAG_ROOT = &H800
+        MOVEMENTFLAG_FALLING = &H1000
+        MOVEMENTFLAG_FALLINGFAR = &H2000
+        MOVEMENTFLAG_PENDINGSTOP = &H4000
+        MOVEMENTFLAG_PENDINGSTRAFESTOP = &H8000
+        MOVEMENTFLAG_PENDINGFORWARD = &H10000
+        MOVEMENTFLAG_PENDINGBACKWARD = &H20000
+        MOVEMENTFLAG_PENDINGSTRAFELEFT = &H40000
+        MOVEMENTFLAG_PENDINGSTRAFERIGHT = &H80000
+        MOVEMENTFLAG_PENDINGROOT = &H100000
+        MOVEMENTFLAG_SWIMMING = &H200000               ' appears with fly flag also
+        MOVEMENTFLAG_ASCENDING = &H400000               ' swim up also
+        MOVEMENTFLAG_DESCENDING = &H800000               ' swim down also
+        MOVEMENTFLAG_CAN_FLY = &H1000000               ' can fly in 3.3?
+        MOVEMENTFLAG_FLYING = &H2000000               ' Actual flying mode
+        MOVEMENTFLAG_SPLINE_ELEVATION = &H4000000               ' used for flight paths
+        MOVEMENTFLAG_SPLINE_ENABLED = &H8000000               ' used for flight paths
+        MOVEMENTFLAG_WATERWALKING = &H10000000               ' prevent unit from falling through water
+        MOVEMENTFLAG_SAFE_FALL = &H20000000               ' active rogue safe fall spell (passive)
+        MOVEMENTFLAG_HOVER = &H40000000
+    End Enum
+
     Public Sub OnMovementPacket(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
 

@@ -301,8 +301,8 @@ Public Module WC_Handlers_Auth
         Else
             Dim AccountData() As Byte = AccData.Rows(0).Item("account_data" & DataID)
             If AccountData.Length > 0 Then
-                response.AddUInt64(Client.Index)
-                response.AddInt32(DataID)
+                'response.AddUInt64(Client.Index)
+                'response.AddInt32(DataID)               ' These two were already added above, right?
                 response.AddUInt32(CType(AccData.Rows(0).Item("account_time" & DataID), UInteger)) 'unix time
                 response.AddInt32(AccountData.Length) 'Uncompressed buffer length
                 'DONE: Compress buffer if it's longer than 200 bytes

@@ -243,10 +243,10 @@ Public Module WS_GameObjects
             ''''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_LEVEL, ObjectInfo.Level)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FLAGS, Flags)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_DISPLAYID, ObjectInfo.Model)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotations(0))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 1, Rotations(1))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 2, Rotations(2))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 3, Rotations(3))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 1, Rotations(1))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 2, Rotations(2))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 3, Rotations(3))
             'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_TIMESTAMP, 0)
         End Sub
         Private Sub Dispose() Implements System.IDisposable.Dispose
@@ -445,8 +445,11 @@ Public Module WS_GameObjects
             'TODO: Check if we're in a heroic instance!
             Loot = New LootObject(GUID, LootType.LOOTTYPE_SKINNNING)
             For Each LootRow As DataRow In MySQLQuery.Rows
+                Dim lootmin As Integer = LootRow.Item("loot_min")
+                If lootmin < 1 Then lootmin = 1 'TODO: Find out why Mangos has Negative Loot Minimums
+
                 If CType(LootRow.Item("loot_chance"), Single) * 10000 > (Rnd.Next(1, 2000001) Mod 1000000) Then
-                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(LootRow.Item("loot_min"), Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
+                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(lootmin, Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
                     Loot.Items.Add(New LootItem(CType(LootRow.Item("loot_item"), Integer), ItemCount))
                 End If
             Next
@@ -532,10 +535,10 @@ Public Module WS_GameObjects
                 Dim tmpUpdate As New UpdateClass(FIELD_MASK_SIZE_GAMEOBJECT)
                 ' TODO: Fix This Remarked for 3.3.3a                
                 ''tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotations(0))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 1, Rotations(1))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 2, Rotations(2))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 3, Rotations(3))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 1, Rotations(1))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 2, Rotations(2))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 3, Rotations(3))
                 tmpUpdate.AddToPacket(packet, ObjectUpdateType.UPDATETYPE_VALUES, Me)
                 tmpUpdate.Dispose()
 
