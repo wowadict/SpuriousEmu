@@ -120,6 +120,8 @@ Module WS_CharMovement
             Dim transportY As Single = packet.GetFloat
             Dim transportZ As Single = packet.GetFloat
             Dim transportO As Single = packet.GetFloat
+            Dim transportTime As Single = packet.GetFloat
+            Dim transportSeat As Byte = packet.GetInt8
         End If
         If (Client.Character.movementFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING2)) OrElse (unkFlags And &H20) Then
             Dim swimAngle As Single = packet.GetFloat
@@ -128,7 +130,7 @@ Module WS_CharMovement
             '#End If
         End If
 
-        packet.GetInt32() 'Fall time
+        'packet.GetInt32() 'Fall time
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_JUMPING) Then
             Dim airTime As UInteger = packet.GetUInt32

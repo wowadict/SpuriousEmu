@@ -292,7 +292,11 @@ Public Module WC_Handlers_Auth
         End If
 
         Dim response As New PacketClass(OPCODES.SMSG_UPDATE_ACCOUNT_DATA)
-        response.AddUInt64(Client.Character.GUID)
+        If (Client.Character IsNot Nothing) Then
+            response.AddUInt64(Client.Character.GUID)
+        Else
+            response.AddUInt64(0)
+        End If
         response.AddUInt32(DataID)
 
         If FoundData = False Then
@@ -301,10 +305,8 @@ Public Module WC_Handlers_Auth
         Else
             Dim AccountData() As Byte = AccData.Rows(0).Item("account_data" & DataID)
             If AccountData.Length > 0 Then
-                'response.AddUInt64(Client.Index)
-                'response.AddInt32(DataID)               ' These two were already added above, right?
                 response.AddUInt32(CType(AccData.Rows(0).Item("account_time" & DataID), UInteger)) 'unix time
-                response.AddInt32(AccountData.Length) 'Uncompressed buffer length
+                response.AddUInt32(AccountData.Length) 'Uncompressed buffer length
                 'DONE: Compress buffer if it's longer than 200 bytes
                 If AccountData.Length > 200 Then
                     Dim CompressedBuffer() As Byte = Compress(AccountData, 0, AccountData.Length)

@@ -461,6 +461,7 @@ Public Module Functions
     End Enum
     Function BuildPartyMemberStatsOffline(ByVal GUID As ULong) As PacketClass
         Dim packet As New PacketClass(OPCODES.SMSG_PARTY_MEMBER_STATS_FULL)
+        packet.AddInt8(0) ' only for SMSG_PARTY_MEMBER_STATS_FULL, probably arena/bg related
         packet.AddPackGUID(GUID)
         packet.AddUInt32(PartyMemberStatsFlag.GROUP_UPDATE_FLAG_STATUS)
         packet.AddUInt16(PartyMemberStatsStatus.STATUS_OFFLINE)

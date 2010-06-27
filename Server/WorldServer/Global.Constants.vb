@@ -71,15 +71,16 @@ Public Module Constants
         Return Common.RevisionReader.GetBuildRevision()
     End Function
 
-    Public Const GUID_ITEM As ULong = &H4000000000000000
-    Public Const GUID_CONTAINER As ULong = &H4000000000000000
+    Public Const GUID_ITEM As ULong = &H4700000000000000
+    Public Const GUID_CONTAINER As ULong = &H4700000000000000
     Public Const GUID_PLAYER As ULong = &H0
     Public Const GUID_GAMEOBJECT As ULong = &HF110000000000000UL
     Public Const GUID_TRANSPORT As ULong = &HF120000000000000UL
     Public Const GUID_UNIT As ULong = &HF130000000000000UL
     Public Const GUID_PET As ULong = &HF140000000000000UL
+    Public Const GUID_VEHICLE As ULong = &HF150000000000000UL
     Public Const GUID_DYNAMICOBJECT As ULong = &HF100000000000000UL
-    Public Const GUID_CORPSE As ULong = &HF101000000000000UL
+    Public Const GUID_CORPSE As ULong = &HF500000000000000UL
     Public Const GUID_MO_TRANSPORT As ULong = &H1FC0000000000000UL
     Public Const GUID_MASK_LOW As UInteger = &HFFFFFFFFUI
     Public Const GUID_MASK_HIGH As ULong = &HFFFFFFFF00000000UL

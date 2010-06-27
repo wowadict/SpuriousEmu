@@ -84,7 +84,7 @@ Public Module WC_Handlers_Social
 
         'DONE: Make the packet
         Dim SMSG_FRIEND_LIST As New PacketClass(OPCODES.SMSG_CONTACT_LIST)
-        SMSG_FRIEND_LIST.AddInt32(&H7)                              'Flag (0x1 = List, 0x2 = FriendList, 0x4 = IgnoreList)
+        SMSG_FRIEND_LIST.AddInt32(&H7)                              'Flag (0x1 = List, 0x2 = FriendList, 0x4 = IgnoreList, 0x7 if it includes ignore list)
         If q.Rows.Count > 0 Then
             SMSG_FRIEND_LIST.AddInt32(q.Rows.Count)
 
