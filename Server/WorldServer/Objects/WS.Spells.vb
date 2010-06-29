@@ -5237,7 +5237,6 @@ SkipShapeShift:
                 packet.AddPackGUID(Target.GUID)
                 Target.SendToNearPlayers(packet)
                 packet.Dispose()
-
         End Select
 
     End Sub
