@@ -27,53 +27,42 @@ Friend Class frmMain
 		Dim Y As Single = VB6.PixelsToTwipsY(eventArgs.Y)
 		PressOnMap(X, Y)
 	End Sub
-    Private Sub imgNorthrend_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles imgNorthrend.MouseDown
-        Dim Button As Short = e.Button \ &H100000
-        Dim Shift As Short = System.Windows.Forms.Control.ModifierKeys \ &H10000
-        Dim X As Single = VB6.PixelsToTwipsX(e.X)
-        Dim Y As Single = VB6.PixelsToTwipsY(e.Y)
-        PressOnMap(X, Y)
-
-    End Sub
-    Private Sub PressOnMap(ByRef X As Single, ByRef Y As Single)
-        Dim PosX, PosY As Single
-
-        shpLocation.Visible = True
-        shpLocation.Left = VB6.TwipsToPixelsX(X - (VB6.PixelsToTwipsX(shpLocation.Width) / 2))
-        shpLocation.Top = VB6.TwipsToPixelsY(Y - (VB6.PixelsToTwipsY(shpLocation.Height) / 2))
-
-        CalculateCoords(X, Y, PosX, PosY)
-
-        frmCoords.txtX.Text = CStr(PosX)
-        frmCoords.txtY.Text = CStr(PosY)
-    End Sub
-
-    Public Sub mnuCoords_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuCoords.Click
-        frmCoords.Show()
-    End Sub
-
-    Public Sub mnuEasternK_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuEasternK.Click
-        imgAzeroth.Visible = True
-        imgOutlands.Visible = False
-        CurrentMap = 0
-    End Sub
-
-    Public Sub mnuKalimdor_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuKalimdor.Click
-        imgAzeroth.Visible = True
-        imgOutlands.Visible = False
-        CurrentMap = 1
-    End Sub
-
-    Public Sub mnuOutlands_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuOutlands.Click
-        imgAzeroth.Visible = False
-        imgOutlands.Visible = True
-        CurrentMap = 530
-    End Sub
-    Public Sub mnuNorthrend_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuNorthrend.Click
-        imgNorthrend.Visible = True
-        imgAzeroth.Visible = False
-        imgOutlands.Visible = False
-    End Sub
+	
+	Private Sub PressOnMap(ByRef X As Single, ByRef Y As Single)
+		Dim PosX, PosY As Single
+		
+		shpLocation.Visible = True
+		shpLocation.Left = VB6.TwipsToPixelsX(X - (VB6.PixelsToTwipsX(shpLocation.Width) / 2))
+		shpLocation.Top = VB6.TwipsToPixelsY(Y - (VB6.PixelsToTwipsY(shpLocation.Height) / 2))
+		
+		CalculateCoords(X, Y, PosX, PosY)
+		
+		frmCoords.txtX.Text = CStr(PosX)
+		frmCoords.txtY.Text = CStr(PosY)
+	End Sub
+	
+	Public Sub mnuCoords_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuCoords.Click
+		frmCoords.Show()
+	End Sub
+	
+	Public Sub mnuEasternK_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuEasternK.Click
+		imgAzeroth.Visible = True
+		imgOutlands.Visible = False
+		CurrentMap = 0
+	End Sub
+	
+	Public Sub mnuKalimdor_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuKalimdor.Click
+		imgAzeroth.Visible = True
+		imgOutlands.Visible = False
+		CurrentMap = 1
+	End Sub
+	
+	Public Sub mnuOutlands_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuOutlands.Click
+		imgAzeroth.Visible = False
+		imgOutlands.Visible = True
+		CurrentMap = 530
+	End Sub
+	
     Public Sub CalculateCoords(ByRef X As Single, ByRef Y As Single, ByRef PosX As Single, ByRef PosY As Single)
         Select Case CurrentMap
             Case 0
@@ -87,7 +76,7 @@ Friend Class frmMain
                 PosY = (((((686 * 15) - X) / 15) / (533 / 525)) / 17.7) * 305
         End Select
     End Sub
-
+	
     Public Sub CalculateMapCoords(ByRef X As Single, ByRef Y As Single, ByRef PosX As Single, ByRef PosY As Single)
         Select Case CurrentMap
             Case 0
@@ -115,10 +104,4 @@ Friend Class frmMain
                 PosY = (271 * 15) - Y
         End Select
     End Sub
-
-    Private Sub MainMenu1_ItemClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolStripItemClickedEventArgs) Handles MainMenu1.ItemClicked
-
-    End Sub
-
-
 End Class

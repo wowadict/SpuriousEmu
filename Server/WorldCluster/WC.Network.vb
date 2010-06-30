@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ Imports System.Runtime.CompilerServices
 Imports System.Security.Permissions
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
-Imports System.Security.Cryptography
+
 
 Public Module WC_Network
 
@@ -195,8 +195,7 @@ Public Module WC_Network
                         Else
                             MyTime = timeGetTime
                             ServerTime = w.Value.Ping(MyTime)
-                            'Latency = Math.Abs(MyTime - ServerTime)
-                            Latency = Math.Abs(MyTime - timeGetTime)
+                            Latency = Math.Abs(MyTime - ServerTime)
 
                             WorldsInfo(w.Key).Latency = Latency
                             SentPingTo(WorldsInfo(w.Key)) = Latency
@@ -534,7 +533,6 @@ Public Module WC_Network
         Developer = 4
     End Enum
 
-    Public LastConnections As New Dictionary(Of UInteger, Date)
     Class ClientClass
         Inherits ClientInfo
         Implements IDisposable
@@ -546,7 +544,7 @@ Public Module WC_Network
 
         Public SS_Hash() As Byte
         Public Encryption As Boolean = False
-        Public Crypt As AuthCrypt
+
         Protected SocketBuffer(8192) As Byte
         Protected SocketBytes As Integer
 
@@ -571,37 +569,13 @@ Public Module WC_Network
             IP = CType(Socket.RemoteEndPoint, IPEndPoint).Address
             Port = CType(Socket.RemoteEndPoint, IPEndPoint).Port
 
-            'DONE: Connection spam protection
-            'TODO: Connection spamming still increases a lot of CPU. How do we protect against this?
-            Dim IpInt As UInteger = IP2Int(IP.ToString)
-            If LastConnections.ContainsKey(IpInt) Then
-                If Now > LastConnections(IpInt) Then
-                    LastConnections(IpInt) = Now.AddSeconds(5)
-                Else
-                    Socket.Close()
-                    Me.Dispose()
-                    Exit Sub
-                End If
-            Else
-                LastConnections.Add(IpInt, Now.AddSeconds(5))
-            End If
-
             Log.WriteLine(LogType.DEBUG, "Incoming connection from [{0}:{1}]", IP, Port)
 
             Socket.BeginReceive(SocketBuffer, 0, SocketBuffer.Length, SocketFlags.None, AddressOf OnData, Nothing)
 
             'Send Auth Challenge
             Dim p As New PacketClass(OPCODES.SMSG_AUTH_CHALLENGE)
-            p.AddInt32(1)
             p.AddInt32(Index)
-            p.AddInt32(&HF3539DA3)
-            p.AddInt32(&H6E8547B9)
-            p.AddInt32(&H9A6AA2F8)
-            p.AddInt32(&HA4F170F4)
-            p.AddInt32(&HF3539DA3)
-            p.AddInt32(&H6E8547B9)
-            p.AddInt32(&H9A6AA2F8)
-            p.AddInt32(&HA4F170F4)
             Me.Send(p)
 
             Me.Index = Interlocked.Increment(CLIETNIDs)
@@ -624,8 +598,8 @@ Public Module WC_Network
                     Interlocked.Add(DataTransferIn, SocketBytes)
 
                     While SocketBytes > 0
-                        'If Encryption Then Decode(SocketBuffer)
-                        If Encryption Then Crypt.Decrypt(SocketBuffer)
+                        If Encryption Then Decode(SocketBuffer)
+
                         'Calculate Length from packet
                         Dim PacketLen As Integer = (SocketBuffer(1) + SocketBuffer(0) * 256) + 2
 
@@ -671,8 +645,6 @@ Public Module WC_Network
                     p = Queue.Dequeue
                 End SyncLock
 
-                If Config.PacketLogging Then LogPacket(p.Data, False, Me)
-
                 If PacketHandlers.ContainsKey(p.OpCode) = True Then
                     Try
                         PacketHandlers(p.OpCode).Invoke(p, Me)
@@ -701,9 +673,7 @@ Public Module WC_Network
             If Not Socket.Connected Then Exit Sub
 
             Try
-                If Config.PacketLogging Then LogPacket(data, True, Me)
-                'If Encryption Then Encode(data)
-                If Encryption Then Crypt.Encrypt(data)
+                If Encryption Then Encode(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
             Catch Err As Exception
                 'NOTE: If it's a error here it means the connection is closed?
@@ -718,9 +688,7 @@ Public Module WC_Network
 
             Try
                 Dim data As Byte() = packet.Data
-                If Config.PacketLogging Then LogPacket(data, True, Me)
-                'If Encryption Then Encode(data)
-                If Encryption Then Crypt.Encrypt(data)
+                If Encryption Then Encode(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
             Catch Err As Exception
                 'NOTE: If it's a error here it means the connection is closed?
@@ -738,9 +706,7 @@ Public Module WC_Network
 
             Try
                 Dim data As Byte() = packet.Data.Clone
-                If Config.PacketLogging Then LogPacket(data, True, Me)
-                'If Encryption Then Encode(data)
-                If Encryption Then Crypt.Encrypt(data)
+                If Encryption Then Encode(data)
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, AddressOf OnSendComplete, Nothing)
             Catch Err As Exception
                 'NOTE: If it's a error here it means the connection is closed?
@@ -760,7 +726,7 @@ Public Module WC_Network
         End Sub
 
         Private Sub Dispose() Implements System.IDisposable.Dispose
-            'Log.WriteLine(LogType.NETWORK, "Connection from [{0}:{1}] disposed", IP, Port)
+            Log.WriteLine(LogType.NETWORK, "Connection from [{0}:{1}] disposed", IP, Port)
 
             On Error Resume Next
 
@@ -789,35 +755,34 @@ Public Module WC_Network
             Me.Dispose()
         End Sub
 
-        'Public Sub Decode(ByRef data() As Byte)
-        '    Dim i As Integer
-        '    Dim tmp As Integer
+        Public Sub Decode(ByRef data() As Byte)
+            Dim i As Integer
+            Dim tmp As Integer
 
-        '    For i = 0 To 6 - 1
-        '        tmp = data(i)
-        '        data(i) = SS_Hash(Key(1)) Xor CByte((256 + CInt(data(i)) - Key(0)) Mod 256)
-        '        Me.Key(0) = tmp
-        '        Me.Key(1) = (Me.Key(1) + 1) Mod 20
-        '    Next i
-        'End Sub
-        'Public Sub Encode(ByRef data() As Byte)
-        '    Dim i As Integer
-        '    For i = 0 To 4 - 1
-        '        data(i) = (CInt(SS_Hash(Key(3)) Xor data(i)) + Key(2)) Mod 256
+            For i = 0 To 6 - 1
+                tmp = data(i)
+                data(i) = SS_Hash(Key(1)) Xor CByte((256 + CInt(data(i)) - Key(0)) Mod 256)
+                Me.Key(0) = tmp
+                Me.Key(1) = (Me.Key(1) + 1) Mod 20
+            Next i
+        End Sub
+        Public Sub Encode(ByRef data() As Byte)
+            Dim i As Integer
+            For i = 0 To 4 - 1
+                data(i) = (CInt(SS_Hash(Key(3)) Xor data(i)) + Key(2)) Mod 256
 
-        '        Me.Key(2) = data(i)
-        '        Me.Key(3) = (Key(3) + 1) Mod 20
-        '    Next i
-        'End Sub
+                Me.Key(2) = data(i)
+                Me.Key(3) = (Key(3) + 1) Mod 20
+            Next i
+        End Sub
 
         Public Sub EnQueue(ByVal state As Object)
-            While CHARACTERs.Count > Config.ServerLimit
+            While CHARACTERS.Count > Config.ServerLimit
                 If Not Me.Socket.Connected Then Exit Sub
 
                 Dim response_full As New PacketClass(OPCODES.SMSG_AUTH_RESPONSE)
                 response_full.AddInt8(AuthResponseCodes.AUTH_WAIT_QUEUE)
-                response_full.AddInt32(CLIENTs.Count - CHARACTERs.Count)            'amount of players in queue
-                'response_full.AddInt8(0)                                            '3.3.0
+                response_full.AddInt32(CLIENTs.Count - CHARACTERS.Count)            'amount of players in queue
                 Me.Send(response_full)
 
                 Log.WriteLine(LogType.INFORMATION, "[{1}:{2}] AUTH_WAIT_QUEUE: Server limit reached!", Me.IP, Me.Port)
@@ -831,121 +796,5 @@ Public Module WC_Network
 
 #End Region
 
-#Region "AUTH Crypt"
-    Public Class AuthCrypt
-
-        '3.3.3 updates / dont enable unless you know what you're doing 
-        Public ServerEncryptionKey() As Byte = {&HCC, &H98, &HAE, &H4, &HE8, &H97, &HEA, &HCA, &H12, &HDD, &HC0, &H93, &H42, &H91, &H53, &H57}
-        Public ServerDecryptionKey() As Byte = {&HC2, &HB3, &H72, &H3C, &HC6, &HAE, &HD9, &HB5, &H34, &H3C, &H53, &HEE, &H2F, &H43, &H67, &HCE}
-
-        '3.3.2 Network codes below 
-        'Public ServerEncryptionKey() As Byte = {&H22, &HBE, &HE5, &HCF, &HBB, &H7, &H64, &HD9, &H0, &H45, &H1B, &HD0, &H24, &HB8, &HD5, &H45}
-        'Public ServerDecryptionKey() As Byte = {&HF4, &H66, &H31, &H59, &HFC, &H83, &H6E, &H31, &H31, &H2, &H51, &HD5, &H44, &H31, &H67, &H98}
-
-        Private ServerEncrypt As RC4
-        Private ServerDecrypt As RC4
-
-        Public Sub New(ByVal K() As Byte)
-            Dim hmacEncrypt As New HMACSHA1(ServerEncryptionKey)
-            Dim encryptHash() As Byte = hmacEncrypt.ComputeHash(K)
-            Dim hmacDecrypt As New HMACSHA1(ServerDecryptionKey)
-            Dim decryptHash() As Byte = hmacDecrypt.ComputeHash(K)
-
-            ServerEncrypt = New RC4(encryptHash)
-            ServerDecrypt = New RC4(decryptHash)
-
-            Dim data() As Byte = New Byte(1024 - 1) {}
-            ServerEncrypt.Crypt(data, 0, 1024)
-            data = New Byte(1024 - 1) {}
-            ServerDecrypt.Crypt(data, 0, 1024)
-        End Sub
-
-        Public Sub Encrypt(ByRef buffer() As Byte)
-            ServerEncrypt.Crypt(buffer, 0, 4)
-        End Sub
-
-        Public Sub Decrypt(ByRef buffer() As Byte)
-            ServerDecrypt.Crypt(buffer, 0, 6)
-        End Sub
-
-    End Class
-
-    Public Class RC4
-        Private key() As Byte = {}
-
-        Public Sub New(ByVal base() As Byte)
-            Dim val As Integer = 0
-            Dim position As Integer = 0
-            Dim temp As Byte
-
-            key = New Byte(255 + 2) {}
-
-            For i As Integer = 0 To 256 - 1
-                key(i) = i
-            Next
-
-            key(256) = 0
-            key(257) = 0
-
-            For i As Integer = 1 To 64
-                val = val + key((i * 4) - 4) + base(position Mod base.Length)
-                val = val And &HFF
-                position += 1
-                temp = key((i * 4) - 4)
-                key((i * 4) - 4) = key(val And &HFF)
-                key(val And &HFF) = temp
-
-                val = val + key((i * 4) - 3) + base(position Mod base.Length)
-                val = val And &HFF
-                position += 1
-                temp = key((i * 4) - 3)
-                key((i * 4) - 3) = key(val And &HFF)
-                key(val And &HFF) = temp
-
-                val = val + key((i * 4) - 2) + base(position Mod base.Length)
-                val = val And &HFF
-                position += 1
-                temp = key((i * 4) - 2)
-                key((i * 4) - 2) = key(val And &HFF)
-                key(val And &HFF) = temp
-
-                val = val + key((i * 4) - 1) + base(position Mod base.Length)
-                val = val And &HFF
-                position += 1
-                temp = key((i * 4) - 1)
-                key((i * 4) - 1) = key(val And &HFF)
-                key(val And &HFF) = temp
-            Next
-        End Sub
-        Public Sub Crypt(ByRef data As Byte(), ByVal index As Integer, ByVal length As Integer)
-            Dim temp As Byte
-            For i As Integer = index To length - 1
-                key(256) = (CType(key(256), Integer) + 1) And &HFF
-                key(257) = (CType(key(257), Integer) + CType(key(key(256)), Integer)) And &HFF
-
-                temp = key(key(257) And &HFF)
-                key(key(257)) = key(key(256))
-                key(key(256)) = temp
-
-                data(i) = (data(i) Xor key((CType(key(key(257)), Integer) + CType(key(key(256)), Integer)) And &HFF))
-            Next
-        End Sub
-    End Class
-#End Region
-
-    Function IP2Int(ByVal IP As String) As UInteger
-        Dim IpSplit() As String = IP.Split(".")
-        If IpSplit.Length <> 4 Then Return 0
-        Dim IpBytes(3) As Byte
-        Try
-            IpBytes(0) = CByte(IpSplit(3))
-            IpBytes(1) = CByte(IpSplit(2))
-            IpBytes(2) = CByte(IpSplit(1))
-            IpBytes(3) = CByte(IpSplit(0))
-            Return BitConverter.ToUInt32(IpBytes, 0)
-        Catch
-            Return 0
-        End Try
-    End Function
 
 End Module

@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -71,8 +71,6 @@ Public Module WorldCluster
         <XmlElement(ElementName:="StatsEnabled")> Public StatsEnabled As Boolean = True
         <XmlElement(ElementName:="StatsTimer")> Public StatsTimer As Integer = 120000
         <XmlElement(ElementName:="StatsLocation")> Public StatsLocation As String = "stats.xsl"
-        <XmlElement(ElementName:="PacketLogging")> Public PacketLogging As Boolean = False
-        <XmlElement(ElementName:="GMLogging")> Public GMLogging As Boolean = False
     End Class
 
     Public Sub LoadConfig()
@@ -115,11 +113,6 @@ Public Module WorldCluster
             'DONE: Creating logger
             Common.BaseWriter.CreateLog(Config.LogType, Config.LogConfig, Log)
             Log.LogLevel = Config.LogLevel
-
-            'DONE: Cleaning up the packet log
-            If Config.PacketLogging Then
-                File.Delete("packets.log")
-            End If
 
         Catch e As Exception
             Console.WriteLine(e.ToString)

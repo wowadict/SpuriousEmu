@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -40,10 +40,7 @@ Public Module WS_Mail
         NOT_ENOUGHT_MONEY = 3
         CHARACTER_NOT_FOUND = 4
         NOT_YOUR_ALLIANCE = 5
-		RECIPIENT_CAP_REACHED = 6
-		CANT_SEND_WRAPPED_COD = 7
-		MAIL_AND_CHAT_SUSPENDED = 8
-        INTERNAL_ERROR = 9
+        INTERNAL_ERROR = 6
     End Enum
 
     Private Enum MailReadInfo As Byte

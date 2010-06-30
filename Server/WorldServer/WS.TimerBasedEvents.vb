@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -26,9 +26,7 @@ Public Module WS_TimerBasedEvents
     Public AIManager As TAIManager
     Public SpellManager As TSpellManager
     Public CharacterSaver As TCharacterSaver
-    Public WeatherManager As TWeatherManager
 
-#Region "Regenerator Manager"
     'NOTE: Regenerates players' Mana, Life and Rage
     Public Class TRegenerator
         Implements IDisposable
@@ -201,8 +199,8 @@ Public Module WS_TimerBasedEvents
             RegenerationTimer = Nothing
         End Sub
     End Class
-#End Region
-#Region "Spell Manager"
+
+
     'NOTE: Manages spell durations and DOT spells
     Public Class TSpellManager
         Implements IDisposable
@@ -363,8 +361,8 @@ Public Module WS_TimerBasedEvents
 
         End Sub
     End Class
-#End Region
-#Region "AI Manager"
+
+
     'NOTE: Manages ai movement
     Public Class TAIManager
         Implements IDisposable
@@ -418,8 +416,8 @@ Public Module WS_TimerBasedEvents
             MyBase.Finalize()
         End Sub
     End Class
-#End Region
-#Region "Character Saver Manager"
+
+
     'NOTE: Manages character savings
     Public Class TCharacterSaver
         Implements IDisposable
@@ -459,47 +457,10 @@ Public Module WS_TimerBasedEvents
             CharacterSaverTimer = Nothing
         End Sub
     End Class
-#End Region
+
     'TODO: Timer for kicking not connected players (ping timeout)
     'TODO: Timer for auction items and mails
-#Region "Weather Manager"
-    'Done: Timer for weather change
-    Public Class TWeatherManager
-        Implements IDisposable
-
-        Public WeatherTimer As Threading.Timer = Nothing
-        Private WeatherWorking As Boolean = False
-
-        Public UPDATE_TIMER As Integer = Config.WeatherTimer     'Timer period (ms)
-        Public Sub New()
-            WeatherTimer = New Threading.Timer(AddressOf Update, Nothing, 10000, UPDATE_TIMER)
-        End Sub
-        Private Sub Update(ByVal state As Object)
-            If WeatherWorking Then
-                Log.WriteLine(LogType.WARNING, "Update: Weather skipping update")
-                Exit Sub
-            End If
-
-            WeatherWorking = True
-            Try
-                CHARACTERs_Lock.AcquireReaderLock(DEFAULT_LOCK_TIMEOUT)
-                For Each Character As KeyValuePair(Of ULong, CharacterObject) In CHARACTERs
-                    UpdateWeather(Character.Value.Client)
-                Next
-            Catch ex As Exception
-                Log.WriteLine(LogType.FAILED, ex.ToString, Nothing)
-            Finally
-                CHARACTERs_Lock.ReleaseReaderLock()
-            End Try
-
-            WeatherWorking = False
-        End Sub
-        Public Sub Dispose() Implements System.IDisposable.Dispose
-            WeatherTimer.Dispose()
-            WeatherTimer = Nothing
-        End Sub
-    End Class
-#End Region
+    'TODO: Timer for weather change
 
 End Module
 

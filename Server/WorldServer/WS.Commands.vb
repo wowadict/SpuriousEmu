@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -432,7 +432,7 @@ Public Module WS_Commands
             c.CommandResponse("This creature doesn't have AI")
         Else
             With WORLD_CREATUREs(c.TargetGUID)
-                c.CommandResponse(String.Format("Information for creature [{0}]:{1}ai = {2}{1}state = {3}{1}maxdist = {4}{1}respawn time = {5}{1}spawnID = {6}{1}Current Waypoint = {7}", .Name, vbNewLine, .aiScript.ToString, .aiScript.State.ToString, .MaxDistance, .CreatureInfo.RespawnTime, .SpawnID, .CurrentWaypoint))
+                c.CommandResponse(String.Format("Information for creature [{0}]:{1}ai = {2}{1}state = {3}{1}respawn time = {4}{1}spawnID = {5}{1}Current Waypoint = {6}", .Name, vbNewLine, .aiScript.ToString, .aiScript.State.ToString, .CreatureInfo.RespawnTime, .SpawnID, .CurrentWaypoint))
                 c.CommandResponse("Hate table:")
                 For Each u As KeyValuePair(Of BaseUnit, Integer) In .aiScript.aiHateTable
                     c.CommandResponse(String.Format("{0:X} = {1} hate", u.Key.GUID, u.Value))
@@ -550,33 +550,6 @@ Public Module WS_Commands
         c.CommandResponse("RangedAttackPowerMods: " & c.AttackPowerModsRanged)
 
         Return True
-    End Function
-
-    <ChatCommandAttribute("SetDurability", "SETDURABILITY <PERCENT> - Set all the target's itemdurability to a certain percentage.", AccessLevel.Admin)> _
-    Public Function cmdSetDurability(ByRef c As CharacterObject, ByVal Message As String) As Boolean
-        Dim Percent As Integer = 0
-        If Integer.TryParse(Message, Percent) = True Then
-            If Percent < 0 Then Percent = 0
-            If Percent > 100 Then Percent = 100
-            Dim sngPercent As Single = CSng(Percent / 100)
-
-            If c.TargetGUID <> 0 AndAlso GuidIsPlayer(c.TargetGUID) AndAlso CHARACTERs.ContainsKey(c.TargetGUID) Then
-                For i As Byte = EQUIPMENT_SLOT_START To EQUIPMENT_SLOT_END - 1
-                    If CHARACTERs(c.TargetGUID).Items.ContainsKey(i) Then
-                        CHARACTERs(c.TargetGUID).Items(i).ModifyToDurability(sngPercent, CHARACTERs(c.TargetGUID).Client)
-                    End If
-                Next
-            Else
-                For i As Byte = EQUIPMENT_SLOT_START To EQUIPMENT_SLOT_END - 1
-                    If c.Items.ContainsKey(i) Then
-                        c.Items(i).ModifyToDurability(sngPercent, c.Client)
-                    End If
-                Next
-            End If
-
-            Return True
-        End If
-        Return False
     End Function
 
     '****************************************** DEBUG COMMANDs ******************************************************
@@ -1324,7 +1297,7 @@ Public Module WS_Commands
                 CHARACTERs(GUID).GUID, _
                 CHARACTERs(GUID).Access))
             ElseIf WORLD_CREATUREs.ContainsKey(GUID) Then
-                c.CommandResponse(String.Format("Information for creature [{0}]:{1}id = {2}{1}guid = {3:X}{1}model = {4}{1}ai = {5}{1}his reaction = {6}{1}guard = {7}{1}damage = {8}-{9}{1}spawnID = {10}{1}Current Waypoint = {11}", _
+                c.CommandResponse(String.Format("Information for creature [{0}]:{1}id = {2}{1}guid = {3:X}{1}model = {4}{1}ai = {5}{1}his reaction = {6}{1}guard = {7}{1}spawnID = {8}{1}Current Waypoint = {9}", _
                 WORLD_CREATUREs(GUID).Name, vbNewLine, _
                 WORLD_CREATUREs(GUID).ID, _
                 GUID, _
@@ -1332,7 +1305,6 @@ Public Module WS_Commands
                 WORLD_CREATUREs(GUID).aiScript.GetType().ToString, _
                 c.GetReaction(WORLD_CREATUREs(GUID).Faction), _
                 WORLD_CREATUREs(GUID).isGuard, _
-                WORLD_CREATUREs(GUID).CreatureInfo.Damage.Minimum, WORLD_CREATUREs(GUID).CreatureInfo.Damage.Maximum, _
                 WORLD_CREATUREs(GUID).SpawnID, _
                 WORLD_CREATUREs(GUID).CurrentWaypoint))
             ElseIf WORLD_GAMEOBJECTs.ContainsKey(GUID) Then

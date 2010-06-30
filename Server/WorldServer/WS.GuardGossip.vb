@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -40,18 +40,14 @@ Public Module WS_GuardGossip
     Public MenuData As New Dictionary(Of Integer, TMenuData)
 
     Public Sub StartGuardGossip(ByRef c As CharacterObject, ByVal cGUID As ULong)
-        'Dim GuardGUID As Integer
-        Dim GuardID As Integer
+        Dim GuardGUID As Integer
 
         MenuData.Clear()
-        'GuardGUID = CType(WORLD_CREATUREs(cGUID).ID, Integer)
-        GuardID = CType(WORLD_CREATUREs(cGUID).ID, Integer)
+        GuardGUID = CType(WORLD_CREATUREs(cGUID).ID, Integer)
 
         Dim GuardMenusSQLQuery As New DataTable
-        'Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardGUID), GuardMenusSQLQuery)
-        'Log.WriteLine(LogType.DEBUG, "Reading Guard Gossip Menus For [GUID={0}]", GuardGUID)
-        Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardID), GuardMenusSQLQuery)
-        Log.WriteLine(LogType.DEBUG, "Reading Guard Gossip Menus For [GUID={0}]", GuardID)
+        Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardGUID), GuardMenusSQLQuery)
+        Log.WriteLine(LogType.DEBUG, "Reading Guard Gossip Menus For [GUID={0}]", GuardGUID)
 
         If GuardMenusSQLQuery.Rows.Count > 0 Then
             Dim tmp() As String
@@ -67,22 +63,18 @@ Public Module WS_GuardGossip
                 Next i
             End If
 
-            'Dim npcText As New NPCText
+            Dim npcText As New NPCText
             Dim npcTextIDSQLQuery As New DataTable
-            'Dim npcTextSQLQuery As New DataTable
-            'Database.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardGUID), npcTextIDSQLQuery)
-            'Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", npcTextIDSQLQuery.Rows(0).Item("textid")), npcTextSQLQuery)
+            Dim npcTextSQLQuery As New DataTable
+            Database.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardGUID), npcTextIDSQLQuery)
+            Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", npcTextIDSQLQuery.Rows(0).Item("textid")), npcTextSQLQuery)
 
-            'npcText.Count = 1
-            'npcText.TextID = 99999999
-            'npcText.Probability(0) = 1
-            'npcText.TextLine1(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_0"), String)
-            'npcText.TextLine2(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_1"), String)
-            'SendNPCText(c.Client, npcText)
-            Database.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardID), npcTextIDSQLQuery)
-
-            Dim TextID As Integer = CType(npcTextIDSQLQuery.Rows(0).Item("textid"), Integer)
-            c.SendTalking(TextID)
+            npcText.Count = 1
+            npcText.TextID = 99999999
+            npcText.Probability(0) = 1
+            npcText.TextLine1(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_0"), String)
+            npcText.TextLine2(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_1"), String)
+            SendNPCText(c.Client, npcText)
 
             c.TalkMenuTypes.Clear()
             Dim npcMenu As New GossipMenu
@@ -95,14 +87,14 @@ Public Module WS_GuardGossip
 
             c.SendGossip(cGUID, 99999999, npcMenu)
             c.MenuNumber = 0
-            'Else
-            '    Dim npcText As New NPCText
-            '    npcText.Count = 1
-            '    npcText.TextID = 99999999
-            '    npcText.Probability(0) = 1
-            '    npcText.TextLine1(0) = "Hi $N, I'm not yet set up to talk with you."
-            '    npcText.TextLine2(0) = "Hi $N, I'm not yet set up to talk with you."
-            '    SendNPCText(c.Client, npcText)
+        Else
+            Dim npcText As New NPCText
+            npcText.Count = 1
+            npcText.TextID = 99999999
+            npcText.Probability(0) = 1
+            npcText.TextLine1(0) = "Hi $N, I'm not yet set up to talk with you."
+            npcText.TextLine2(0) = "Hi $N, I'm not yet set up to talk with you."
+            SendNPCText(c.Client, npcText)
 
         End If
     End Sub
@@ -133,18 +125,16 @@ Public Module WS_GuardGossip
                 End If
             End If
 
-            'Dim npcTextSQLQuery As New DataTable
-            'Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", GuardMenusSQLQuery.Rows(0).Item("Menu_Header_TextID")), npcTextSQLQuery)
+            Dim npcTextSQLQuery As New DataTable
+            Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", GuardMenusSQLQuery.Rows(0).Item("Menu_Header_TextID")), npcTextSQLQuery)
 
-            'Dim npcText As New NPCText
-            'npcText.Count = 1
-            'npcText.TextID = 99999999
-            'npcText.Probability(0) = 1
-            'npcText.TextLine1(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_0"), String)
-            'npcText.TextLine2(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_1"), String)
-            'SendNPCText(c.Client, npcText)
-            Dim TextID As Integer = CType(GuardMenusSQLQuery.Rows(0).Item("Menu_Header_TextID"), Integer)
-            c.SendTalking(TextID)
+            Dim npcText As New NPCText
+            npcText.Count = 1
+            npcText.TextID = 99999999
+            npcText.Probability(0) = 1
+            npcText.TextLine1(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_0"), String)
+            npcText.TextLine2(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_1"), String)
+            SendNPCText(c.Client, npcText)
 
             c.TalkMenuTypes.Clear()
             Dim npcMenu As New GossipMenu

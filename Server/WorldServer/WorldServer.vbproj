@@ -154,30 +154,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Global.Constants.vb" />
-    <Compile Include="Handlers\WS.Handlers.Arena.vb" />
-    <Compile Include="Handlers\WS.Handlers.Battleground.vb" />
-    <Compile Include="Handlers\WS.Handlers.Chat.vb" />
-    <Compile Include="Handlers\WS.Handlers.Gamemaster.vb" />
-    <Compile Include="Handlers\WS.Handlers.Instance.vb" />
-    <Compile Include="Handlers\WS.Handlers.Misc.vb" />
-    <Compile Include="Handlers\WS.Handlers.Taxi.vb" />
-    <Compile Include="Handlers\WS.Handlers.Trade.vb" />
-    <Compile Include="Handlers\WS.Handlers.vb" />
-    <Compile Include="Objects\WS.Base.vb" />
-    <Compile Include="Objects\WS.CharManagment.vb" />
-    <Compile Include="Objects\WS.Corpses.vb" />
-    <Compile Include="Objects\WS.Creatures.vb" />
-    <Compile Include="Objects\WS.DynamicObjects.vb" />
-    <Compile Include="Objects\WS.GameObjects.vb" />
-    <Compile Include="Objects\WS.Group.vb" />
-    <Compile Include="Objects\WS.Guilds.vb" />
-    <Compile Include="Objects\WS.Items.vb" />
-    <Compile Include="Objects\WS.Loot.vb" />
-    <Compile Include="Objects\WS.Maps.vb" />
-    <Compile Include="Objects\WS.NPCs.vb" />
-    <Compile Include="Objects\WS.Pets.vb" />
-    <Compile Include="Objects\WS.Spells.vb" />
+    <Compile Include="WS.Handlers.Arena.vb" />
+    <Compile Include="WS.Handlers.Battleground.vb" />
     <Compile Include="WS.Totems.vb" />
+    <Compile Include="WS.DynamicObjects.vb" />
     <Compile Include="Global.Functions.vb" />
     <Compile Include="Global.Opcodes.vb">
       <SubType>Code</SubType>
@@ -198,6 +178,12 @@
     <Compile Include="WS.Auction.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WS.Base.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.CharManagment.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WS.CharMovement.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -207,19 +193,57 @@
     <Compile Include="WS.Commands.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WS.Corpses.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WS.Creatures.AI.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Creatures.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="WS.DBCDatabase.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="WS.DBCLoad.vb" />
+    <Compile Include="WS.GameObjects.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WS.GuardGossip.vb" />
+    <Compile Include="WS.Guilds.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Handlers.Chat.vb" />
+    <Compile Include="WS.Handlers.Gamemaster.vb" />
+    <Compile Include="WS.Handlers.Instance.vb" />
+    <Compile Include="WS.Handlers.Misc.vb" />
+    <Compile Include="WS.Handlers.Taxi.vb" />
+    <Compile Include="WS.Handlers.Trade.vb" />
+    <Compile Include="WS.Handlers.vb" />
+    <Compile Include="WS.Items.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Loot.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WS.Mail.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WS.Maps.vb" />
     <Compile Include="WS.Network.vb" />
+    <Compile Include="WS.NPCs.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Group.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Pets.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WS.Quests.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WS.Spells.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="WS.TimerBasedEvents.vb">

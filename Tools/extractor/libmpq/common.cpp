@@ -22,28 +22,13 @@
 #define _CRT_SECURE_NO_DEPRECATE
 //#include <dirent.h>
 #include <sys/stat.h>
-
-#ifndef WIN32
-#include <unistd.h>
-#endif
-
+//#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "mpq.h"
 #include "common.h"
 #include <ctype.h>
-
-unsigned int libmpq_lseek(mpq_archive* mpq_a, unsigned int pos)
-{
-#ifdef WIN32
-    return (unsigned int)_lseeki64(mpq_a->fd, pos, SEEK_SET);
-#elif defined(__APPLE__)
-    return (unsigned int)lseek(mpq_a->fd, pos, SEEK_SET);
-#else
-    return (unsigned int)lseek64(mpq_a->fd, pos, SEEK_SET);
-#endif
-}
 
 /*
  *  This function decrypts a MPQ block.
@@ -411,7 +396,11 @@ int libmpq_read_hashtable(mpq_archive *mpq_a) {
 	/* Read the hash table into the buffer */
 	bytes = mpq_a->header->hashtablesize * sizeof(mpq_hash);
 
-    libmpq_lseek(mpq_a, mpq_a->header->hashtablepos);
+	#ifdef WIN32
+		_lseeki64(mpq_a->fd, mpq_a->header->hashtablepos, SEEK_SET);
+	#else
+		lseek64(mpq_a->fd, mpq_a->header->hashtablepos, SEEK_SET);
+	#endif
 
 	rb = _read(mpq_a->fd, mpq_a->hashtable, bytes);
 	if (rb != bytes) {
@@ -466,7 +455,11 @@ int libmpq_read_blocktable(mpq_archive *mpq_a) {
 	bytes = mpq_a->header->blocktablesize * sizeof(mpq_block);
 	memset(mpq_a->blocktable, 0, mpq_a->header->blocktablesize * sizeof(mpq_block));
 
-    libmpq_lseek(mpq_a, mpq_a->header->blocktablepos);
+	#ifdef WIN32
+		_lseeki64(mpq_a->fd, mpq_a->header->blocktablepos, SEEK_SET);
+	#else
+		lseek64(mpq_a->fd, mpq_a->header->blocktablepos, SEEK_SET);
+	#endif	
 
 	rb = _read(mpq_a->fd, mpq_a->blocktable, bytes);
 	if (rb != bytes) {
@@ -526,7 +519,12 @@ int libmpq_file_read_block(mpq_archive *mpq_a, mpq_file *mpq_f, unsigned int blo
 		unsigned int nread;
 
 		if (mpq_f->mpq_b->filepos != mpq_a->filepos) {
-            libmpq_lseek(mpq_a, mpq_f->mpq_b->filepos);
+		#ifdef WIN32
+			_lseeki64(mpq_a->fd, mpq_f->mpq_b->filepos, SEEK_SET);
+		#else
+			lseek64(mpq_a->fd, mpq_f->mpq_b->filepos, SEEK_SET);
+
+		#endif
 		}
 
 		/* Read block positions from begin of file. */
@@ -571,7 +569,12 @@ int libmpq_file_read_block(mpq_archive *mpq_a, mpq_file *mpq_f, unsigned int blo
 			if (mpq_f->blockpos[0] != nread) {
 
 				/* Try once again to detect file seed and decrypt the blocks */
-                libmpq_lseek(mpq_a, mpq_f->mpq_b->filepos);
+
+				#ifdef WIN32
+					_lseeki64(mpq_a->fd, mpq_f->mpq_b->filepos, SEEK_SET);
+				#else
+					lseek64(mpq_a->fd, mpq_f->mpq_b->filepos, SEEK_SET);
+				#endif				
 
 				nread = _read(mpq_a->fd, mpq_f->blockpos, (mpq_f->nblocks + 1) * sizeof(int));
 				mpq_f->seed = libmpq_detect_fileseed(mpq_a, mpq_f->blockpos, nread);
@@ -608,7 +611,13 @@ int libmpq_file_read_block(mpq_archive *mpq_a, mpq_file *mpq_f, unsigned int blo
 
 	/* Set file pointer, if necessary. */
 	if (mpq_a->filepos != readpos) {
-        mpq_a->filepos = libmpq_lseek(mpq_a, readpos);
+
+		#ifdef WIN32
+			mpq_a->filepos = _lseeki64(mpq_a->fd, readpos, SEEK_SET);
+		#else
+			mpq_a->filepos = lseek64(mpq_a->fd, readpos, SEEK_SET);
+		#endif	
+
 	}
 
 	/* 15018F87 - Read all requested blocks. */

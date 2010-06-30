@@ -77,12 +77,9 @@ Public Interface IWorld
     <Description("Respond to world server if still alive.")> _
     Function Ping(ByVal Timestamp As Integer) As Integer
 
-    <Description("Tell the cluster about your CPU and Memory Usage.")> _
+    <Description("Tell the cluster about your CPU.")> _
     Sub ServerInfo(ByRef CPUUsage As Single, ByRef MemoryUsage As ULong)
 
-    '<Description("Tell the cluster about your Memory Usage.")> _
-    'Sub ServerInfo(ByRef MemoryUsage As ULong)
-	
     <Description("Make world create specific map.")> _
     Sub InstanceCreate(ByVal Map As UInteger)
     <Description("Make world destroy specific map.")> _

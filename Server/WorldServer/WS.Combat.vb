@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -248,13 +248,11 @@ Public Module WS_Combat
 
         'DONE: Glancing blow (only VS Creatures)
         Dim chanceToGlancingBlow As Short = 0
-        'If TypeOf Victim Is CreatureObject AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
-        If (TypeOf Attacker Is CharacterObject) AndAlso (TypeOf Victim Is CreatureObject) AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
+        If TypeOf Victim Is CreatureObject AndAlso (Attacker.Level > Victim.Level + 2) AndAlso skillDiference <= -15 Then chanceToGlancingBlow = (CInt(Victim.Level) - CInt(Attacker.Level)) * 10
 
         'DONE: Crushing blow, fix real damage (only for Creatures)
         Dim chanceToCrushingBlow As Short = 0
-        '        If TypeOf Attacker Is CreatureObject AndAlso TypeOf Victim Is CharacterObject AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
-        If (TypeOf Attacker Is CreatureObject) AndAlso (TypeOf Victim Is CharacterObject) AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
+        If TypeOf Attacker Is CreatureObject AndAlso TypeOf Victim Is CharacterObject AndAlso Ability Is Nothing AndAlso (Attacker.Level > Victim.Level + 2) Then chanceToCrushingBlow = (skillDiference * 2.0F - 15)
 
         'DONE: Some limitations
         If chanceToMiss > 60.0F Then chanceToMiss = 60.0F
@@ -828,10 +826,9 @@ Public Module WS_Combat
                 End If
 
                 If Character.StandState > 0 Then
-                    ' TODO: Figure out what needs to be done in this situation.
-                    'Dim SMSG_ATTACKSWING_NOTSTANDING As New PacketClass(OPCODES.SMSG_ATTACKSWING_NOTSTANDING)
-                    'Character.Client.Send(SMSG_ATTACKSWING_NOTSTANDING)
-                    'SMSG_ATTACKSWING_NOTSTANDING.Dispose()
+                    Dim SMSG_ATTACKSWING_NOTSTANDING As New PacketClass(OPCODES.SMSG_ATTACKSWING_NOTSTANDING)
+                    Character.Client.Send(SMSG_ATTACKSWING_NOTSTANDING)
+                    SMSG_ATTACKSWING_NOTSTANDING.Dispose()
                     AttackStop()
                     Exit Sub
                 End If

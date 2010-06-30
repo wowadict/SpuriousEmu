@@ -2,7 +2,7 @@ This is a simple web interface for your Spurious Server, the orginal was done by
 
 This would give you a simple news, faq and account registration page, with links to your forums pages.
 
-This is included for a simple CMS web interface, with credit going to ElderGod for providing it in the first place.
+This is included for a simple CMS web interface, with credit going to ElderGod for providing it in the first page.
 
 Copy these files to your htdoc or www or whichever folder you need to have your web files in.
 

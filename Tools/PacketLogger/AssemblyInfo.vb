@@ -26,7 +26,7 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("Spurious.PacketLogger")> 
-<Assembly: AssemblyDescription("Spurious packet logger for dev purposes.")> 
+<Assembly: AssemblyDescription("Proxy like packet logger for dev purposes.")> 
 <Assembly: AssemblyCompany("Spurious TeaM")> 
 <Assembly: AssemblyProduct("Spurious Tools Pack")> 
 <Assembly: AssemblyCopyright("Copyright (C) 2008")> 

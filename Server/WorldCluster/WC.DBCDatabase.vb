@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -38,12 +38,11 @@ Public Module WS_DBCDatabase
                 Dim m As New MapInfo
                 m.ID = tmpDBC.Item(i, 0, DBC.DBCValueType.DBC_INTEGER)
                 m.Type = tmpDBC.Item(i, 2, DBC.DBCValueType.DBC_INTEGER)
-                m.Name = tmpDBC.Item(i, 5, DBC.DBCValueType.DBC_STRING)
-                m.ParentMap = tmpDBC.Item(i, 59, DBC.DBCValueType.DBC_INTEGER) ' map_id of entrance map (Possibly Parent Map?)
-                m.ResetTime_Raid = 0
-                m.ResetTime_Heroic = 0
-
-                m.Expansion = tmpDBC.Item(i, 63, DBC.DBCValueType.DBC_INTEGER) ' (0-original maps,1-tbc addon, 2-wotlk addon)
+                m.Name = tmpDBC.Item(i, 4, DBC.DBCValueType.DBC_STRING)
+                m.ParentMap = tmpDBC.Item(i, 109, DBC.DBCValueType.DBC_INTEGER)
+                m.ResetTime_Raid = tmpDBC.Item(i, 112, DBC.DBCValueType.DBC_INTEGER)
+                m.ResetTime_Heroic = tmpDBC.Item(i, 113, DBC.DBCValueType.DBC_INTEGER)
+                m.Expansion = tmpDBC.Item(i, 116, DBC.DBCValueType.DBC_INTEGER)
 
                 Maps.Add(m.ID, m)
             Next i
@@ -53,42 +52,6 @@ Public Module WS_DBCDatabase
         Catch e As System.IO.DirectoryNotFoundException
             Console.ForegroundColor = System.ConsoleColor.DarkRed
             Console.WriteLine("DBC File : Maps missing.")
-            Console.ForegroundColor = System.ConsoleColor.Gray
-        End Try
-    End Sub
-
-    Public Sub InitializeMapDifficulty()
-        Try
-            Dim tmpDBC As DBC.BufferedDBC = New DBC.BufferedDBC("dbc\MapDifficulty.dbc")
-            Dim MapDifficulty As Integer = 0
-
-            Dim i As Integer = 0
-            For i = 0 To tmpDBC.Rows - 1
-                Dim m As New MapInfo
-                Dim tmpMap As New MapInfo
-                MapDifficulty = 0
-                m.ID = tmpDBC.Item(i, 1, DBC.DBCValueType.DBC_INTEGER) ' Map ID
-                MapDifficulty = tmpDBC.Item(i, 2, DBC.DBCValueType.DBC_INTEGER) ' Difficulty
-
-                If Maps.ContainsKey(m.ID) Then
-                    tmpMap = Maps(m.ID)
-                    If (tmpMap.Type = MapTypes.MAP_INSTANCE) And (MapDifficulty = Difficulty.DUNGEON_DIFFICULTY_HEROIC) Then
-                        Maps.Item(m.ID).ResetTime_Heroic = tmpDBC.Item(i, 20, DBC.DBCValueType.DBC_INTEGER) ' Reset Time
-                    End If
-                    If (tmpMap.Type = MapTypes.MAP_RAID) And (MapDifficulty = Difficulty.RAID_DIFFICULTY_10MAN_HEROIC Or MapDifficulty = Difficulty.RAID_DIFFICULTY_25MAN_HEROIC) Then
-                        Maps.Item(m.ID).ResetTime_Heroic = tmpDBC.Item(i, 20, DBC.DBCValueType.DBC_INTEGER) ' Reset Time
-                    ElseIf (tmpMap.Type = MapTypes.MAP_RAID) And (MapDifficulty = Difficulty.RAID_DIFFICULTY_10MAN_NORMAL Or MapDifficulty = Difficulty.RAID_DIFFICULTY_25MAN_NORMAL) Then
-                        Maps.Item(m.ID).ResetTime_Raid = tmpDBC.Item(i, 20, DBC.DBCValueType.DBC_INTEGER) ' Reset Time
-                    End If
-                End If
-
-            Next
-
-            tmpDBC.Dispose()
-            Log.WriteLine(LogType.INFORMATION, "DBC: {0} Map Difficulties initialized.", i)
-        Catch ex As Exception
-            Console.ForegroundColor = System.ConsoleColor.DarkRed
-            Console.WriteLine("DBC File : MapDifficulty missing.")
             Console.ForegroundColor = System.ConsoleColor.Gray
         End Try
     End Sub
@@ -300,8 +263,8 @@ Public Module WS_DBCDatabase
                 factionID = tmpDBC.Item(i, 2)
                 modelM = tmpDBC.Item(i, 4)
                 modelF = tmpDBC.Item(i, 5)
-                teamID = tmpDBC.Item(i, 7)
-                cinematicID = tmpDBC.Item(i, 12)
+                teamID = tmpDBC.Item(i, 8)
+                cinematicID = tmpDBC.Item(i, 13)
                 expansion = tmpDBC.Item(i, 68)
 
                 CharRaces(CByte(raceID)) = New TCharRace(CShort(factionID), modelM, modelF, CByte(teamID), cinematicID, CByte(expansion))
@@ -324,21 +287,19 @@ Public Module WS_DBCDatabase
             Dim tmpDBC As DBC.BufferedDBC = New DBC.BufferedDBC("dbc\ChrClasses.dbc")
 
             Dim classID As Integer
-            Dim powerType As Integer
             Dim cinematicID As Integer
             Dim expansion As Integer
 
             For i = 0 To tmpDBC.Rows - 1
                 classID = tmpDBC.Item(i, 0)
-                powerType = tmpDBC.Item(i, 2, DBC.DBCValueType.DBC_INTEGER)
                 cinematicID = tmpDBC.Item(i, 58)
                 expansion = tmpDBC.Item(i, 59)
 
-                CharClasses(CByte(classID)) = New TCharClass(powerType, cinematicID, CByte(expansion))
+                CharClasses(CByte(classID)) = New TCharClass(cinematicID, CByte(expansion))
             Next i
 
             tmpDBC.Dispose()
-            Log.WriteLine(LogType.INFORMATION, "DBC: {0} CharClasses initialized.", i)
+            Log.WriteLine(LogType.INFORMATION, "DBC: {0} CharRaces initialized.", i)
         Catch e As System.IO.DirectoryNotFoundException
             Console.ForegroundColor = System.ConsoleColor.DarkRed
             Console.WriteLine("DBC File : CharRaces missing.")
@@ -367,12 +328,10 @@ Public Module WS_DBCDatabase
 
     Public CharClasses As New Dictionary(Of Integer, TCharClass)
     Public Class TCharClass
-        Public PowerType As Integer
         Public CinematicID As Integer
         Public ExpansionReq As ExpansionLevel
 
-        Public Sub New(ByVal _PowerType As Integer, ByVal Cinematic As Integer, ByVal Expansion As Byte)
-            PowerType = _PowerType
+        Public Sub New(ByVal Cinematic As Integer, ByVal Expansion As Byte)
             CinematicID = Cinematic
             ExpansionReq = Expansion
         End Sub

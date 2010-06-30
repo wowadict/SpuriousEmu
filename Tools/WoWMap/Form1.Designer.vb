@@ -44,11 +44,9 @@
         Me.mnuOutlands = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuNorthrend = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuCoords = New System.Windows.Forms.ToolStripMenuItem
-        Me.imgNorthrend = New System.Windows.Forms.PictureBox
         CType(Me.imgOutlands, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imgAzeroth, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.MainMenu1.SuspendLayout()
-        CType(Me.imgNorthrend, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'shpLocation
@@ -97,50 +95,39 @@
         '
         Me.mnuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuKalimdor, Me.mnuEasternK, Me.mnuOutlands, Me.mnuNorthrend})
         Me.mnuFile.Name = "mnuFile"
-        Me.mnuFile.Size = New System.Drawing.Size(35, 20)
+        Me.mnuFile.Size = New System.Drawing.Size(37, 20)
         Me.mnuFile.Text = "File"
         '
         'mnuKalimdor
         '
         Me.mnuKalimdor.Name = "mnuKalimdor"
-        Me.mnuKalimdor.Size = New System.Drawing.Size(170, 22)
+        Me.mnuKalimdor.Size = New System.Drawing.Size(169, 22)
         Me.mnuKalimdor.Text = "Kalimdor"
         '
         'mnuEasternK
         '
         Me.mnuEasternK.Name = "mnuEasternK"
-        Me.mnuEasternK.Size = New System.Drawing.Size(170, 22)
+        Me.mnuEasternK.Size = New System.Drawing.Size(169, 22)
         Me.mnuEasternK.Text = "Eastern Kingdoms"
         '
         'mnuOutlands
         '
         Me.mnuOutlands.Name = "mnuOutlands"
-        Me.mnuOutlands.Size = New System.Drawing.Size(170, 22)
+        Me.mnuOutlands.Size = New System.Drawing.Size(169, 22)
         Me.mnuOutlands.Text = "Outlands"
         '
         'mnuNorthrend
         '
+        Me.mnuNorthrend.Enabled = False
         Me.mnuNorthrend.Name = "mnuNorthrend"
-        Me.mnuNorthrend.Size = New System.Drawing.Size(170, 22)
+        Me.mnuNorthrend.Size = New System.Drawing.Size(169, 22)
         Me.mnuNorthrend.Text = "Northrend"
         '
         'mnuCoords
         '
         Me.mnuCoords.Name = "mnuCoords"
-        Me.mnuCoords.Size = New System.Drawing.Size(53, 20)
+        Me.mnuCoords.Size = New System.Drawing.Size(57, 20)
         Me.mnuCoords.Text = "Coords"
-        '
-        'imgNorthrend
-        '
-        Me.imgNorthrend.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.imgNorthrend.Image = CType(resources.GetObject("imgNorthrend.Image"), System.Drawing.Image)
-        Me.imgNorthrend.InitialImage = CType(resources.GetObject("imgNorthrend.InitialImage"), System.Drawing.Image)
-        Me.imgNorthrend.Location = New System.Drawing.Point(0, 0)
-        Me.imgNorthrend.Name = "imgNorthrend"
-        Me.imgNorthrend.Size = New System.Drawing.Size(783, 524)
-        Me.imgNorthrend.TabIndex = 4
-        Me.imgNorthrend.TabStop = False
-        Me.imgNorthrend.Visible = False
         '
         'frmMain
         '
@@ -152,22 +139,19 @@
         Me.Controls.Add(Me.MainMenu1)
         Me.Controls.Add(Me.imgOutlands)
         Me.Controls.Add(Me.imgAzeroth)
-        Me.Controls.Add(Me.imgNorthrend)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Arial", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Location = New System.Drawing.Point(11, 57)
         Me.Name = "frmMain"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.Text = "WoWMap By Unix Updated By Hex00010"
+        Me.Text = "WoWMap by UniX"
         CType(Me.imgOutlands, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imgAzeroth, System.ComponentModel.ISupportInitialize).EndInit()
         Me.MainMenu1.ResumeLayout(False)
         Me.MainMenu1.PerformLayout()
-        CType(Me.imgNorthrend, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents imgNorthrend As System.Windows.Forms.PictureBox
 #End Region 
 End Class
