@@ -704,6 +704,7 @@ Public Module WS_CharManagment
         Public Access As AccessLevel = AccessLevel.Player
         Public LogoutTimer As Threading.Timer
         Public FullyLoggedIn As Boolean = False
+        Public LoginMap As UInteger = 0
 
         'Character Information
         Public TargetGUID As ULong = 0
@@ -4222,6 +4223,13 @@ CheckXPAgain:
             'DONE: Setting instance ID
             InstanceMapEnter(Me)
 
+            'DONE: If we have changed map
+            If MapID <> LoginMap Then
+                Log.WriteLine(LogType.DEBUG, "Spawned on wrong map [{0}], transferring to [{1}].", LoginMap, MapID)
+                Transfer(positionX, positionY, positionZ, orientation, MapID)
+                Exit Sub
+            End If
+
             'Loading map cell if not loaded
             GetMapTile(positionX, positionY, CellX, CellY)
             'If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
@@ -4460,6 +4468,7 @@ CheckXPAgain:
             orientation = CType(MySQLQuery.Rows(0).Item("char_orientation"), Single)
             ZoneID = CType(MySQLQuery.Rows(0).Item("char_zone_id"), Single)
             MapID = CType(MySQLQuery.Rows(0).Item("char_map_id"), Single)
+            LoginMap = MapID
             Strength.Base = CType(MySQLQuery.Rows(0).Item("char_strength"), Short)
             Agility.Base = CType(MySQLQuery.Rows(0).Item("char_agility"), Short)
             Stamina.Base = CType(MySQLQuery.Rows(0).Item("char_stamina"), Short)
