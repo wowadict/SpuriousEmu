@@ -355,7 +355,7 @@
         Table.Columns.Add(GameobjectLoot_Columns.FFA, "ffa_loot")
 
         'Loot_Items
-        Table = New TTable("loot_items", TableTypes.GameobjectLoot)
+        Table = New TTable("loot_items", TableTypes.LootsItem)
         Tables.Add(Table)
         Table.Columns.Add(ItemsLoot_Columns.Index, "index")
         Table.Columns.Add(ItemsLoot_Columns.Entry, "entryid")
@@ -367,7 +367,7 @@
         Table.Columns.Add(ItemsLoot_Columns.FFA, "ffa_loot")
 
         'Loot_Skinning
-        Table = New TTable("loot_skinning", TableTypes.GameobjectLoot)
+        Table = New TTable("loot_skinning", TableTypes.LootsSkinning)
         Tables.Add(Table)
         Table.Columns.Add(SkinningLoot_Columns.Index, "index")
         Table.Columns.Add(SkinningLoot_Columns.Entry, "entryid")
@@ -379,7 +379,7 @@
         Table.Columns.Add(SkinningLoot_Columns.FFA, "ffa_loot")
 
         'Loot_Fishing
-        Table = New TTable("loot_fishing", TableTypes.GameobjectLoot)
+        Table = New TTable("loot_fishing", TableTypes.LootsFishing)
         Tables.Add(Table)
         Table.Columns.Add(FishingLoot_Columns.Index, "index")
         Table.Columns.Add(FishingLoot_Columns.Entry, "entryid")
@@ -398,7 +398,7 @@
         Table.Columns.Add(Fishing_Columns.MaxSkill, "MaxSkill")
 
         'Loot_PickPocketing
-        Table = New TTable("loot_pickpocketing", TableTypes.GameobjectLoot)
+        Table = New TTable("loot_pickpocketing", TableTypes.LootsPickPocketing)
         Tables.Add(Table)
         Table.Columns.Add(PickPocketingLoot_Columns.Index, "index")
         Table.Columns.Add(PickPocketingLoot_Columns.Entry, "entryid")
@@ -438,16 +438,16 @@
         Table.Columns.Add(Quest_Columns.TextComplete, "CompletionText")
         Table.Columns.Add(Quest_Columns.TextIncomplete, "IncompleteText")
         Table.Columns.Add(Quest_Columns.TextEnd, "EndText")
-        Table.Columns.Add(Quest_Columns.ObjectiveText1, "ObjectoveText1")
+        Table.Columns.Add(Quest_Columns.ObjectiveText1, "ObjectiveText1")
         Table.Columns.Add(Quest_Columns.ObjectiveText2, "ObjectiveText2")
         Table.Columns.Add(Quest_Columns.ObjectiveText3, "ObjectiveText3")
         Table.Columns.Add(Quest_Columns.ObjectiveText4, "ObjectiveText4")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem1, "ReqItem1")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem2, "ReqItem2")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem3, "ReqItem3")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem4, "ReqItem4")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem5, "ReqItem5")
-        Table.Columns.Add(Quest_Columns.ObjectiveItem6, "ReqItem6")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem1, "ReqItemId1")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem2, "ReqItemId2")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem3, "ReqItemId3")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem4, "ReqItemId4")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem5, "ReqItemId5")
+        Table.Columns.Add(Quest_Columns.ObjectiveItem6, "ReqItemId6")
         Table.Columns.Add(Quest_Columns.ObjectiveItem1Count, "ReqItemCount1")
         Table.Columns.Add(Quest_Columns.ObjectiveItem2Count, "ReqItemCount2")
         Table.Columns.Add(Quest_Columns.ObjectiveItem3Count, "ReqItemCount3")
@@ -532,9 +532,9 @@
         Table.Columns.Add(Quest_Columns.ReceiveItem4Count, "ReceiveItemCount4")
         Table.Columns.Add(Quest_Columns.IsRepeatable, "IsRepeatable")
         Table.Columns.Add(Quest_Columns.BonusHonor, "bonushonor")
-        Table.Columns.Add(Quest_Columns.RewTitleId, "rewtitleid")
-        Table.Columns.Add(Quest_Columns.RewardTalents, "rewtalents")
-        Table.Columns.Add(Quest_Columns.SuggestedPlayers, "SuggestedPlayers")
+        Table.Columns.Add(Quest_Columns.RewTitleId, "rewardtitleid")
+        Table.Columns.Add(Quest_Columns.RewardTalents, "rewardtalents")
+        Table.Columns.Add(Quest_Columns.SuggestedPlayers, "suggestedplayers")
         Table.Columns.Add(Quest_Columns.DetailEmotecount, "detailemotecount")
         Table.Columns.Add(Quest_Columns.DetailEmote1, "detailemote1")
         Table.Columns.Add(Quest_Columns.DetailEmote2, "detailemote2")
@@ -567,28 +567,28 @@
         'Creature_Quest_Starter
         Table = New TTable("creature_quest_starter", TableTypes.QuestStartersCreature)
         Tables.Add(Table)
-        Table.Columns.Add(QuestStarter_Columns.Type, "1") 'hardcoded to value 1 (creature)
+        Table.Columns.Add(QuestStarter_Columns.Type, "-1") 'hardcoded to value 1 (creature)
         Table.Columns.Add(QuestStarter_Columns.TypeID, "id")
         Table.Columns.Add(QuestStarter_Columns.QuestID, "quest")
 
         'Gameobject_Quest_Starter
         Table = New TTable("gameobject_quest_starter", TableTypes.QuestStartersGameobject)
         Tables.Add(Table)
-        Table.Columns.Add(QuestStarter_Columns.Type, "2") 'hardcoded to value 2 (gameobject)
+        Table.Columns.Add(QuestStarter_Columns.Type, "-2") 'hardcoded to value 2 (gameobject)
         Table.Columns.Add(QuestStarter_Columns.TypeID, "id")
         Table.Columns.Add(QuestStarter_Columns.QuestID, "quest")
 
         'Creature_Quest_Finisher
         Table = New TTable("creature_quest_finisher", TableTypes.QuestFinishersCreature)
         Tables.Add(Table)
-        Table.Columns.Add(QuestFinisher_Columns.Type, "1") 'hardcoded to value 1 (creature)
+        Table.Columns.Add(QuestFinisher_Columns.Type, "-1") 'hardcoded to value 1 (creature)
         Table.Columns.Add(QuestFinisher_Columns.TypeID, "id")
         Table.Columns.Add(QuestFinisher_Columns.QuestID, "quest")
 
         'Quests_Gameobject_Quest_Finsher
         Table = New TTable("gameobject_quest_finisher", TableTypes.QuestFinishersGameobject)
         Tables.Add(Table)
-        Table.Columns.Add(QuestFinisher_Columns.Type, "2") 'hardcoded to value 2 (gameobject)
+        Table.Columns.Add(QuestFinisher_Columns.Type, "-2") 'hardcoded to value 2 (gameobject)
         Table.Columns.Add(QuestFinisher_Columns.TypeID, "id")
         Table.Columns.Add(QuestFinisher_Columns.QuestID, "quest")
 
@@ -837,8 +837,8 @@
         Table.Columns.Add(MonsterSay_Columns.Text3, "text3")
         Table.Columns.Add(MonsterSay_Columns.Text4, "text4")
 
-        'World_CmdTeleports
-        Table = New TTable("world_cmdteleports", TableTypes.CmdTeleports)
+        'Recall
+        Table = New TTable("recall", TableTypes.CmdTeleports)
         Tables.Add(Table)
         Table.Columns.Add(CmdTeleports_Columns.Id, "id")
         Table.Columns.Add(CmdTeleports_Columns.Name, "name")

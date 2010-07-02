@@ -39,7 +39,7 @@ Module Main
             Console.WriteLine()
 
             Console.ForegroundColor = System.ConsoleColor.Magenta
-            Console.WriteLine("http://www.spuriousemu.com")
+            Console.WriteLine("http://www.SpuriousEmu.com")
             Console.WriteLine()
 
             'DONE: Get all the sql info
@@ -299,254 +299,286 @@ ExitNow:
     End Sub
 
     Public Sub SpecialTableHandling()
-        'DONE: Prepare the DB
-        Console.Write("Preparing the database... ")
-        SourceDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
-        DestDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
+        Try
+            Dim SqlLine As String = ""
+            Dim SqlLine2 As String = ""
+            Dim SqlQuests As String = ""
+            Dim SqlResult As New DataTable
+            Dim SqlQuestsResult As New DataTable
+            Dim SqlExists As String = ""
+            Dim SqlExistsResults As New DataTable
+            Dim SqlTrainer As String = ""
+            Dim SqlTrainerResults As New DataTable
+            Dim NextPercent As Integer = 0
+            Dim CurrentRow As Integer = 0
 
-        'PROCESS AREATRIGGERS!!!!
-        Console.Write("Creating query for {0}... ", "areatriggers (tavern)")
-
-        If FillEmptyOnly = False Then
-            'DONE: Empty the table before we start inserting data into it
-            DestDB.Update("DELETE FROM areatrigger_tavern")
-        End If
-
-        Dim SqlLine As String = ""
-        Dim SqlLine2 As String = ""
-        Dim SqlQuests As String = ""
-        Dim SqlResult As New DataTable
-        Dim SqlQuestsResult As New DataTable
-        Dim SqlExists As String = ""
-        Dim SqlExistsResults As New DataTable
-        Dim SqlTrainer As String = ""
-        Dim SqlTrainerResults As New DataTable
-        Dim NextPercent As Integer = 0
-        Dim CurrentRow As Integer = 0
-
-        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='3';"
-        Console.WriteLine("Done.")
-
-        Console.Write("Collecting data... ")
-
-        SourceDB.Query(SqlLine, SqlResult)
-        If FailMsg <> "" Then
-            Console.WriteLine("Failed.")
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.WriteLine(FailMsg)
-            FailMsg = ""
-            GoTo NextAreaTrigger
-        End If
-        Console.WriteLine("Done.")
-
-        Console.Write("Transfer data to {0}", "areatrigger_tavern")
-
-        For Each RowData As DataRow In SqlResult.Rows
-            SqlLine2 = "INSERT INTO areatrigger_tavern (id, name) VALUES ('" & RowData.Item("entry") & "', '" & RowData.Item("name") & "');"
-
-            CurrentRow += 1
-
-            'DONE: Execute the SQL Line
-            DestDB.Update(SqlLine2)
-            If FailMsg <> "" Then
-                Console.WriteLine(" Failed.")
-                Console.ForegroundColor = ConsoleColor.Red
-                Console.WriteLine(FailMsg)
-                FailMsg = ""
-                GoTo NextAreaTrigger
-            End If
-
-            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
-                Console.Write(".")
-                NextPercent += 10
-            End If
-
-        Next
-
-        Console.WriteLine("Done.")
-
-        CurrentRow = 0
-
-NextAreaTrigger:
-        Console.Write("Creating query for {0}... ", "areatriggers (teleport)")
-
-        If FillEmptyOnly = False Then
-            'DONE: Empty the table before we start inserting data into it
-            DestDB.Update("DELETE FROM areatrigger_teleport")
-        End If
-
-        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='1';"
-        Console.WriteLine("Done.")
-
-        Console.Write("Collecting data... ")
-
-        SourceDB.Query(SqlLine, SqlResult)
-        If FailMsg <> "" Then
-            Console.WriteLine("Failed.")
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.WriteLine(FailMsg)
-            FailMsg = ""
-            GoTo NextAreaTrigger2
-        End If
-        Console.WriteLine("Done.")
-
-        Console.Write("Transfer data to {0}", "areatrigger_teleport")
-
-        For Each RowData As DataRow In SqlResult.Rows
-            SqlLine2 = "INSERT INTO areatrigger_teleport (id, name, required_level, required_item, required_item2, heroic_key, heroic_key2, required_quest_done, required_quest_done_heroic, required_failed_text, target_map, target_position_x, target_position_y, target_position_z, target_orientation) VALUES ('" & _
-            RowData.Item("entry") & "', '" & RowData.Item("name") & "', '" & RowData.Item("required_level") & "', '0', '0', '0', '0', '0', '0', '', '" & RowData.Item("map") & "', '" & _
-            RowData.Item("position_x") & "', '" & RowData.Item("position_y") & "', '" & RowData.Item("position_z") & "', '" & RowData.Item("orientation") & "');"
-
-            CurrentRow += 1
-
-            'DONE: Execute the SQL Line
-            DestDB.Update(SqlLine2)
-            If FailMsg <> "" Then
-                Console.WriteLine(" Failed.")
-                Console.ForegroundColor = ConsoleColor.Red
-                Console.WriteLine(FailMsg)
-                FailMsg = ""
-                GoTo NextAreaTrigger2
-            End If
-
-            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
-                Console.Write(".")
-                NextPercent += 10
-            End If
-
-        Next
-
-        Console.WriteLine("Done.")
-
-NextAreaTrigger2:
-        Console.Write("Creating query for {0}... ", "areatriggers (involvedrelation)")
-
-        If FillEmptyOnly = False Then
-            'DONE: Empty the table before we start inserting data into it
-            DestDB.Update("DELETE FROM areatrigger_involvedrelation")
-        End If
-
-        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='2';"
-        Console.WriteLine("Done.")
-
-        Console.Write("Collecting data... ")
-
-        SourceDB.Query(SqlLine, SqlResult)
-        If FailMsg <> "" Then
-            Console.WriteLine("Failed.")
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.WriteLine(FailMsg)
-            FailMsg = ""
-            GoTo NextTable
-        End If
-        Console.WriteLine("Done.")
-
-        Console.Write("Transfer data to {0}", "areatrigger_involvedrelation")
-
-        For Each RowData As DataRow In SqlResult.Rows
-            SqlExists = "SELECT id FROM " & SQLDestDB & ".areatrigger_involvedrelation WHERE id = '" & RowData.Item("entry") & "';"
-            DestDB.Query(SqlExists, SqlExistsResults)
-            If SqlExistsResults.Rows.Count > 0 Then
-                'Duplicate Entry
-                Continue For
+            'PROCESS AREATRIGGERS!!!!
+            '****Area Triggers Tavern****
+            If FillEmptyOnly = False Then
+                'DONE: Empty the table before we start inserting data into it
+                DestDB.Update("DELETE FROM areatrigger_tavern")
             Else
-                SqlQuests = "SELECT * FROM " & SQLSourceDB & ".quests WHERE ExploreTrigger1 = '" & RowData.Item("entry") & "' OR ExploreTrigger2 = '" & RowData.Item("entry") & "' OR ExploreTrigger3 = '" & RowData.Item("entry") & "' OR ExploreTrigger4 = '" & RowData.Item("entry") & "';"
-                SourceDB.Query(SqlQuests, SqlQuestsResult)
-                If SqlQuestsResult.Rows.Count > 0 Then
-                    SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '" & SqlQuestsResult.Rows(CurrentRow).Item("entry") & "');"
-                Else
-                    SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '0');"
+                'DONE: Skip table if it includes data and it's only supposed to fill empty tables
+                Dim tmpResult As New DataTable
+                DestDB.Query("SELECT * FROM " & SQLDestDB & ".areatrigger_tavern LIMIT 1", tmpResult)
+                If tmpResult.Rows.Count > 0 Then GoTo AreaTriggerTeleport
+            End If
+
+            Console.Write("Creating query for {0}... ", "areatriggers (tavern)")
+
+            SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='3';"
+            Console.WriteLine("Done.")
+
+            Console.Write("Collecting data... ")
+
+            SourceDB.Query(SqlLine, SqlResult)
+            If FailMsg <> "" Then
+                Console.WriteLine("Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo ExitHere
+            End If
+            Console.WriteLine("Done.")
+
+            Console.Write("Transfer data to {0}", "areatrigger_tavern")
+
+            For Each RowData As DataRow In SqlResult.Rows
+                SqlLine2 = "INSERT INTO areatrigger_tavern (id, name) VALUES ('" & RowData.Item("entry") & "', '" & ReplaceValue(RowData.Item("name"), System.Type.GetType("System.String")) & "');"
+
+                CurrentRow += 1
+
+                'DONE: Execute the SQL Line
+                DestDB.Update(SqlLine2)
+                If FailMsg <> "" Then
+                    Console.WriteLine(" Failed.")
+                    Console.ForegroundColor = ConsoleColor.Red
+                    Console.WriteLine(FailMsg)
+                    FailMsg = ""
+                    GoTo ExitHere
                 End If
 
-            End If
+                If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                    Console.Write(".")
+                    NextPercent += 10
+                End If
 
-            CurrentRow += 1
+            Next
 
-            'DONE: Execute the SQL Line
-            DestDB.Update(SqlLine2)
-            If FailMsg <> "" Then
-                Console.WriteLine(" Failed.")
-                Console.ForegroundColor = ConsoleColor.Red
-                Console.WriteLine(FailMsg)
-                FailMsg = ""
-                GoTo NextTable
-            End If
+            Console.WriteLine("Done.")
 
-            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
-                Console.Write(".")
-                NextPercent += 10
-            End If
+            CurrentRow = 0
 
-        Next
-
-        Console.WriteLine(" Done.")
-
-NextTable:
-        'PROCESS TRAINER_SPELLS!!!!
-        Console.Write("Creating query for {0}... ", "trainer_spells")
-
-        If FillEmptyOnly = False Then
-            'DONE: Empty the table before we start inserting data into it
-            DestDB.Update("DELETE FROM trainer_spells")
-        End If
-
-        SqlLine = "SELECT * FROM " & SQLSourceDB & ".trainer_spells;"
-        Console.WriteLine("Done.")
-
-        Console.Write("Collecting data... ")
-
-        SourceDB.Query(SqlTrainer, SqlTrainerResults)
-        If FailMsg <> "" Then
-            Console.WriteLine("Failed.")
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.WriteLine(FailMsg)
-            FailMsg = ""
-            GoTo NextAreaTrigger
-        End If
-        Console.WriteLine("Done.")
-
-        Console.Write("Transfer data to {0}", "trainer_spells")
-
-        Dim isCast As Integer = 0
-        Dim SpellID As Integer = 0
-
-        CurrentRow = 0
-
-        For Each RowData As DataRow In SqlTrainerResults.Rows
-            'Is this a Cast Spell Record?
-            If RowData.Item("cast_spell") <> 0 Then
-                isCast = 1
-                SpellID = RowData.Item("cast_spell")
+AreaTriggerTeleport:
+            '****Area Triggers Teleport****
+            If FillEmptyOnly = False Then
+                'DONE: Empty the table before we start inserting data into it
+                DestDB.Update("DELETE FROM areatrigger_teleport")
             Else
-                isCast = 0
-                SpellID = RowData.Item("learn_spell")
+                'DONE: Skip table if it includes data and it's only supposed to fill empty tables
+                Dim tmpResult As New DataTable
+                DestDB.Query("SELECT * FROM " & SQLDestDB & ".areatrigger_teleport LIMIT 1", tmpResult)
+                If tmpResult.Rows.Count > 0 Then GoTo AreaTriggerInvolvedRelation
             End If
 
-            SqlLine2 = "INSERT INTO trainer_spells (entry, spellid, spellcost, reqspell, reqskill, reqskillvalue, reqlevel, deletespell, is_prof, is_cast) VALUES ('" & _
-            RowData.Item("entry") & "', '" & SpellID & "', '" & RowData.Item("spellcost") & "', '" & RowData.Item("reqspell") & "', '" & RowData.Item("reqskill") & _
-            "', '" & RowData.Item("reqskillvalue") & "', '" & RowData.Item("reqlevel") & "', '" & RowData.Item("deletespell") & "', '" & RowData.Item("is_prof") & _
-            "', '" & isCast & "');"
+            Console.Write("Creating query for {0}... ", "areatriggers (teleport)")
 
-            CurrentRow += 1
+            SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='1';"
+            Console.WriteLine("Done.")
 
-            'DONE: Execute the SQL Line
-            DestDB.Update(SqlLine2)
+            Console.Write("Collecting data... ")
+
+            SourceDB.Query(SqlLine, SqlResult)
             If FailMsg <> "" Then
-                Console.WriteLine(" Failed.")
+                Console.WriteLine("Failed.")
                 Console.ForegroundColor = ConsoleColor.Red
                 Console.WriteLine(FailMsg)
                 FailMsg = ""
-                Continue For
+                GoTo ExitHere
+            End If
+            Console.WriteLine("Done.")
+
+            Console.Write("Transfer data to {0}", "areatrigger_teleport")
+
+            For Each RowData As DataRow In SqlResult.Rows
+                SqlLine2 = "INSERT INTO areatrigger_teleport (id, name, required_level, required_item, required_item2, heroic_key, heroic_key2, required_quest_done, required_quest_done_heroic, required_failed_text, target_map, target_position_x, target_position_y, target_position_z, target_orientation) VALUES ('" & _
+                RowData.Item("entry") & "', '" & ReplaceValue(RowData.Item("name"), System.Type.GetType("System.String")) & "', '" & RowData.Item("required_level") & "', '0', '0', '0', '0', '0', '0', '', '" & RowData.Item("map") & "', '" & _
+                RowData.Item("position_x") & "', '" & RowData.Item("position_y") & "', '" & RowData.Item("position_z") & "', '" & RowData.Item("orientation") & "');"
+
+                CurrentRow += 1
+
+                'DONE: Execute the SQL Line
+                DestDB.Update(SqlLine2)
+                If FailMsg <> "" Then
+                    Console.WriteLine(" Failed.")
+                    Console.ForegroundColor = ConsoleColor.Red
+                    Console.WriteLine(FailMsg)
+                    FailMsg = ""
+                    GoTo ExitHere
+                End If
+
+                If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                    Console.Write(".")
+                    NextPercent += 10
+                End If
+
+            Next
+
+            Console.WriteLine("Done.")
+
+AreaTriggerInvolvedRelation:
+            'Area Triggers Involved Relation
+            If FillEmptyOnly = False Then
+                'DONE: Empty the table before we start inserting data into it
+                DestDB.Update("DELETE FROM areatrigger_involvedrelation")
+            Else
+                'DONE: Skip table if it includes data and it's only supposed to fill empty tables
+                Dim tmpResult As New DataTable
+                DestDB.Query("SELECT * FROM " & SQLDestDB & ".areatrigger_involvedrelation LIMIT 1", tmpResult)
+                If tmpResult.Rows.Count > 0 Then GoTo TrainerSpells
             End If
 
-            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
-                Console.Write(".")
-                NextPercent += 10
+            Console.Write("Creating query for {0}... ", "areatriggers (involvedrelation)")
+
+            SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='2';"
+            Console.WriteLine("Done.")
+
+            Console.Write("Collecting data... ")
+
+            SourceDB.Query(SqlLine, SqlResult)
+            If FailMsg <> "" Then
+                Console.WriteLine("Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo ExitHere
+            End If
+            Console.WriteLine("Done.")
+
+            Console.Write("Transfer data to {0}", "areatrigger_involvedrelation")
+
+            For Each RowData As DataRow In SqlResult.Rows
+                SqlExists = "SELECT id FROM " & SQLDestDB & ".areatrigger_involvedrelation WHERE id = '" & RowData.Item("entry") & "';"
+                DestDB.Query(SqlExists, SqlExistsResults)
+                If SqlExistsResults.Rows.Count > 0 Then
+                    'Duplicate Entry
+                    Continue For
+                Else
+                    SqlQuests = "SELECT * FROM " & SQLSourceDB & ".quests WHERE ExploreTrigger1 = '" & RowData.Item("entry") & "' OR ExploreTrigger2 = '" & RowData.Item("entry") & "' OR ExploreTrigger3 = '" & RowData.Item("entry") & "' OR ExploreTrigger4 = '" & RowData.Item("entry") & "';"
+                    SourceDB.Query(SqlQuests, SqlQuestsResult)
+                    If SqlQuestsResult.Rows.Count > 0 Then
+                        SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '" & SqlQuestsResult.Rows(0).Item("entry") & "');"
+                    Else
+                        SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '0');"
+                    End If
+
+                End If
+
+                CurrentRow += 1
+
+                'DONE: Execute the SQL Line
+                DestDB.Update(SqlLine2)
+                If FailMsg <> "" Then
+                    Console.WriteLine(" Failed.")
+                    Console.ForegroundColor = ConsoleColor.Red
+                    Console.WriteLine(FailMsg)
+                    FailMsg = ""
+                    GoTo ExitHere
+                End If
+
+                If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                    Console.Write(".")
+                    NextPercent += 10
+                End If
+
+            Next
+
+            Console.WriteLine(" Done.")
+
+TrainerSpells:
+            'PROCESS TRAINER_SPELLS!!!!
+            If FillEmptyOnly = False Then
+                'DONE: Empty the table before we start inserting data into it
+                DestDB.Update("DELETE FROM trainer_spells")
+            Else
+                'DONE: Skip table if it includes data and it's only supposed to fill empty tables
+                Dim tmpResult As New DataTable
+                DestDB.Query("SELECT * FROM " & SQLDestDB & ".trainer_spells LIMIT 1", tmpResult)
+                If tmpResult.Rows.Count > 0 Then GoTo ExitHere
             End If
 
-        Next
+            Console.Write("Creating query for {0}... ", "trainer_spells")
 
-        Console.WriteLine(" Done.")
+            SqlLine = "SELECT * FROM " & SQLSourceDB & ".trainer_spells;"
+            Console.WriteLine("Done.")
+
+            Console.Write("Collecting data... ")
+
+            SourceDB.Query(SqlLine, SqlTrainerResults)
+            If FailMsg <> "" Then
+                Console.WriteLine("Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo ExitHere
+            End If
+            Console.WriteLine("Done.")
+
+            Console.Write("Transfer data to {0}", "trainer_spells")
+
+            Dim isCast As Integer = 0
+            Dim SpellID As Integer = 0
+
+            CurrentRow = 0
+
+            For Each RowData As DataRow In SqlTrainerResults.Rows
+                'Is this a Cast Spell Record?
+                If RowData.Item("cast_spell") <> 0 Then
+                    isCast = 1
+                    SpellID = RowData.Item("cast_spell")
+                Else
+                    isCast = 0
+                    SpellID = RowData.Item("learn_spell")
+                End If
+
+                SqlLine2 = "INSERT INTO trainer_spells (entry, spellid, spellcost, reqspell, reqskill, reqskillvalue, reqlevel, deletespell, is_prof, is_cast) VALUES ('" & _
+                RowData.Item("entry") & "', '" & SpellID & "', '" & RowData.Item("spellcost") & "', '" & RowData.Item("reqspell") & "', '" & RowData.Item("reqskill") & _
+                "', '" & RowData.Item("reqskillvalue") & "', '" & RowData.Item("reqlevel") & "', '" & RowData.Item("deletespell") & "', '" & RowData.Item("is_prof") & _
+                "', '" & isCast & "');"
+
+                CurrentRow += 1
+
+                'DONE: Execute the SQL Line
+                DestDB.Update(SqlLine2)
+                If FailMsg <> "" Then
+                    Console.WriteLine(" Failed.")
+                    Console.ForegroundColor = ConsoleColor.Red
+                    Console.WriteLine(FailMsg)
+                    FailMsg = ""
+                    Continue For
+                End If
+
+                If Int(CurrentRow / SqlTrainerResults.Rows.Count * 100) >= NextPercent Then
+                    Console.Write(".")
+                    NextPercent += 10
+                End If
+
+            Next
+
+            Console.WriteLine(" Done.")
+
+ExitHere:
+
+        Catch e As Exception
+            Console.ForegroundColor = ConsoleColor.DarkRed
+            Console.WriteLine("Error.")
+            Console.WriteLine(e.ToString)
+
+            Console.ForegroundColor = ConsoleColor.DarkMagenta
+            Console.WriteLine("Press any key to close this window.")
+            Console.ReadKey()
+            End
+        End Try
 
     End Sub
 
