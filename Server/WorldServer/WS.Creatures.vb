@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -53,13 +53,19 @@ Public Module WS_Creatures
 
             Model = MySQLQuery.Rows(0).Item("creature_model")
             FemaleModel = MySQLQuery.Rows(0).Item("creature_femalemodel")
+            Model2 = MySQLQuery.Rows(0).Item("creature_model2")
+            FemaleModel2 = MySQLQuery.Rows(0).Item("creature_femalemodel2")
             Name = MySQLQuery.Rows(0).Item("creature_name")
             Guild = MySQLQuery.Rows(0).Item("creature_guild")
             Info_Str = MySQLQuery.Rows(0).Item("info_str")
+            KillCredit1 = MySQLQuery.Rows(0).Item("KillCredit1")
+            KillCredit2 = MySQLQuery.Rows(0).Item("KillCredit2")
             Size = MySQLQuery.Rows(0).Item("creature_size")
 
-            Life = MySQLQuery.Rows(0).Item("creature_life")
-            Mana = MySQLQuery.Rows(0).Item("creature_mana")
+            MinLife = MySQLQuery.Rows(0).Item("creature_minlife")
+            Life = MySQLQuery.Rows(0).Item("creature_maxlife")
+            MinMana = MySQLQuery.Rows(0).Item("creature_minmana")
+            Mana = MySQLQuery.Rows(0).Item("creature_maxmana")
             ManaType = MySQLQuery.Rows(0).Item("creature_manaType")
             Faction = MySQLQuery.Rows(0).Item("creature_faction")
             Elite = MySQLQuery.Rows(0).Item("creature_elite")
@@ -87,7 +93,34 @@ Public Module WS_Creatures
             LevelMin = MySQLQuery.Rows(0).Item("creature_minLevel")
             LevelMax = MySQLQuery.Rows(0).Item("creature_maxLevel")
 
+            EquipModel(0) = MySQLQuery.Rows(0).Item("creature_equipmodel1")
+            EquipModel(1) = MySQLQuery.Rows(0).Item("creature_equipmodel2")
+            EquipModel(2) = MySQLQuery.Rows(0).Item("creature_equipmodel3")
+            EquipInfo(0) = MySQLQuery.Rows(0).Item("creature_equipinfo1")
+            EquipInfo(1) = MySQLQuery.Rows(0).Item("creature_equipinfo2")
+            EquipInfo(2) = MySQLQuery.Rows(0).Item("creature_equipinfo3")
+            EquipSlot(0) = MySQLQuery.Rows(0).Item("creature_equipslot1")
+            EquipSlot(1) = MySQLQuery.Rows(0).Item("creature_equipslot2")
+            EquipSlot(2) = MySQLQuery.Rows(0).Item("creature_equipslot3")
+
             AIScriptSource = MySQLQuery.Rows(0).Item("creature_aiScript")
+
+            MinGold = MySQLQuery.Rows(0).Item("creature_minGold")
+            MaxGold = MySQLQuery.Rows(0).Item("creature_maxGold")
+            TrainerType = MySQLQuery.Rows(0).Item("creature_trainerType")
+            TrainerSpell = MySQLQuery.Rows(0).Item("creature_trainerSpell")
+            TrainerClass = MySQLQuery.Rows(0).Item("creature_trainerClass")
+            TrainerRace = MySQLQuery.Rows(0).Item("creature_trainerRace")
+            MovementType = MySQLQuery.Rows(0).Item("creature_movementType")
+            RegenHealth = MySQLQuery.Rows(0).Item("creature_regenHealth")
+            MechanicImmuneMask = MySQLQuery.Rows(0).Item("creature_mechanicImmuneMask")
+            FlagsExtra = MySQLQuery.Rows(0).Item("creature_flagsExtra")
+            QuestItem1 = MySQLQuery.Rows(0).Item("questItem1")
+            QuestItem2 = MySQLQuery.Rows(0).Item("questItem2")
+            QuestItem3 = MySQLQuery.Rows(0).Item("questItem3")
+            QuestItem4 = MySQLQuery.Rows(0).Item("questItem4")
+            QuestItem5 = MySQLQuery.Rows(0).Item("questItem5")
+            QuestItem6 = MySQLQuery.Rows(0).Item("questItem6")
 
             Id = CreatureID
 
@@ -130,8 +163,10 @@ Public Module WS_Creatures
             tmp = tmp & ", creature_name='" & Name & "'"
             tmp = tmp & ", creature_guild=""" & Guild & """"
             tmp = tmp & ", creature_size=""" & Trim(Str(Size)) & """"
-            tmp = tmp & ", creature_life=""" & Life & """"
-            tmp = tmp & ", creature_mana=""" & Mana & """"
+            tmp = tmp & ", creature_minlife=""" & MinLife & """"
+            tmp = tmp & ", creature_maxlife=""" & Life & """"
+            tmp = tmp & ", creature_minmana=""" & MinMana & """"
+            tmp = tmp & ", creature_maxmana=""" & Mana & """"
             tmp = tmp & ", creature_manaType=""" & ManaType & """"
             tmp = tmp & ", creature_elite=""" & Elite & """"
             tmp = tmp & ", creature_faction=""" & Faction & """"
@@ -172,10 +207,16 @@ Public Module WS_Creatures
         Public Name As String = "MISSING_CREATURE_INFO"
         Public Guild As String = ""
         Public Info_Str As String = ""
+        Public KillCredit1 As Integer = 0
+        Public KillCredit2 As Integer = 0
         Public Size As Single = 1
         Public Model As Integer = 262
         Public FemaleModel As Integer = 0
+        Public Model2 As Integer = 0
+        Public FemaleModel2 As Integer = 0
+        Public MinLife As Integer = 1
         Public Life As Integer = 1
+        Public MinMana As Integer = 1
         Public Mana As Integer = 1
         Public ManaType As Byte = 0
         Public Faction As Short = FactionTemplates.None
@@ -210,7 +251,28 @@ Public Module WS_Creatures
         Public UnkFloat2 As Single = 2
 
         'Public EquipedItems() As Integer = {0, 0, 0}
+        Public EquipModel() As Integer = {0, 0, 0}
+        Public EquipInfo() As Integer = {0, 0, 0}
+        Public EquipSlot() As Byte = {0, 0, 0}
+
         Public AIScriptSource As String = ""
+
+        Public MinGold As Integer = 0
+        Public MaxGold As Integer = 0
+        Public TrainerType As Integer = 0
+        Public TrainerSpell As Integer = 0
+        Public TrainerClass As Integer = 0
+        Public TrainerRace As Integer = 0
+        Public MovementType As Integer = 0
+        Public RegenHealth As Integer = 0
+        Public MechanicImmuneMask As Integer = 0
+        Public FlagsExtra As Integer = 0
+        Public QuestItem1 As Integer = 0
+        Public QuestItem2 As Integer = 0
+        Public QuestItem3 As Integer = 0
+        Public QuestItem4 As Integer = 0
+        Public QuestItem5 As Integer = 0
+        Public QuestItem6 As Integer = 0
 
         Public SpellDataID As Integer = 0
         Public SpellsTable As Integer = 0
@@ -254,19 +316,22 @@ Public Module WS_Creatures
 
         Public ReadOnly Property Name() As String
             Get
-                Return CType(CREATURESDatabase(ID), CreatureInfo).Name
+                'Return CType(CREATURESDatabase(ID), CreatureInfo).Name
+                Return CreatureInfo.Name
             End Get
         End Property
         Public ReadOnly Property MaxDistance() As Single
             Get
-                Return CType(CREATURESDatabase(ID), CreatureInfo).BoundingRadius * 50
+                'Return CType(CREATURESDatabase(ID), CreatureInfo).BoundingRadius * 50
+                Return CreatureInfo.BoundingRadius * 50
             End Get
         End Property
 
         Public ReadOnly Property isAbleToWalkOnWater() As Boolean
             Get
                 'TODO: Fix family filter
-                Select Case CType(CREATURESDatabase(ID), CreatureInfo).CreatureFamily
+                'Select Case CType(CREATURESDatabase(ID), CreatureInfo).CreatureFamily
+                Select Case CreatureInfo.CreatureFamily
                     Case 3, 10, 11, 12, 20, 21, 27
                         Return False
                     Case Else
@@ -277,7 +342,8 @@ Public Module WS_Creatures
         Public ReadOnly Property isAbleToWalkOnGround() As Boolean
             Get
                 'TODO: Fix family filter
-                Select Case CType(CREATURESDatabase(ID), CreatureInfo).CreatureFamily
+                'Select Case CType(CREATURESDatabase(ID), CreatureInfo).CreatureFamily
+                Select Case CreatureInfo.CreatureFamily
                     Case 255
                         Return False
                     Case Else
@@ -294,8 +360,10 @@ Public Module WS_Creatures
         Public ReadOnly Property isGuard() As Boolean
             Get
                 Select Case ID
-                    Case 68, 197, 240, 466, 727, 853, 1423, 1496, 1642, 1652, 1736, 1738, 1741, 1743, 1744, 1745, 1746, 1756, 1965, 2041, 2714, 2721, 3083, 3084, 3210, 3211, 3212, 3213, 3214, 3215, 3220, 3221, 3222, 3223, 3224, 3296, 3297, 3469, 3502, 3571, 4262, 4624, 5595, 5624, 5952, 5953, 5597, 7980, 8017, 9460, 10676, 10682, 10881, 11190, 12160, 12996, 13839, 14304, 14377, 15371, 15442, 15616, 15940, 16096, 16221, 16222, 16733, 16864, 16921, 18038, 18103, 18948, 18949, 18971, 18986, 19541, 20484, 20485, 20672, 20674, 21976, 22494, 23636, 23721, 25992
+                    Case 68, 197, 240, 466, 727, 853, 1423, 1496, 1642, 1652, 1736, 1738, 1741, 1743, 1744, 1745, 1746, 1756, 1965, 2041, 2714, 2721, 3083, 3084, 3210, 3211, 3212, 3213, 3214, 3215, 3220, 3221, 3222, 3223, 3224, 3296, 3297, 3469, 3502, 3571, 4262, 4624, 5595, 5624, 5952, 5953, 5597, 7980, 8017, 9460, 10676, 10682, 10881, 11190, 11822, 12160, 12996, 13839, 14304, 14377, 15184, 15371, 15442, 15616, 15940, 16096, 16221, 16222, 16733, 16864, 16921, 18038, 18103, 18948, 18949, 18971, 18986, 19541, 20484, 20485, 20672, 20674, 21976, 22494, 23636, 23721, 25992
                         Return True
+                    Case Else
+                        Return False
                 End Select
             End Get
         End Property
@@ -316,7 +384,24 @@ Public Module WS_Creatures
         End Property
         Public Overrides ReadOnly Property isDead() As Boolean
             Get
-                Return aiScript.State = TBaseAI.AIState.AI_DEAD
+                'Return aiScript.State = TBaseAI.AIState.AI_DEAD
+                If aiScript IsNot Nothing Then
+                    Return (aiScript.State = TBaseAI.AIState.AI_DEAD OrElse aiScript.State = TBaseAI.AIState.AI_RESPAWN)
+                Else
+                    Return (Life.Current = 0)
+                End If
+            End Get
+        End Property
+
+        Public ReadOnly Property NPCTextID() As Integer
+            Get
+                Dim MysqlResult As New DataTable
+                Database.Query(String.Format("SELECT textid FROM npc_gossip_textid WHERE creatureid = '{0}'", GUID - GUID_UNIT), MysqlResult)
+                If MysqlResult.Rows.Count > 0 Then
+                    Return CType(MysqlResult.Rows(0).Item("textid"), Integer)
+                End If
+
+                Return &HFFFFFF
             End Get
         End Property
 
@@ -354,7 +439,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_GUID, GUID)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_TYPE, CType(ObjectType.TYPE_OBJECT + ObjectType.TYPE_UNIT, Integer))
-            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(ID, Integer))
+            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer))
+            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, GuidLOW(GUID))
 
             If (Not aiScript Is Nothing) AndAlso (Not aiScript.aiTarget Is Nothing) Then
                 Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_TARGET, aiScript.aiTarget.GUID)
@@ -365,8 +451,9 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EUnitFields.UNIT_CREATED_BY_SPELL, CreatedBySpell)
 
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_DISPLAYID, Me.Model)
-            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, CREATURESDatabase(ID).Model)
-            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_MOUNTDISPLAYID, Mount)
+            'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, CREATURESDatabase(ID).Model)
+            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, Me.Model)
+            If Mount > 0 Then Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_MOUNTDISPLAYID, Mount)
 
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_0, CType(CType(CREATURESDatabase(ID).ManaType, Integer) << 24, Integer))
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_1, cBytes1)
@@ -395,17 +482,28 @@ Public Module WS_Creatures
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_RESISTANCES + DamageTypes.DMG_SHADOW, CREATURESDatabase(ID).Resistances(DamageTypes.DMG_SHADOW))
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_RESISTANCES + DamageTypes.DMG_ARCANE, CREATURESDatabase(ID).Resistances(DamageTypes.DMG_ARCANE))
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, EquipedItems(0))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, EquipedItems(0))
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 1, 0)
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, EquipedItems(1))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, EquipedItems(1))
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 2, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 2 + 1, 0)
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_2 + 2, EquipedItems(2))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_2 + 2, EquipedItems(2))
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4 + 1, 0)
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, CreatureInfo.EquipModel(0))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1, CreatureInfo.EquipInfo(0))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, CreatureInfo.EquipSlot(0))
+
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 1, CreatureInfo.EquipModel(1))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2, CreatureInfo.EquipInfo(1))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2 + 1, CreatureInfo.EquipSlot(1))
+
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 2, CreatureInfo.EquipModel(2))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4, CreatureInfo.EquipInfo(2))
+            ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4 + 1, CreatureInfo.EquipSlot(2))
 
 
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BASEATTACKTIME, CREATURESDatabase(ID).BaseAttackTime)
@@ -431,7 +529,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -449,7 +547,7 @@ Public Module WS_Creatures
         Public OldZ As Single = 0
         Public LastMove As Integer = 0
         Public LastMove_Time As Integer = 0
-        Public Sub GetPosition(ByRef x As Single, ByVal y As Single, ByVal z As Single)
+        Public Sub GetPosition(ByRef x As Single, ByRef y As Single, ByRef z As Single)
             If aiScript IsNot Nothing AndAlso aiScript.IsMoving AndAlso (timeGetTime - LastMove) < LastMove_Time Then
                 Dim distance As Single
 
@@ -548,7 +646,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -573,7 +671,7 @@ Public Module WS_Creatures
                 Dim packet As New PacketClass(OPCODES.MSG_MOVE_HEARTBEAT)
                 packet.AddPackGUID(GUID)
                 packet.AddInt32(0) 'Movementflags
-                packet.AddInt16(0)
+                packet.AddInt16(0) ' 2.3.0
                 packet.AddInt32(timeGetTime)
                 packet.AddSingle(positionX)
                 packet.AddSingle(positionY)
@@ -713,6 +811,7 @@ Public Module WS_Creatures
                 End If
 
                 Me.Die(Attacker)
+                Exit Sub
 
             Else
 
@@ -869,8 +968,11 @@ Public Module WS_Creatures
             'TODO: Check if we're in a heroic instance!
             Dim Loot As New LootObject(GUID, LootType)
             For Each LootRow As DataRow In MySQLQuery.Rows
+                Dim lootmin As Integer = LootRow.Item("loot_min")
+                If lootmin < 1 Then lootmin = 1 'TODO: Find out why Mangos has Negative loot minimums
+
                 If CType(LootRow.Item("loot_chance"), Single) * 10000 > (Rnd.Next(1, 2000001) Mod 1000000) Then
-                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(LootRow.Item("loot_min"), Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
+                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(lootmin, Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
                     If ITEMDatabase.ContainsKey(CType(LootRow.Item("loot_item"), Integer)) = False Then Dim tmpItem As ItemInfo = New ItemInfo(CType(LootRow.Item("loot_item"), Integer))
                     If CType(ITEMDatabase(CType(LootRow.Item("loot_item"), Integer)), ItemInfo).ObjectClass = ITEM_CLASS.ITEM_CLASS_QUEST Then
                         'Check if this quest item can be looted
@@ -1117,7 +1219,7 @@ Public Module WS_Creatures
             'WARNING: Use only for loading creature from DB
             If Info Is Nothing Then
                 Dim MySQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawned_id = {0};", GUID_), MySQLQuery)
+                Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawn_id = {0};", GUID_), MySQLQuery)
                 If MySQLQuery.Rows.Count > 0 Then
                     Info = MySQLQuery.Rows(0)
                 Else
@@ -1155,9 +1257,9 @@ Public Module WS_Creatures
             cEmoteState = Info.Item("spawn_emotestate")
             cStandState = Info.Item("spawn_standstate")
 
-            EquipedItems(0) = Info.Item("spawn_equipslot1")
-            EquipedItems(1) = Info.Item("spawn_equipslot2")
-            EquipedItems(2) = Info.Item("spawn_equipslot3")
+            'EquipedItems(0) = Info.Item("spawn_equipslot1")
+            'EquipedItems(1) = Info.Item("spawn_equipslot2")
+            'EquipedItems(2) = Info.Item("spawn_equipslot3")
 
             If Not CREATURESDatabase.ContainsKey(ID) Then
                 Dim baseCreature As New CreatureInfo(ID)
@@ -1174,6 +1276,26 @@ Public Module WS_Creatures
                 ''''WORLD_CREATUREsClone.Add(GUID, Me)
                 WORLD_CREATUREs_Lock.ReleaseWriterLock()
                 ''''WORLD_CREATUREsClone_Lock.ReleaseWriterLock()
+            Catch
+            End Try
+        End Sub
+        Public Sub New(ByVal GUID_ As ULong, ByVal ID_ As Integer)
+            'WARNING: Use only for spawning new crature
+
+            If Not CREATURESDatabase.ContainsKey(ID_) Then
+                Dim baseCreature As New CreatureInfo(ID_)
+            End If
+
+            ID = ID_
+            GUID = GUID_
+
+            Initialize()
+
+            Try
+                WORLD_CREATUREs_Lock.AcquireWriterLock(DEFAULT_LOCK_TIMEOUT)
+                WORLD_CREATUREs.Add(GUID, Me)
+                WORLD_CREATUREsKeys.Add(GUID)
+                WORLD_CREATUREs_Lock.ReleaseWriterLock()
             Catch
             End Try
         End Sub
@@ -1391,7 +1513,7 @@ Public Module WS_Creatures
 #End Region
 #Region "WS.Creatures.HelperSubs"
     Public Sub On_CMSG_CREATURE_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 17 Then Exit Sub
+        'If (packet.Data.Length - 1) < 17 Then Exit Sub
         Dim response As New PacketClass(OPCODES.SMSG_CREATURE_QUERY_RESPONSE)
 
         packet.GetInt16()
@@ -1426,14 +1548,26 @@ Public Module WS_Creatures
             response.AddInt32(Creature.CreatureType)
             response.AddInt32(Creature.CreatureFamily)
             response.AddInt32(Creature.Elite)           'Rank
-            response.AddInt32(0)                        'Unk1
-            response.AddInt32(Creature.SpellDataID)
+            response.AddInt32(Creature.KillCredit1)                        'Quest Kill Credit 1
+            response.AddInt32(Creature.KillCredit2)                        'Quest Kill Credit 2
+            ''response.AddInt32(Creature.SpellDataID)
             response.AddInt32(Creature.Model)           'Male model
             response.AddInt32(Creature.FemaleModel)     'Female Model
-            response.AddInt32(0)                        'Unkint1
+            response.AddInt32(Creature.Model2)                        'Male Model 2
+            response.AddInt32(Creature.FemaleModel2)                        'Female Model 2
             response.AddSingle(Creature.UnkFloat1)      'UnkFloat1
             response.AddSingle(Creature.UnkFloat2)      'UnkFloat2
             response.AddInt8(Creature.Leader)           'Leader
+
+            ' Allow Up to 6 Quest Items (quest drop)
+            response.AddInt32(Creature.QuestItem1)
+            response.AddInt32(Creature.QuestItem2)
+            response.AddInt32(Creature.QuestItem3)
+            response.AddInt32(Creature.QuestItem4)
+            response.AddInt32(Creature.QuestItem5)
+            response.AddInt32(Creature.QuestItem6)
+
+            response.AddInt32(Creature.MovementType)  ' CreatureMovementInfo.dbc
 
             Client.Send(response)
             response.Dispose()
@@ -1450,118 +1584,119 @@ Public Module WS_Creatures
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NPC_TEXT_QUERY [TextID={2}]", Client.IP, Client.Port, TextID)
 
 
-        Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM npcText WHERE entry = {0};", TextID), MySQLQuery)
+        'Dim MySQLQuery As New DataTable
+        'Database.Query(String.Format("SELECT * FROM npcText WHERE entry = {0};", TextID), MySQLQuery)
 
-        'DONE: Load TextID
-        Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
-        'Dim i As Byte
-        response.AddInt32(TextID)
+        ''DONE: Load TextID
+        'Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
+        ''Dim i As Byte
+        'response.AddInt32(TextID)
 
-        If MySQLQuery.Rows.Count <> 0 Then
-            response.AddSingle(1.0F) ' Unknown
-            'For i = 1 To 8
-            response.AddString(MySQLQuery.Rows(0).Item("text0_0"))        'text0_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text0_1"))        'text0_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang0"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob0"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em0_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text1_0"))        'text1_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text1_1"))        'text1_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang1"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob1"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em1_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text2_0"))        'text2_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text2_1"))        'text2_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang2"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob2"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em2_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text3_0"))        'text3_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text3_1"))        'text3_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang3"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob3"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em3_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text4_0"))        'text4_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text4_1"))        'text4_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang4"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob4"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em4_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text5_0"))        'text5_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text5_1"))        'text5_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang5"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob5"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em5_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text6_0"))        'text6_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text6_1"))        'text6_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang6"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob6"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em6_5"))           'Emote3.Emote
-            response.AddString(MySQLQuery.Rows(0).Item("text7_0"))        'text7_0        'Text1
-            response.AddString(MySQLQuery.Rows(0).Item("text7_1"))        'text7_1        'Text2
-            response.AddInt32(MySQLQuery.Rows(0).Item("lang7"))           'Language
-            response.AddInt32(MySQLQuery.Rows(0).Item("prob7"))           'Probability
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_0"))           'Emote1.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_1"))           'Emote1.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_2"))           'Emote2.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_3"))           'Emote2.Emote
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_4"))           'Emote3.Delay
-            response.AddInt32(MySQLQuery.Rows(0).Item("em7_5"))           'Emote3.Emote
-            'Next
+        'If MySQLQuery.Rows.Count <> 0 Then
+        '    response.AddSingle(1.0F) ' Unknown
+        '    'For i = 1 To 8
+        '    response.AddString(MySQLQuery.Rows(0).Item("text0_0"))        'text0_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text0_1"))        'text0_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang0"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob0"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em0_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text1_0"))        'text1_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text1_1"))        'text1_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang1"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob1"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em1_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text2_0"))        'text2_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text2_1"))        'text2_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang2"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob2"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em2_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text3_0"))        'text3_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text3_1"))        'text3_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang3"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob3"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em3_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text4_0"))        'text4_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text4_1"))        'text4_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang4"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob4"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em4_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text5_0"))        'text5_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text5_1"))        'text5_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang5"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob5"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em5_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text6_0"))        'text6_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text6_1"))        'text6_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang6"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob6"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em6_5"))           'Emote3.Emote
+        '    response.AddString(MySQLQuery.Rows(0).Item("text7_0"))        'text7_0        'Text1
+        '    response.AddString(MySQLQuery.Rows(0).Item("text7_1"))        'text7_1        'Text2
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("lang7"))           'Language
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("prob7"))           'Probability
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_0"))           'Emote1.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_1"))           'Emote1.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_2"))           'Emote2.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_3"))           'Emote2.Emote
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_4"))           'Emote3.Delay
+        '    response.AddInt32(MySQLQuery.Rows(0).Item("em7_5"))           'Emote3.Emote
+        '    'Next
 
-            Client.Send(response)
-            response.Dispose()
-        Else
-            ''Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
-            'response.AddInt32(TextID)
-            response.AddSingle(1.0F) ' Unknown
-            response.AddString("Hey there, $N. How can I help you?")
-            response.AddString(" ")
-            response.AddInt32(0)
-            response.AddInt32(0)
-            response.AddInt32(0)
-            response.AddInt32(0)
-            response.AddInt32(0)
-            response.AddInt32(0)
-            response.AddInt32(0)
-            Client.Send(response)
-            response.Dispose()
-        End If
+        '    Client.Send(response)
+        '    response.Dispose()
+        'Else
+        '    ''Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
+        '    'response.AddInt32(TextID)
+        '    response.AddSingle(1.0F) ' Unknown
+        '    response.AddString("Hey there, $N. How can I help you?")
+        '    response.AddString(" ")
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    response.AddInt32(0)
+        '    Client.Send(response)
+        '    response.Dispose()
+        'End If
 
+        Client.Character.SendTalking(TextID)
     End Sub
 
     Public Sub On_CMSG_GOSSIP_HELLO(ByRef packet As PacketClass, ByRef Client As ClientClass)
@@ -1570,6 +1705,11 @@ Public Module WS_Creatures
         Dim GUID As ULong = packet.GetUInt64
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GOSSIP_HELLO [GUID={2:X}]", Client.IP, Client.Port, GUID)
 
+        If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse WORLD_CREATUREs(GUID).CreatureInfo.cNpcFlags = 0 Then
+            Log.WriteLine(LogType.WARNING, "[{0}:{1}] Client tried to speak with a creature that didn't exist or couldn't interact with. [GUID={2:X}  ID={3}]", Client.IP, Client.Port, GUID, WORLD_CREATUREs(GUID).ID)
+            Exit Sub
+        End If
+
         If CREATURESDatabase(WORLD_CREATUREs(GUID).ID).TalkScript Is Nothing Then
             Dim test As New PacketClass(OPCODES.SMSG_NPC_WONT_TALK)
             test.AddUInt64(GUID)
@@ -1577,13 +1717,19 @@ Public Module WS_Creatures
             Client.Send(test)
             test.Dispose()
 
-            Dim npcText As New NPCText
-            npcText.Count = 1
-            npcText.TextID = 34
-            npcText.TextLine1(0) = "Hi $N, I'm not yet scripted to talk with you."
-            SendNPCText(Client, npcText)
+            'Dim npcText As New NPCText
+            'npcText.Count = 1
+            'npcText.TextID = 34
+            'npcText.TextLine1(0) = "Hi $N, I'm not yet scripted to talk with you."
+            'SendNPCText(Client, npcText)
 
-            Client.Character.SendGossip(GUID, 1)
+            'Client.Character.SendGossip(GUID, 1)
+            If NPCTexts.ContainsKey(34) = False Then
+                Dim tmpText As New NPCText(34, "Hi $N, I'm not yet scripted to talk with you.")
+            End If
+            Client.Character.SendTalking(34)
+
+            Client.Character.SendGossip(GUID, 34)
         Else
             CREATURESDatabase(WORLD_CREATUREs(GUID).ID).TalkScript.OnGossipHello(Client.Character, GUID)
         End If
@@ -1595,6 +1741,11 @@ Public Module WS_Creatures
         Dim Unk As Integer = packet.GetInt32
         Dim SelOption As Integer = packet.GetInt32
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GOSSIP_SELECT_OPTION [SelOption={3} GUID={2:X}]", Client.IP, Client.Port, GUID, SelOption)
+
+        If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse WORLD_CREATUREs(GUID).CreatureInfo.cNpcFlags = 0 Then
+            Log.WriteLine(LogType.WARNING, "[{0}:{1}] Client tried to speak with a creature that didn't exist or couldn't interact with. [GUID={2:X}  ID={3}]", Client.IP, Client.Port, GUID, WORLD_CREATUREs(GUID).ID)
+            Exit Sub
+        End If
 
         If CREATURESDatabase(WORLD_CREATUREs(GUID).ID).TalkScript Is Nothing Then
             Throw New ApplicationException("Invoked OnGossipSelect() on creature without initialized TalkScript!")
@@ -1629,34 +1780,37 @@ Public Module WS_Creatures
         CreatureGUIDCounter += 1
         Return CreatureGUIDCounter
     End Function
-    Public Sub SendNPCText(ByRef Client As ClientClass, ByRef text As NPCText)
-        Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
-        Dim i As Byte
-        response.AddInt32(text.TextID)
+    'Public Sub SendNPCText(ByRef Client As ClientClass, ByRef text As NPCText)
+    '    Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
+    '    Dim i As Byte
+    '    response.AddInt32(text.TextID)
 
-        For i = 0 To text.Count
-            response.AddSingle(1.0F)
-            response.AddString(text.TextLine1(i))               'text0_0        'Text1
-            response.AddString(text.TextLine2(i))               'text0_1        'Text2
-            response.AddInt32(text.Language(i))                 'lang0=         'Language
-            response.AddInt32(text.Probability(i))              'dens0          'Probability
-            response.AddInt32(text.EmoteDelay1(i))              'unk0_0=        'Emote1.Delay
-            response.AddInt32(text.Emote1(i))                   'unk0_1=        'Emote1.Emote
-            response.AddInt32(text.EmoteDelay2(i))              'unk0_2=        'Emote2.Delay
-            response.AddInt32(text.Emote2(i))                   'unk0_3=        'Emote2.Emote
-            response.AddInt32(text.EmoteDelay3(i))              'unk0_4=        'Emote3.Delay
-            response.AddInt32(text.Emote3(i))                   'unk0_5=        'Emote3.Emote
-        Next
+    '    For i = 0 To text.Count
+    '        response.AddSingle(1.0F)
+    '        response.AddString(text.TextLine1(i))               'text0_0        'Text1
+    '        response.AddString(text.TextLine2(i))               'text0_1        'Text2
+    '        response.AddInt32(text.Language(i))                 'lang0=         'Language
+    '        response.AddInt32(text.Probability(i))              'dens0          'Probability
+    '        response.AddInt32(text.EmoteDelay1(i))              'unk0_0=        'Emote1.Delay
+    '        response.AddInt32(text.Emote1(i))                   'unk0_1=        'Emote1.Emote
+    '        response.AddInt32(text.EmoteDelay2(i))              'unk0_2=        'Emote2.Delay
+    '        response.AddInt32(text.Emote2(i))                   'unk0_3=        'Emote2.Emote
+    '        response.AddInt32(text.EmoteDelay3(i))              'unk0_4=        'Emote3.Delay
+    '        response.AddInt32(text.Emote3(i))                   'unk0_5=        'Emote3.Emote
+    '    Next
 
-        Client.Send(response)
-        response.Dispose()
-    End Sub
+    '    Client.Send(response)
+    '    response.Dispose()
+    'End Sub
+    Public NPCTexts As New Dictionary(Of Integer, NPCText)
     Public Class NPCText
         Public Count As Byte = 1
 
         Public TextID As Integer = 0
-        Public Probability() As Byte = {0, 0, 0, 0, 0, 0, 0, 0}
-        Public Language() As Byte = {0, 0, 0, 0, 0, 0, 0, 0}
+        'Public Probability() As Byte = {0, 0, 0, 0, 0, 0, 0, 0}
+        'Public Language() As Byte = {0, 0, 0, 0, 0, 0, 0, 0}
+        Public Probability() As Single = {0, 0, 0, 0, 0, 0, 0, 0}
+        Public Language() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         Public TextLine1() As String = {"", "", "", "", "", "", "", ""}
         Public TextLine2() As String = {"", "", "", "", "", "", "", ""}
         Public Emote1() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
@@ -1665,6 +1819,45 @@ Public Module WS_Creatures
         Public EmoteDelay1() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         Public EmoteDelay2() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         Public EmoteDelay3() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
+
+        Public Sub New(ByVal _TextID As Integer)
+            TextID = _TextID
+
+            Dim MySQLQuery As New DataTable
+            Database.Query(String.Format("SELECT * FROM npc_text WHERE entry = {0};", TextID), MySQLQuery)
+
+            If MySQLQuery.Rows.Count > 0 Then
+                For i As Integer = 0 To 7
+                    Probability(i) = MySQLQuery.Rows(0).Item("prob" & i & "")
+                    TextLine1(i) = MySQLQuery.Rows(0).Item("text" & i & "_0")
+                    TextLine2(i) = MySQLQuery.Rows(0).Item("text" & i & "_1")
+                    Language(i) = MySQLQuery.Rows(0).Item("lang" & i & "")
+                    EmoteDelay1(i) = MySQLQuery.Rows(0).Item("em" & i & "_0")
+                    Emote1(i) = MySQLQuery.Rows(0).Item("em" & i & "_1")
+                    EmoteDelay2(i) = MySQLQuery.Rows(0).Item("em" & i & "_2")
+                    Emote2(i) = MySQLQuery.Rows(0).Item("em" & i & "_3")
+                    EmoteDelay3(i) = MySQLQuery.Rows(0).Item("em" & i & "_4")
+                    Emote3(i) = MySQLQuery.Rows(0).Item("em" & i & "_5")
+
+                    If TextLine1(i) <> "" Then Count = CByte(i) + 1
+                Next
+            Else
+                Probability(0) = 1
+                TextLine1(0) = "Hey there, $N. How can I help you?"
+                TextLine2(0) = TextLine1(0)
+            End If
+
+            NPCTexts.Add(TextID, Me)
+        End Sub
+
+        Public Sub New(ByVal _TextID As Integer, ByVal TextLine As String)
+            TextID = _TextID
+            TextLine1(0) = TextLine
+            TextLine2(0) = TextLine
+
+            NPCTexts.Add(TextID, Me)
+        End Sub
+
     End Class
 #End Region
 #Region "WS.Creatures.MonsterSay"

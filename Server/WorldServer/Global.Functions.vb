@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -276,7 +276,7 @@ Public Module Functions
         packet.Dispose()
     End Sub
 
-    Public Sub SendAccountMD5(ByRef Client As ClientClass, ByRef Character As CharacterObject)
+    Public Sub SendAccountMD5(ByRef Client As ClientClass, ByRef Character As CharacterObject, Optional ByVal mask As UInteger = PER_CHARACTER_CACHE_MASK)
         Dim FoundData As Boolean = False
         Dim AccData As New DataTable
         Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
@@ -295,10 +295,12 @@ Public Module Functions
         Dim SMSG_ACCOUNT_DATA_TIMES As New PacketClass(OPCODES.SMSG_ACCOUNT_DATA_TIMES)
         SMSG_ACCOUNT_DATA_TIMES.AddUInt32(GetTimestamp(Now)) 'unix time now
         SMSG_ACCOUNT_DATA_TIMES.AddInt8(1) 'Unk (1)
-
+        SMSG_ACCOUNT_DATA_TIMES.AddUInt32(mask)
         For i As Integer = 0 To 7
             If FoundData Then
-                SMSG_ACCOUNT_DATA_TIMES.AddUInt32(CType(AccData.Rows(0).Item("account_time" & i), UInteger))
+                If (mask And (1 << i)) Then
+                    SMSG_ACCOUNT_DATA_TIMES.AddUInt32(CType(AccData.Rows(0).Item("account_time" & i), UInteger))
+                End If
             Else
                 SMSG_ACCOUNT_DATA_TIMES.AddUInt32(0)
             End If
@@ -325,6 +327,14 @@ Public Module Functions
         Client.Send(packet)
         packet.Dispose()
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] SMSG_TRIGGER_CINEMATIC", Client.IP, Client.Port)
+    End Sub
+    Public Sub SendTutorialFlags(ByRef Client As ClientClass)
+        Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
+        For i As Integer = 0 To 7
+            SMSG_TUTORIAL_FLAGS.AddUInt32(UInteger.MaxValue)
+        Next
+        Client.Send(SMSG_TUTORIAL_FLAGS)
+        SMSG_TUTORIAL_FLAGS.Dispose()
     End Sub
     Public Sub SendTimeSyncReq(ByRef Client As ClientClass)
         Dim packet As New PacketClass(OPCODES.SMSG_TIME_SYNC_REQ)
@@ -451,6 +461,7 @@ Public Module Functions
     End Enum
     Function BuildPartyMemberStatsOffline(ByVal GUID As ULong) As PacketClass
         Dim packet As New PacketClass(OPCODES.SMSG_PARTY_MEMBER_STATS_FULL)
+        packet.AddInt8(0) ' only for SMSG_PARTY_MEMBER_STATS_FULL, probably arena/bg related
         packet.AddPackGUID(GUID)
         packet.AddUInt32(PartyMemberStatsFlag.GROUP_UPDATE_FLAG_STATUS)
         packet.AddUInt16(PartyMemberStatsStatus.STATUS_OFFLINE)

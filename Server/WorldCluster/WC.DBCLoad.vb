@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ Public Module WS_DBCLoad
 
     Public Sub InitializeLoadDBCs()
         InitializeMaps()
+        InitializeMapDifficulty()
         InitializeChatChannels()
         InitializeBattlegrounds()
         InitializeWorldSafeLocs()

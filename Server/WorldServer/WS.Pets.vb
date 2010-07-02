@@ -1,5 +1,5 @@
-' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+﻿' 
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -17,13 +17,14 @@
 '
 
 Imports System.Threading
+'Imports System.Linq  added by hex00010  WoW masters  you need to define it before commiting please
 Imports Spurious.Common
 
 Public Module WS_Pets
 
 #Region "WS.Pets.Framework"
 
-Public Const CREATURE_MAX_SPELLS As Integer = 4
+    Public Const CREATURE_MAX_SPELLS As Integer = 4
     Public Const MAX_OWNER_DIS As Integer = 100
 
     Public LevelUpLoyalty(6) As Integer
@@ -49,12 +50,12 @@ Public Const CREATURE_MAX_SPELLS As Integer = 4
         WS_Pets.LevelStartLoyalty(6) = 17500
     End Sub
 
-Public Enum PetType As Byte
-SUMMON_PET 		= 0
-HUNTER_PET	 	= 1
-GUARDIAN_PET 	= 2
-MINI_PET 		= 3
-End Enum
+    Public Enum PetType As Byte
+        SUMMON_PET = 0
+        HUNTER_PET = 1
+        GUARDIAN_PET = 2
+        MINI_PET = 3
+    End Enum
 
     Public Enum PetSaveType As Integer
         PET_SAVE_DELETED = -1
@@ -64,39 +65,68 @@ End Enum
         PET_SAVE_NO_SLOT = 3
     End Enum
 
-Public Enum HappinessState As Byte
-UNHAPPY		= 1
-CONTENT		= 2
-HAPPY		= 3
-End Enum
+    Public Enum HappinessState As Byte
+        UNHAPPY = 1
+        CONTENT = 2
+        HAPPY = 3
+    End Enum
 
-Public Enum LoyaltyState As Byte
-REBELLIOUS  	= 1
-UNRULY      	= 2
-SUBMISSIVE  	= 3
-DEPENDABLE  	= 4
-FAITHFUL    	= 5
-BEST_FRIEND 	= 6
-End Enum
+    Public Enum LoyaltyState As Byte
+        REBELLIOUS = 1
+        UNRULY = 2
+        SUBMISSIVE = 3
+        DEPENDABLE = 4
+        FAITHFUL = 5
+        BEST_FRIEND = 6
+    End Enum
 
-Public Enum PetSpellState As Byte
-SPELL_UNCHANGED 	= 0
-SPELL_CHANGED		= 1
-SPELL_NEW 			= 2
-SPELL_REMOVED		= 3
-End Enum	
+    Public Enum PetAction As Byte
+        STAY = 0
+        FOLLOW = 1
+        ATTACK = 2
+        ABANDON = 3
+    End Enum
 
-Public Enum ActionFeedback As Byte
-FEEDBACK_NONE		= 0
-FEEDBACK_PET_DEAD	= 1
-FEEDBACK_NO_TARGET	= 2
-FEEDBACK_CANT_ATT	= 3
-End Enum
+    Public Enum PetSpellState As Byte
+        SPELL_UNCHANGED = 0
+        SPELL_CHANGED = 1
+        SPELL_NEW = 2
+        SPELL_REMOVED = 3
+    End Enum
 
-Public Enum PetTalk As Byte
-PET_TALK_SPECIAL_SPELL 	= 0
-PET_TALK_ATTACK			= 1
-End Enum
+    Public Enum PetTalentType As Byte
+        None = 0
+        Ferocity = 1    ' Edited your  Ids WoW master as they were messed up
+        Tenacity = 2
+        Cunning = 3
+    End Enum
+
+    Public Enum TameFailReason As Byte
+        InvalidCreature = 1
+        TooManyPets = 2
+        CreatureAlreadyOwned = 3
+        NotTamable = 4
+        SummonActive = 5
+        UnitCantTame = 6
+        NotAvailable = 7
+        Internal = 8
+        TooHighLevel = 9
+        TargetDead = 10
+        TargetNotDead = 11
+        CantControlExotic = 12
+    End Enum
+
+    Public Enum ActionFeedback As Byte
+        FEEDBACK_NONE = 0
+        FEEDBACK_PET_DEAD = 1
+        FEEDBACK_NO_TARGET = 2
+        FEEDBACK_CANT_ATT = 3
+    End Enum
+
+    Public Enum PetTalk As Byte
+        PET_TALK_SPECIAL_SPELL = 0
+        PET_TALK_ATTACK = 1
+    End Enum
 
 
 #End Region

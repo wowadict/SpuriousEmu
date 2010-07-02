@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -80,28 +80,117 @@ Public Module WS_Maps
     End Class
 #End Region
 
+    Public RESOLUTION_ZMAP As Integer = 0
 
 #Region "Continents"
 
+    Structure map_fileHeader
+        Public mapMagic As String
+        Public versionMagic As String
+        Public buldMagic As Integer
+        Public areaMapOffset As Integer
+        Public areaMapSize As Integer
+        Public heightMapOffset As Integer
+        Public heightMapSize As Integer
+        Public liquidMapOffset As Integer
+        Public liquidMapSize As Integer
+
+        Public Sub New(ByVal br As BinaryReader)
+            mapMagic = System.Text.Encoding.ASCII.GetString(br.ReadBytes(4), 0, 4)
+            versionMagic = System.Text.Encoding.ASCII.GetString(br.ReadBytes(4), 0, 4)
+            buldMagic = br.ReadInt32()
+            areaMapOffset = br.ReadInt32()
+            areaMapSize = br.ReadInt32()
+            heightMapOffset = br.ReadInt32()
+            heightMapSize = br.ReadInt32()
+            liquidMapOffset = br.ReadInt32()
+            liquidMapSize = br.ReadInt32()
+        End Sub
+
+    End Structure
+
+    Structure map_areaHeader
+        Public fourcc As Integer
+        Public flags As Integer
+        Public gridArea As Integer
+
+        Public Sub New(ByVal br As BinaryReader)
+            fourcc = br.ReadInt32()
+            flags = br.ReadInt16()
+            gridArea = br.ReadInt16()
+        End Sub
+
+    End Structure
+
+    Structure map_heightHeader
+        Public fourcc As Integer
+        Public flags As Integer
+        Public gridHeight As Single
+        Public gridMaxHeight As Single
+
+        Public Sub New(ByVal br As BinaryReader)
+            fourcc = br.ReadInt32()
+            flags = br.ReadInt32()
+            gridHeight = br.ReadSingle()
+            gridMaxHeight = br.ReadSingle()
+        End Sub
+
+    End Structure
+
+    Structure map_liquidHeader
+        Public fourcc As Integer
+        Public flags As Integer
+        Public liquidType As Integer ' Bytes?????? uint16 in extractor
+        Public offsetX As Byte
+        Public offsetY As Byte
+        Public width As Byte
+        Public height As Byte
+        Public liquidLevel As Single
+
+        Public Sub New(ByVal br As BinaryReader)
+            fourcc = br.ReadInt32()
+            flags = br.ReadInt16()
+            liquidType = br.ReadInt16() ' Bytes????? uint16 in extractor
+            offsetX = br.ReadByte()
+            offsetY = br.ReadByte()
+            width = br.ReadByte()
+            height = br.ReadByte()
+            liquidLevel = br.ReadSingle()
+        End Sub
+
+    End Structure
+
     'NOTE: Map resolution. The resolution of your map files in your maps folder.
-    Public Const RESOLUTION_ZMAP As Integer = 64 - 1
+    'Public Const RESOLUTION_ZMAP As Integer = 256 - 1
 
     Public Class TMapTile
         Implements IDisposable
 
         Public Const SIZE As Single = 533.3333F
-        Public Const RESOLUTION_WATER As Integer = 128 - 1
+        ''Public Const RESOLUTION_WATER As Integer = 128 - 1
+        ''Public Const RESOLUTION_FLAGS As Integer = 16 - 1
+        ''Public Const RESOLUTION_TERRAIN As Integer = 16 - 1
+
         Public Const RESOLUTION_FLAGS As Integer = 16 - 1
-        Public Const RESOLUTION_TERRAIN As Integer = 16 - 1
+        Public Const RESOLUTION_V9 As Integer = 129 - 1
+        Public Const RESOLUTION_WATER As Integer = 128 - 1
+        Public Const RESOLUTION_LIQUID As Integer = 16 - 1
 
         'TMap contains 64x64 TMapTile(s)
+        ''Public AreaFlag(RESOLUTION_FLAGS, RESOLUTION_FLAGS) As UShort
+        ''Public AreaTerrain(RESOLUTION_TERRAIN, RESOLUTION_TERRAIN) As Byte
+        ''Public WaterLevel(RESOLUTION_WATER, RESOLUTION_WATER) As Single
+        '''Public ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        ''Public ZCoord(,) As Single
         Public AreaFlag(RESOLUTION_FLAGS, RESOLUTION_FLAGS) As UShort
-        Public AreaTerrain(RESOLUTION_TERRAIN, RESOLUTION_TERRAIN) As Byte
+        Public V9(RESOLUTION_V9, RESOLUTION_V9) As Single
+        Public LiquidType(RESOLUTION_LIQUID, RESOLUTION_LIQUID) As Byte
         Public WaterLevel(RESOLUTION_WATER, RESOLUTION_WATER) As Single
-        Public ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        Public ZCoord(,) As Single
 
 #If ENABLE_PPOINTS Then
-        Public ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        'Public ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP) As Single
+        Public ZCoord_PP(,) As Single
         Public ZCoord_PP_ModTimes As Integer = 0
 
         Public Sub ZCoord_PP_Save()
@@ -135,7 +224,9 @@ Public Module WS_Maps
         Private CellMap As Integer
 
         Public Sub New(ByVal tileX As Byte, ByVal tileY As Byte, ByVal tileMap As Integer)
+            ' Routine Coded by W@WAdict with LOTS of help from UniX. :D
             ReDim ZCoord(RESOLUTION_ZMAP, RESOLUTION_ZMAP)
+            ReDim ZCoord_PP(RESOLUTION_ZMAP, RESOLUTION_ZMAP)
 
             CellX = tileX
             CellY = tileY
@@ -146,6 +237,10 @@ Public Module WS_Maps
             Dim f As IO.FileStream
             Dim b As BinaryReader
             Dim x, y As Integer
+            Dim FileHeader As map_fileHeader
+            Dim AreaHeader As map_areaHeader
+            Dim HeightHeader As map_heightHeader
+            Dim LiquidHeader As map_liquidHeader
 
             'DONE: Loading MAP file
             fileName = String.Format("{0}{1}{2}.map", Format(tileMap, "000"), Format(tileX, "00"), Format(tileY, "00"))
@@ -155,32 +250,120 @@ Public Module WS_Maps
                 f = New IO.FileStream("maps\" & fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 82704, FileOptions.SequentialScan)
                 b = New BinaryReader(f)
 
-                fileVersion = System.Text.Encoding.ASCII.GetString(b.ReadBytes(8), 0, 8)
+                FileHeader = New map_fileHeader(b)
+                fileVersion = FileHeader.mapMagic & FileHeader.versionMagic
                 Log.WriteLine(LogType.INFORMATION, "Loading map file [{0}] version [{1}]", fileName, fileVersion)
 
-                For x = 0 To RESOLUTION_FLAGS
-                    For y = 0 To RESOLUTION_FLAGS
-                        AreaFlag(x, y) = b.ReadUInt16()
-                    Next y
-                Next x
-                For x = 0 To RESOLUTION_TERRAIN
-                    For y = 0 To RESOLUTION_TERRAIN
-                        AreaTerrain(x, y) = b.ReadByte
-                    Next y
-                Next x
-                For x = 0 To RESOLUTION_WATER
-                    For y = 0 To RESOLUTION_WATER
-                        WaterLevel(x, y) = b.ReadSingle
-                    Next y
-                Next x
-                For x = 0 To RESOLUTION_ZMAP
-                    For y = 0 To RESOLUTION_ZMAP
-                        ZCoord(x, y) = b.ReadSingle
-                    Next y
-                Next x
-                b.Close()
-                f.Close()
+                AreaHeader = New map_areaHeader(b)
+
+                If (AreaHeader.flags And &H1) Then
+                    ' NO Area Table For This Cell
+                Else
+                    For x = 0 To RESOLUTION_FLAGS
+                        For y = 0 To RESOLUTION_FLAGS
+                            AreaFlag(x, y) = b.ReadUInt16()
+                        Next y
+                    Next x
+
+                End If
+
+                HeightHeader = New map_heightHeader(b)
+
+                Dim Diff As Single = HeightHeader.gridMaxHeight - HeightHeader.gridHeight
+                Dim sngStep As Single
+                Dim hasHeight As Boolean = True
+
+                If (HeightHeader.flags And &H4) Then
+                    sngStep = 255 / Diff
+                ElseIf (HeightHeader.flags And &H2) Then
+                    sngStep = 65535 / Diff
+                ElseIf (HeightHeader.flags And &H1) Then
+                    hasHeight = False
+                End If
+
+                If hasHeight Then
+                    For x = 0 To RESOLUTION_V9
+                        For y = 0 To RESOLUTION_V9
+                            If (HeightHeader.flags And &H4) Then
+                                V9(x, y) = ((CSng(b.ReadByte()) - 0.5F) / sngStep) * HeightHeader.gridHeight
+                            ElseIf (HeightHeader.flags And &H2) Then
+                                V9(x, y) = ((CSng(b.ReadUInt16()) - 0.5F) / sngStep) * HeightHeader.gridHeight
+                            Else
+                                V9(x, y) = b.ReadSingle()
+                            End If
+                        Next
+                    Next
+
+                    For x = 0 To RESOLUTION_ZMAP
+                        For y = 0 To RESOLUTION_ZMAP
+                            If (HeightHeader.flags And &H4) Then
+                                ZCoord(x, y) = ((CSng(b.ReadByte()) - 0.5F) / sngStep) * HeightHeader.gridHeight
+                            ElseIf (HeightHeader.flags And &H2) Then
+                                ZCoord(x, y) = ((CSng(b.ReadUInt16()) - 0.5F) / sngStep) * HeightHeader.gridHeight
+                            Else
+                                ZCoord(x, y) = b.ReadSingle()
+                            End If
+                        Next
+                    Next
+                End If
+
+                If (FileHeader.liquidMapOffset = 0) Then
+                    ' NO Liquid Table For This Cell
+                Else
+
+                    LiquidHeader = New map_liquidHeader(b)
+
+                    ' Liquid Type
+                    If (LiquidHeader.flags And &H1) = 0 Then
+                        For x = 0 To RESOLUTION_LIQUID
+                            For y = 0 To RESOLUTION_LIQUID
+                                LiquidType(x, y) = b.ReadByte()
+                            Next
+                        Next
+                    End If
+
+                    ' Liquid Level
+                    If (LiquidHeader.flags And &H2) = 0 Then
+                        For y = 0 To LiquidHeader.height - 1
+                            For x = 0 To LiquidHeader.width - 1
+                                WaterLevel(y + LiquidHeader.offsetY, x + LiquidHeader.offsetX) = b.ReadSingle()
+                            Next
+                        Next
+                    End If
+
+                End If
+
+                If b.BaseStream.Position = b.BaseStream.Length Then
+                    Log.WriteLine(LogType.INFORMATION, "Successfully Read to The End of Map File [{0}]", fileName)
+                End If
             End If
+
+            ''fileVersion = System.Text.Encoding.ASCII.GetString(b.ReadBytes(8), 0, 8)
+            ''Log.WriteLine(LogType.INFORMATION, "Loading map file [{0}] version [{1}]", fileName, fileVersion)
+
+            ''For x = 0 To RESOLUTION_FLAGS
+            ''    For y = 0 To RESOLUTION_FLAGS
+            ''        AreaFlag(x, y) = b.ReadUInt16()
+            ''    Next y
+            ''Next x
+            ''For x = 0 To RESOLUTION_TERRAIN
+            ''    For y = 0 To RESOLUTION_TERRAIN
+            ''        AreaTerrain(x, y) = b.ReadByte
+            ''    Next y
+            ''Next x
+            ''For x = 0 To RESOLUTION_WATER
+            ''    For y = 0 To RESOLUTION_WATER
+            ''        WaterLevel(x, y) = b.ReadSingle
+            ''    Next y
+            ''Next x
+            ''For x = 0 To RESOLUTION_ZMAP
+            ''    For y = 0 To RESOLUTION_ZMAP
+            ''        ZCoord(x, y) = b.ReadSingle
+            ''    Next y
+            ''Next x
+            ''b.Close()
+            ''f.Close()
+            ''End If
 
 
 
@@ -293,23 +476,36 @@ Public Module WS_Maps
                 Dim tmpMap As Integer
 
                 Dim i As Integer = 0
+                Dim j As Integer = 0
                 For i = 0 To tmpDBC.Rows - 1
                     tmpMap = tmpDBC.Item(i, 0)
 
                     If tmpMap = Map Then
                         ID = Map
                         Type = tmpDBC.Item(i, 2, DBC.DBCValueType.DBC_INTEGER)
-                        Name = tmpDBC.Item(i, 4, DBC.DBCValueType.DBC_STRING)
-                        ResetTime_Raid = tmpDBC.Item(i, 112, DBC.DBCValueType.DBC_INTEGER)
-                        ResetTime_Heroic = tmpDBC.Item(i, 113, DBC.DBCValueType.DBC_INTEGER)
-                        Expansion = tmpDBC.Item(i, 116, DBC.DBCValueType.DBC_INTEGER)
+                        Name = tmpDBC.Item(i, 5, DBC.DBCValueType.DBC_STRING)
+
+                        For j = 0 To MapDifficulties.Count - 1
+                            If MapDifficulties(j).MapID = Map Then
+                                If (Type = MapTypes.MAP_INSTANCE) And (MapDifficulties(j).Difficulty = Difficulty.DUNGEON_DIFFICULTY_HEROIC) Then
+                                    ResetTime_Heroic = MapDifficulties(j).ResetTime
+                                End If
+                                If (Type = MapTypes.MAP_RAID) And (MapDifficulties(j).Difficulty = Difficulty.RAID_DIFFICULTY_10MAN_HEROIC Or MapDifficulties(j).Difficulty = Difficulty.RAID_DIFFICULTY_25MAN_HEROIC) Then
+                                    ResetTime_Heroic = MapDifficulties(j).ResetTime
+                                ElseIf (Type = MapTypes.MAP_RAID) And (MapDifficulties(j).Difficulty = Difficulty.RAID_DIFFICULTY_10MAN_NORMAL Or MapDifficulties(j).Difficulty = Difficulty.RAID_DIFFICULTY_25MAN_NORMAL) Then
+                                    ResetTime_Raid = MapDifficulties(j).ResetTime
+                                End If
+                            End If
+                        Next
+
+                        Expansion = tmpDBC.Item(i, 63, DBC.DBCValueType.DBC_INTEGER) ' (0-original maps,1-tbc addon, 2-wotlk addon)
                         Exit For
                     End If
                 Next i
 
                 tmpDBC.Dispose()
 
-                InitializedMaps = InitializedMaps & "[ " & Name & "]"
+                'InitializedMaps = InitializedMaps & "[ " & Name & "]"
 
                 Log.WriteLine(LogType.INFORMATION, "DBC: 1 Map initialized. [ {1}]", i, Name)
             Catch e As System.IO.DirectoryNotFoundException
@@ -317,6 +513,7 @@ Public Module WS_Maps
                 Console.WriteLine("DBC File : Map missing.")
                 Console.ForegroundColor = System.ConsoleColor.Gray
             End Try
+
         End Sub
         Public Sub Dispose() Implements System.IDisposable.Dispose
             For i As Integer = 0 To 63
@@ -391,13 +588,14 @@ Public Module WS_Maps
         Return Maps(Map).Tiles(MapTileX, MapTileY).WaterLevel(MapTile_LocalX, MapTile_LocalY)
     End Function
     Public Function GetTerrainType(ByVal x As Single, ByVal y As Single, ByVal Map As Integer) As Byte
-        Dim MapTileX As Byte = Fix(32 - (x / TMapTile.SIZE))
-        Dim MapTileY As Byte = Fix(32 - (y / TMapTile.SIZE))
-        Dim MapTile_LocalX As Byte = CType(TMapTile.RESOLUTION_TERRAIN * (32 - (x / TMapTile.SIZE) - MapTileX), Byte)
-        Dim MapTile_LocalY As Byte = CType(TMapTile.RESOLUTION_TERRAIN * (32 - (y / TMapTile.SIZE) - MapTileY), Byte)
+        Return 0
+        ''Dim MapTileX As Byte = Fix(32 - (x / TMapTile.SIZE))
+        ''Dim MapTileY As Byte = Fix(32 - (y / TMapTile.SIZE))
+        ''Dim MapTile_LocalX As Byte = CType(TMapTile.RESOLUTION_TERRAIN * (32 - (x / TMapTile.SIZE) - MapTileX), Byte)
+        ''Dim MapTile_LocalY As Byte = CType(TMapTile.RESOLUTION_TERRAIN * (32 - (y / TMapTile.SIZE) - MapTileY), Byte)
 
-        If Maps(Map).Tiles(MapTileX, MapTileY) Is Nothing Then Return 0
-        Return Maps(Map).Tiles(MapTileX, MapTileY).AreaTerrain(MapTile_LocalX, MapTile_LocalY)
+        ''If Maps(Map).Tiles(MapTileX, MapTileY) Is Nothing Then Return 0
+        ''Return Maps(Map).Tiles(MapTileX, MapTileY).AreaTerrain(MapTile_LocalX, MapTile_LocalY)
     End Function
     Public Function GetAreaFlag(ByVal x As Single, ByVal y As Single, ByVal Map As Integer) As Integer
         Dim MapTileX As Byte = Fix(32 - (x / TMapTile.SIZE))
@@ -556,24 +754,24 @@ Public Module WS_Maps
         End If
 
         Dim MysqlQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
-        For Each InfoRow As DataRow In MysqlQuery.Rows
-            If Not WORLD_CREATUREs.ContainsKey(CType(InfoRow.Item("spawn_id"), Long) + GUID_UNIT) Then
-                Dim tmpCr As CreatureObject = New CreatureObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
-                tmpCr.instance = TileInstance
-                tmpCr.AddToWorld()
-            End If
-        Next
+        'Database.Query(String.Format("SELECT * FROM spawns_creatures WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
+        'For Each InfoRow As DataRow In MysqlQuery.Rows
+        '    If Not WORLD_CREATUREs.ContainsKey(CType(InfoRow.Item("spawn_id"), Long) + GUID_UNIT) Then
+        '        Dim tmpCr As CreatureObject = New CreatureObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
+        '        tmpCr.instance = TileInstance
+        '        tmpCr.AddToWorld()
+        '    End If
+        'Next
 
-        MysqlQuery.Clear()
-        Database.Query(String.Format("SELECT * FROM spawns_gameobjects WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
-        For Each InfoRow As DataRow In MysqlQuery.Rows
-            If Not WORLD_GAMEOBJECTs.ContainsKey(CType(InfoRow.Item("spawn_id"), ULong) + GUID_GAMEOBJECT) Then
-                Dim tmpGo As GameObjectObject = New GameObjectObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
-                tmpGo.instance = TileInstance
-                tmpGo.AddToWorld()
-            End If
-        Next
+        'MysqlQuery.Clear()
+        'Database.Query(String.Format("SELECT * FROM spawns_gameobjects WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
+        'For Each InfoRow As DataRow In MysqlQuery.Rows
+        '    If Not WORLD_GAMEOBJECTs.ContainsKey(CType(InfoRow.Item("spawn_id"), ULong) + GUID_GAMEOBJECT) Then
+        '        Dim tmpGo As GameObjectObject = New GameObjectObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
+        '        tmpGo.instance = TileInstance
+        '        tmpGo.AddToWorld()
+        '    End If
+        'Next
 
         MysqlQuery.Clear()
         Database.Query(String.Format("SELECT * FROM tmpspawnedcorpses WHERE corpse_mapId IN ({0}) AND corpse_positionX BETWEEN '{1}' AND '{2}' AND corpse_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)

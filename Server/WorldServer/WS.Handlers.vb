@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -41,8 +41,8 @@ Public Module WS_Handlers
 
 
         'NOTE: These opcodes below must be exluded form Cluster
-        PacketHandlers(OPCODES.CMSG_LFM_SET_AUTOFILL) = CType(AddressOf On_CMSG_LFM_SET_AUTOFILL, HandlePacket)
-        PacketHandlers(OPCODES.CMSG_LFG_SET_AUTOJOIN) = CType(AddressOf On_CMSG_LFG_SET_AUTOJOIN, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_SEARCH_LFG_JOIN) = CType(AddressOf On_CMSG_LFM_SET_AUTOFILL, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_LFG_JOIN) = CType(AddressOf On_CMSG_LFG_SET_AUTOJOIN, HandlePacket)
 
         PacketHandlers(OPCODES.CMSG_NAME_QUERY) = CType(AddressOf On_CMSG_NAME_QUERY, HandlePacket)
         PacketHandlers(OPCODES.CMSG_MESSAGECHAT) = CType(AddressOf On_CMSG_MESSAGECHAT, HandlePacket)
@@ -108,8 +108,8 @@ Public Module WS_Handlers
         PacketHandlers(OPCODES.CMSG_TUTORIAL_CLEAR) = CType(AddressOf On_CMSG_TUTORIAL_CLEAR, HandlePacket)
         PacketHandlers(OPCODES.CMSG_TUTORIAL_RESET) = CType(AddressOf On_CMSG_TUTORIAL_RESET, HandlePacket)
         PacketHandlers(OPCODES.CMSG_SET_ACTION_BUTTON) = CType(AddressOf On_CMSG_SET_ACTION_BUTTON, HandlePacket)
-        PacketHandlers(OPCODES.CMSG_TOGGLE_HELM) = CType(AddressOf On_CMSG_TOGGLE_HELM, HandlePacket)
-        PacketHandlers(OPCODES.CMSG_TOGGLE_CLOAK) = CType(AddressOf On_CMSG_TOGGLE_CLOAK, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_SHOWING_HELM) = CType(AddressOf On_CMSG_TOGGLE_HELM, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_SHOWING_CLOAK) = CType(AddressOf On_CMSG_TOGGLE_CLOAK, HandlePacket)
         PacketHandlers(OPCODES.CMSG_MOUNTSPECIAL_ANIM) = CType(AddressOf On_CMSG_MOUNTSPECIAL_ANIM, HandlePacket)
         PacketHandlers(OPCODES.CMSG_EMOTE) = CType(AddressOf On_CMSG_EMOTE, HandlePacket)
         PacketHandlers(OPCODES.CMSG_TEXT_EMOTE) = CType(AddressOf On_CMSG_TEXT_EMOTE, HandlePacket)
@@ -273,6 +273,27 @@ Public Module WS_Handlers
         PacketHandlers(OPCODES.CMSG_RESET_INSTANCES) = CType(AddressOf On_CMSG_RESET_INSTANCES, HandlePacket)
 
         PacketHandlers(OPCODES.CMSG_ALTER_APPEARANCE) = CType(AddressOf On_CMSG_ALTER_APPEARANCE, HandlePacket)
+
+
+        PacketHandlers(OPCODES.CMSG_SET_FACTION_ATWAR) = CType(AddressOf On_CMSG_SET_FACTION_ATWAR, HandlePacket)
+        PacketHandlers(OPCODES.CMSG_SET_FACTION_INACTIVE) = CType(AddressOf On_CMSG_SET_FACTION_INACTIVE, HandlePacket)
+
+        PacketHandlers(OPCODES.CMSG_PET_NAME_QUERY) = CType(AddressOf On_CMSG_PET_NAME_QUERY, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_REQUEST_PET_INFO) = CType(AddressOf On_CMSG_REQUEST_PET_INFO, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_ACTION) = CType(AddressOf On_CMSG_PET_ACTION, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_CANCEL_AURA) = CType(AddressOf On_CMSG_PET_CANCEL_AURA, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_ABANDON) = CType(AddressOf On_CMSG_PET_ABANDON, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_RENAME) = CType(AddressOf On_CMSG_PET_RENAME, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_SET_ACTION) = CType(AddressOf On_CMSG_PET_SET_ACTION, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_SPELL_AUTOCAST) = CType(AddressOf On_CMSG_PET_SPELL_AUTOCAST, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_STOP_ATTACK) = CType(AddressOf On_CMSG_PET_STOP_ATTACK, HandlePacket)
+        'PacketHandlers(OPCODES.CMSG_PET_UNLEARN) = CType(AddressOf On_CMSG_PET_UNLEARN, HandlePacket)
+
+        PacketHandlers.Add(OPCODES.CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, AddressOf On_CMSG_LFD_PLAYER_LOCK_INFO_REQUEST)
+        PacketHandlers.Add(OPCODES.MSG_GUILD_BANK_MONEY_WITHDRAWN, AddressOf On_MSG_GUILD_BANK_MONEY_WITHDRAWN)
+        PacketHandlers.Add(OPCODES.CMSG_CALENDAR_GET_NUM_PENDING, AddressOf On_CMSG_CALENDAR_GET_NUM_PENDING)
+        PacketHandlers.Add(OPCODES.CMSG_MOVE_TIME_SKIPPED, AddressOf On_CMSG_MOVE_TIME_SKIPPED)
+        PacketHandlers.Add(OPCODES.CMSG_WORLD_STATE_UI_TIMER_UPDATE, AddressOf On_CMSG_WORLD_STATE_UI_TIMER_UPDATE)
 
         'NOTE: These opcodes are partialy handled by cluster
         '   none

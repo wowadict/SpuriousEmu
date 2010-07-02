@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ Public Module Packets
             End If
 
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT OrElse updateType = ObjectUpdateType.UPDATETYPE_MOVEMENT Then
-                packet.AddInt8(&H70)
+                packet.AddInt16(&H70)
                 packet.AddInt32(&H0)  'movementflags
                 packet.AddInt16(0) ' unk flag
                 packet.AddInt32(timeGetTime)
@@ -124,9 +124,9 @@ Public Module Packets
 
                 packet.AddSingle(CREATURESDatabase(updateObject.ID).WalkSpeed)
                 packet.AddSingle(CREATURESDatabase(updateObject.ID).RunSpeed)
-                packet.AddSingle(UNIT_NORMAL_SWIM_BACK_SPEED)
-                packet.AddSingle(UNIT_NORMAL_SWIM_SPEED)
                 packet.AddSingle(UNIT_NORMAL_WALK_BACK_SPEED)
+                packet.AddSingle(UNIT_NORMAL_SWIM_SPEED)
+                packet.AddSingle(UNIT_NORMAL_SWIM_BACK_SPEED)
                 packet.AddSingle(UNIT_NORMAL_FLY_SPEED)
                 packet.AddSingle(UNIT_NORMAL_FLY_BACK_SPEED)
                 packet.AddSingle(UNIT_NORMAL_TURN_RATE)
@@ -171,7 +171,7 @@ Public Module Packets
             End If
 
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT OrElse updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF OrElse updateType = ObjectUpdateType.UPDATETYPE_MOVEMENT Then
-                packet.AddInt8(&H70)        'flags
+                packet.AddInt16(&H70)        'flags
                 packet.AddInt32(0)          'flags 2
                 packet.AddInt16(0)          'Unk Flags
                 packet.AddInt32(timeGetTime)
@@ -227,11 +227,11 @@ Public Module Packets
 
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT Then
                 If CType(ITEMDatabase(updateObject.ItemEntry), ItemInfo).ContainerSlots > 0 Then
-                    packet.AddInt8(ObjectTypeID.TYPEID_CONTAINER)
+                    packet.AddInt16(ObjectTypeID.TYPEID_CONTAINER)
                 Else
-                    packet.AddInt8(ObjectTypeID.TYPEID_ITEM)
+                    packet.AddInt16(ObjectTypeID.TYPEID_ITEM)
                 End If
-                packet.AddInt8(&H18)
+                packet.AddInt16(&H18)
                 packet.AddUInt64(updateObject.GUID)
             End If
 
@@ -272,7 +272,7 @@ Public Module Packets
 
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT OrElse updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF Then
                 packet.AddInt8(ObjectTypeID.TYPEID_GAMEOBJECT)
-                packet.AddInt8(&H58)
+                packet.AddInt16(&H58)
 
                 If updateObject.Type = GameObjectType.GAMEOBJECT_TYPE_TRANSPORT Then
                     packet.AddSingle(0)
@@ -322,7 +322,7 @@ Public Module Packets
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT OrElse updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF Then
                 packet.AddInt8(ObjectTypeID.TYPEID_DYNAMICOBJECT)
 
-                packet.AddInt8(&H58)
+                packet.AddInt16(&H58)
                 packet.AddSingle(updateObject.positionX)
                 packet.AddSingle(updateObject.positionY)
                 packet.AddSingle(updateObject.positionZ)
@@ -363,7 +363,7 @@ Public Module Packets
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT Then
                 packet.AddInt8(ObjectTypeID.TYPEID_CORPSE)
 
-                packet.AddInt8(&H58)
+                packet.AddInt16(&H58)
                 packet.AddSingle(updateObject.positionX)
                 packet.AddSingle(updateObject.positionY)
                 packet.AddSingle(updateObject.positionZ)
@@ -437,7 +437,7 @@ Public Module Packets
         Public Sub CompressUpdatePacket()
             Dim startTime As Integer = timeGetTime
             If OpCode <> OPCODES.SMSG_UPDATE_OBJECT Then Exit Sub 'Wrong packet type
-            If Data.Length < 400 Then Exit Sub 'Too small packet
+            If Data.Length < 200 Then Exit Sub 'Too small packet
 
             Dim UncompressedSize As Integer = Data.Length
             Dim CompressedBuffer() As Byte = Compress(Data, 4, Data.Length - 4)

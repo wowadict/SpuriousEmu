@@ -167,25 +167,25 @@
     <Compile Include="..\WorldServer\Global.Zip.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Handlers\WC.Handlers.Auth.vb" />
+    <Compile Include="Handlers\WC.Handlers.Battleground.vb" />
+    <Compile Include="Handlers\WC.Handlers.Chat.vb" />
+    <Compile Include="Handlers\WC.Handlers.Group.vb" />
+    <Compile Include="Handlers\WC.Handlers.Guild.vb" />
+    <Compile Include="Handlers\WC.Handlers.Misc.vb" />
+    <Compile Include="Handlers\WC.Handlers.Petition.vb" />
+    <Compile Include="Handlers\WC.Handlers.Social.vb" />
+    <Compile Include="Handlers\WC.Handlers.Tickets.vb" />
+    <Compile Include="Handlers\WC.Handlers.vb" />
+    <Compile Include="Handlers\WC.Handlers.Voice.vb" />
     <Compile Include="WC.Battlegrounds.vb" />
     <Compile Include="Global.Packets.vb" />
     <Compile Include="WC.ChatChannel.vb" />
     <Compile Include="WC.Group.vb" />
-    <Compile Include="WC.Handlers.Battleground.vb" />
-    <Compile Include="WC.Handlers.Chat.vb" />
-    <Compile Include="WC.Handlers.Group.vb" />
-    <Compile Include="WC.Handlers.Guild.vb" />
-    <Compile Include="WC.Handlers.Petition.vb" />
-    <Compile Include="WC.Handlers.Tickets.vb" />
-    <Compile Include="WC.Handlers.Misc.vb" />
-    <Compile Include="WC.Handlers.Social.vb" />
-    <Compile Include="WC.Handlers.Voice.vb" />
     <Compile Include="WC.Stats.vb" />
     <Compile Include="WC.Character.vb" />
     <Compile Include="WC.DBCDatabase.vb" />
     <Compile Include="WC.DBCLoad.vb" />
-    <Compile Include="WC.Handlers.Auth.vb" />
-    <Compile Include="WC.Handlers.vb" />
     <Compile Include="WC.Network.vb" />
     <Compile Include="WorldCluster.vb">
       <SubType>Code</SubType>

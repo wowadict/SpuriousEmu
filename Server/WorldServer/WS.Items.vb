@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -471,6 +471,7 @@ Public Module WS_Items
             Model = MySQLQuery.Rows(0).Item("displayid")
             Name = MySQLQuery.Rows(0).Item("name1")
             Quality = MySQLQuery.Rows(0).Item("quality")               '0=Grey-Poor 1=White-Common 2=Green-Uncommon 3=Blue-Rare 4=Purple-Epic 5=Orange-Legendary 6=Red-Artifact
+            Faction = MySQLQuery.Rows(0).Item("faction")
             Material = MySQLQuery.Rows(0).Item("lock_material")             '-1=Consumables 1=Metal 2=Wood 3=Liquid 4=Jewelry 5=Chain 6=Plate 7=Cloth 8=Leather 
             Durability = MySQLQuery.Rows(0).Item("MaxDurability")
             MaxCount = MySQLQuery.Rows(0).Item("maxcount")
@@ -575,6 +576,8 @@ Public Module WS_Items
             LockID = MySQLQuery.Rows(0).Item("lock_id")
             'Extra = MySQLQuery.Rows(0).Item("item_extra")
 
+            StatsCount = MySQLQuery.Rows(0).Item("StatsCount")
+
             ItemBonusStatType(0) = MySQLQuery.Rows(0).Item("stat_type1")
             ItemBonusStatValue(0) = MySQLQuery.Rows(0).Item("stat_value1")
             ItemBonusStatType(1) = MySQLQuery.Rows(0).Item("stat_type2")
@@ -596,6 +599,9 @@ Public Module WS_Items
             ItemBonusStatType(9) = MySQLQuery.Rows(0).Item("stat_type10")
             ItemBonusStatValue(9) = MySQLQuery.Rows(0).Item("stat_value10")
 
+            ScalingStatDistribution = MySQLQuery.Rows(0).Item("ScalingStatDistribution")
+            ScalingStatValue = MySQLQuery.Rows(0).Item("ScalingStatValue")
+
             Field4 = MySQLQuery.Rows(0).Item("field4")
             Name2 = MySQLQuery.Rows(0).Item("name2")
             Name3 = MySQLQuery.Rows(0).Item("name3")
@@ -616,6 +622,9 @@ Public Module WS_Items
             ReqDisenchantSkill = MySQLQuery.Rows(0).Item("ReqDisenchantSkill")
             ArmorDamageModifier = MySQLQuery.Rows(0).Item("armorDamageModifier")
             ExistingDuration = MySQLQuery.Rows(0).Item("ExistingDuration")
+
+            ItemLimitCategory = MySQLQuery.Rows(0).Item("ItemLimitCategory")
+            HolidayId = MySQLQuery.Rows(0).Item("HolidayId")
 
             'DONE: Internal database fixers
             If Stackable = 0 Then Stackable = 1
@@ -639,6 +648,7 @@ Public Module WS_Items
         Public MaxCount As Integer = 0
         Public Sheath As SHEATHE_TYPE = 0
         Public Bonding As Integer = 0
+        Public Faction As Integer = 0
         Public BuyPrice As Integer = 0
         Public SellPrice As Integer = 0
 
@@ -673,6 +683,7 @@ Public Module WS_Items
         Public PageMaterial As Integer = 0
         Public StartQuest As Integer = 0
         Public ContainerSlots As Integer = 0
+        Public StatsCount As Integer = 0
         Public LanguageID As Integer = 0
         Public BagFamily As ITEM_BAG = 0
         Public GemProperties As Integer = 0
@@ -684,6 +695,8 @@ Public Module WS_Items
         Public Resistances() As Integer = {0, 0, 0, 0, 0, 0, 0}
         Public ItemBonusStatType() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         Public ItemBonusStatValue() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        Public ScalingStatDistribution As Integer = 0
+        Public ScalingStatValue As Integer = 0
 
         'Item's Spells
         Public Spells(4) As TItemSpellInfo
@@ -704,6 +717,8 @@ Public Module WS_Items
         Public TotemCategory As Integer = 0
         Public RandomProp As Integer = 0
         Public RandomSuffix As Integer = 0
+        Public ItemLimitCategory As Integer = 0
+        Public HolidayId As Integer = 0
 
         Public ReadOnly Property IsContainer() As Boolean
             Get
@@ -898,7 +913,7 @@ Public Module WS_Items
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
                 If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID)
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
@@ -923,7 +938,7 @@ Public Module WS_Items
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
                 If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID)
+                ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error, check this.
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_SPELL_CHARGES, ChargesLeft)         'NOTE: There are other 4 unused charges fields
@@ -938,7 +953,7 @@ Public Module WS_Items
                     Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ENCHANTMENT_1_1 + Enchant.Key * 3 + 2, Enchant.Value.Charges)
                 Next
 
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ITEM_TEXT_ID, ItemText)
+                'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ITEM_TEXT_ID, ItemText) ' Item Field Name NOT Found in Mangos, may need to look into this.
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURABILITY, Durability)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_MAXDURABILITY, ITEMDatabase(ItemEntry).Durability)
             End If
@@ -1219,6 +1234,14 @@ Public Module WS_Items
                 UpdateDurability(Client)
             End If
         End Sub
+        Public Sub ModifyToDurability(ByVal percent As Single, ByRef Client As ClientClass)
+            If ITEMDatabase(ItemEntry).Durability > 0 Then
+                Durability = Fix(ITEMDatabase(ItemEntry).Durability * percent)
+                If Durability < 0 Then Durability = 0
+                If Durability > ITEMDatabase(ItemEntry).Durability Then Durability = ITEMDatabase(ItemEntry).Durability
+                UpdateDurability(Client)
+            End If
+        End Sub
         Public Sub UpdateDurability(ByRef Client As ClientClass)
             Dim packet As New PacketClass(OPCODES.SMSG_UPDATE_OBJECT)
             packet.AddInt32(1)      'Operations.Count
@@ -1228,15 +1251,19 @@ Public Module WS_Items
             tmpUpdate.Dispose()
             Client.Send(packet)
         End Sub
-        Public ReadOnly Property GetDurabulityCost() As Byte
+        Public ReadOnly Property GetDurabulityCost() As UInteger
             Get
-                If ITEMDatabase(ItemEntry).Durability - Durability > DurabilityCosts_MAX Then
-                    Log.WriteLine(LogType.DEBUG, "Durability Cost: {0}", DurabilityCosts(DurabilityCosts_MAX, ITEMDatabase(ItemEntry).InventoryType))
-                    Return DurabilityCosts(DurabilityCosts_MAX, ITEMDatabase(ItemEntry).InventoryType)
-                Else
-                    Log.WriteLine(LogType.DEBUG, "Durability Cost: {0}", DurabilityCosts(ITEMDatabase(ItemEntry).Durability - Durability, ITEMDatabase(ItemEntry).InventoryType))
-                    Return DurabilityCosts(ITEMDatabase(ItemEntry).Durability - Durability, ITEMDatabase(ItemEntry).InventoryType)
-                End If
+                Try
+                    Dim LostDurability As Integer = ITEMDatabase(ItemEntry).Durability - Durability
+                    If LostDurability > DurabilityCosts_MAX Then LostDurability = DurabilityCosts_MAX
+                    Dim SubClass As Integer = 0
+                    If ItemInfo.ObjectClass = ITEM_CLASS.ITEM_CLASS_WEAPON Then SubClass = ItemInfo.SubClass Else SubClass = ItemInfo.SubClass + 21
+                    Dim DurabilityCost As UInteger = (LostDurability * ((DurabilityCosts(ItemInfo.Level, SubClass) / 40) * 100))
+                    Log.WriteLine(LogType.DEBUG, "Durability cost: {0}", DurabilityCost)
+                    Return DurabilityCost
+                Catch
+                    Return 0
+                End Try
             End Get
         End Property
 
@@ -1403,7 +1430,7 @@ Public Module WS_Items
         response.AddInt32(Item.Id)
         response.AddInt32(Item.ObjectClass)
         response.AddInt32(Item.SubClass)
-        response.AddInt32(-1)
+        response.AddInt32(Item.Field4)  ' new 2.0.3, not exist in wdb cache?
         response.AddString(Item.Name)
         response.AddInt8(0)     'Item.Name2
         response.AddInt8(0)     'Item.Name3
@@ -1412,6 +1439,7 @@ Public Module WS_Items
         response.AddInt32(Item.Model)
         response.AddInt32(Item.Quality)
         response.AddInt32(Item.Flags)
+        response.AddInt32(Item.Faction)    ' 3.2 Faction?
         response.AddInt32(Item.BuyPrice)
         response.AddInt32(Item.SellPrice)
         response.AddInt32(Item.InventoryType)
@@ -1426,18 +1454,18 @@ Public Module WS_Items
         response.AddInt32(Item.ReqHonorRank2)                        'RequiredCityRank           [1 - Protector of Stormwind, 2 - Overlord of Orgrimmar, 3 - Thane of Ironforge, 4 - High Sentinel of Darnassus, 5 - Deathlord of the Undercity, 6 - Chieftan of Thunderbluff, 7 - Avenger of Gnomeregan, 8 - Voodoo Boss of Senjin]
         response.AddInt32(Item.ReqFaction)          'RequiredReputationFaction
         response.AddInt32(Item.ReqFactionLevel)     'RequiredRaputationRank
-        response.AddInt32(Item.Unique) ' Was stackable
         response.AddInt32(Item.MaxCount)
+        response.AddInt32(Item.Stackable) ' Was Unique?
         response.AddInt32(Item.ContainerSlots)
-        response.AddInt32(10) ' 3.0.2 Count of Stats
+        response.AddInt32(Item.StatsCount) ' 3.0.2 Count of Stats
 
-        For i = 0 To 9
+        For i = 0 To Item.StatsCount
             response.AddInt32(Item.ItemBonusStatType(i))
             response.AddInt32(Item.ItemBonusStatValue(i))
         Next
 
-        response.AddInt32(0)   'Added in 3.0.2
-        response.AddInt32(0)   'Added in 3.0.2
+        response.AddInt32(Item.ScalingStatDistribution)   'Added in 3.0.2 - scaling stats distribution?
+        response.AddInt32(Item.ScalingStatValue)   'Added in 3.0.2 - some kind of flags used to determine stat values column
 
         For i = 0 To 4
             response.AddSingle(Item.Damage(i).Minimum)
@@ -1491,20 +1519,21 @@ Public Module WS_Items
         response.AddInt32(Item.ReqDisenchantSkill)
         response.AddInt32(Item.ArmorDamageModifier)
         response.AddInt32(Item.ExistingDuration)
-        response.AddInt32(0) 'Added in 3.0.2
+        response.AddInt32(Item.ItemLimitCategory) 'Added in 3.0.2 - ItemLimitCategory
+        response.AddInt32(Item.HolidayId) ' HolidayID - Holiday.dbc?
 
         Client.Send(response)
         response.Dispose()
     End Sub
     Public Sub On_CMSG_ITEM_QUERY_SINGLE(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 9 Then Exit Sub
+        'If (packet.Data.Length - 1) < 3 Then Exit Sub
         packet.GetInt16()
         Dim ItemID As Integer = packet.GetInt32
 
         SendItemInfo(Client, ItemID)
     End Sub
     Public Sub On_CMSG_ITEM_NAME_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 9 Then Exit Sub
+        'If (packet.Data.Length - 1) < 9 Then Exit Sub
         packet.GetInt16()
         Dim ItemID As Integer = packet.GetInt32
 
@@ -2074,6 +2103,8 @@ Public Module WS_Items
         Else
             itemGUID = Client.Character.Items(bag).Items(slot).GUID
         End If
+
+        If itemGUID = 0 OrElse WORLD_ITEMs.ContainsKey(itemGUID) = False Then Exit Sub
 
         If itemGUID <> 0 Then
             If GenerateLoot(Client.Character, itemGUID, WS_Loot.LootType.LOOTTYPE_CORPSE) Then

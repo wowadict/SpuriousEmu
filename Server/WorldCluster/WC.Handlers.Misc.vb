@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -75,6 +75,16 @@ Public Module WC_Handlers_Misc
         response.AddInt32(1)
         Client.Send(response)
         response.Dispose()
+    End Sub
+
+    Public Sub On_CMSG_SET_ACTIONBAR_TOGGLES(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Dim ActionBar As Byte = packet.GetInt8()
+    End Sub
+
+    Public Sub On_CMSG_READY_FOR_ACCOUNT_DATA_TIMES(ByRef packet As PacketClass, ByRef Client As ClientClass)
+        Console.WriteLine("CMSG_READY_FOR_ACCOUNT_DATA_TIMES")
+
+        SendAccountMD5(Client, Client.Character, GLOBAL_CACHE_MASK)
     End Sub
     Public Sub On_CMSG_INSPECT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()

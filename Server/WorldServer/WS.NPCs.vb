@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ Public Module WS_NPCs
         Database.Query(String.Format("SELECT req_class, trainer_type, trainer_ui_window_message, cannot_train_gossip_textid FROM trainer_defs WHERE entry = {0}", WORLD_CREATUREs(cGUID).ID) & " LIMIT 1;", TrainerSQLQuery)
         Database.Query(String.Format("SELECT * FROM trainer_spells WHERE entry = {0};", WORLD_CREATUREs(cGUID).ID), SpellSQLQuery)
         noTrainID = CType(TrainerSQLQuery.Rows(0).Item("cannot_train_gossip_textid"), Integer)
-        Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", noTrainID), npcTextSQLQuery)
+        'Database.Query(String.Format("SELECT * FROM npctext WHERE entry = {0};", noTrainID), npcTextSQLQuery)
 
 
         Dim SpellsList As New ArrayList
@@ -169,29 +169,31 @@ Public Module WS_NPCs
         'DONE: No spells available -> wrong trainer type.
         'TODO: Need to fix this so it works right.
         If SpellsList.Count = 0 Then
-            Dim npcText As New NPCText
-            If npcTextSQLQuery.Rows.Count > 0 Then
-                npcText.Count = 1
-                npcText.TextID = noTrainID
-                npcText.Probability(0) = npcTextSQLQuery.Rows(0).Item("prob0")
-                npcText.TextLine1(0) = npcTextSQLQuery.Rows(0).Item("text0_0")
-                npcText.TextLine2(0) = npcTextSQLQuery.Rows(0).Item("text0_1")
-                npcText.Language(0) = npcTextSQLQuery.Rows(0).Item("lang0")
-                npcText.EmoteDelay1(0) = npcTextSQLQuery.Rows(0).Item("em0_0")
-                npcText.Emote1(0) = npcTextSQLQuery.Rows(0).Item("em0_1")
-                npcText.EmoteDelay2(0) = npcTextSQLQuery.Rows(0).Item("em0_2")
-                npcText.Emote2(0) = npcTextSQLQuery.Rows(0).Item("em0_3")
-                npcText.EmoteDelay3(0) = npcTextSQLQuery.Rows(0).Item("em0_4")
-                npcText.Emote3(0) = npcTextSQLQuery.Rows(0).Item("em0_5")
-            Else
-                npcText.Count = 1
-                npcText.TextID = 0
-                npcText.Probability(0) = 1
-                npcText.TextLine1(0) = "Hey there, $N. How can I help you?"
-                npcText.TextLine2(0) = "Hey there, $N. How can I help you?"
-            End If
+            c.SendTalking(noTrainID)
 
-            SendNPCText(c.Client, npcText)
+            'Dim npcText As New NPCText
+            'If npcTextSQLQuery.Rows.Count > 0 Then
+            '    npcText.Count = 1
+            '    npcText.TextID = noTrainID
+            '    npcText.Probability(0) = npcTextSQLQuery.Rows(0).Item("prob0")
+            '    npcText.TextLine1(0) = npcTextSQLQuery.Rows(0).Item("text0_0")
+            '    npcText.TextLine2(0) = npcTextSQLQuery.Rows(0).Item("text0_1")
+            '    npcText.Language(0) = npcTextSQLQuery.Rows(0).Item("lang0")
+            '    npcText.EmoteDelay1(0) = npcTextSQLQuery.Rows(0).Item("em0_0")
+            '    npcText.Emote1(0) = npcTextSQLQuery.Rows(0).Item("em0_1")
+            '    npcText.EmoteDelay2(0) = npcTextSQLQuery.Rows(0).Item("em0_2")
+            '    npcText.Emote2(0) = npcTextSQLQuery.Rows(0).Item("em0_3")
+            '    npcText.EmoteDelay3(0) = npcTextSQLQuery.Rows(0).Item("em0_4")
+            '    npcText.Emote3(0) = npcTextSQLQuery.Rows(0).Item("em0_5")
+            'Else
+            '    npcText.Count = 1
+            '    npcText.TextID = 0
+            '    npcText.Probability(0) = 1
+            '    npcText.TextLine1(0) = "Hey there, $N. How can I help you?"
+            '    npcText.TextLine2(0) = "Hey there, $N. How can I help you?"
+            'End If
+
+            'SendNPCText(c.Client, npcText)
 
             c.SendGossip(cGUID, noTrainID)
             Exit Sub
@@ -269,8 +271,8 @@ Public Module WS_NPCs
         If (packet.Data.Length - 1) < 13 Then Exit Sub
         packet.GetInt16()
         Dim GUID As ULong = packet.GetUInt64
-        If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse ((CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_REPAIR) = 0 AndAlso (CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_VENDOR) = 0) Then Exit Sub
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_LIST_INVENTORY [GUID={2:X}]", Client.IP, Client.Port, GUID)
+        If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse ((CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_REPAIR) = 0 AndAlso (CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_VENDOR) = 0) Then Exit Sub
 
         SendListInventory(Client.Character, GUID)
     End Sub
@@ -742,28 +744,38 @@ Public Module WS_NPCs
 
         'DONE: Reputation discount
         Dim DiscountMod As Single = Client.Character.GetDiscountMod(WORLD_CREATUREs(vendorGUID).Faction)
+        Dim Price As UInteger = 0
 
         If itemGUID <> 0 Then
-            If Client.Character.Copper >= (WORLD_ITEMs(itemGUID).GetDurabulityCost * DiscountMod) Then
-                Client.Character.Copper -= WORLD_ITEMs(itemGUID).GetDurabulityCost * DiscountMod
+            'If Client.Character.Copper >= (WORLD_ITEMs(itemGUID).GetDurabulityCost * DiscountMod) Then
+            '    Client.Character.Copper -= WORLD_ITEMs(itemGUID).GetDurabulityCost * DiscountMod
+            Price = (WORLD_ITEMs(itemGUID).GetDurabulityCost * DiscountMod)
+            If Client.Character.Copper >= Price Then
+                Client.Character.Copper -= Price
                 Client.Character.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_COINAGE, Client.Character.Copper)
-                Client.Character.SendCharacterUpdate()
+                Client.Character.SendCharacterUpdate(False)
 
-                WORLD_ITEMs(itemGUID).ModifyDurability(-100.0F, Client)
+                'WORLD_ITEMs(itemGUID).ModifyDurability(-100.0F, Client)
+                WORLD_ITEMs(itemGUID).ModifyToDurability(100.0F, Client)
             End If
         Else
             Dim i As Byte
             For i = 0 To EQUIPMENT_SLOT_END - 1
                 If Client.Character.Items.ContainsKey(i) Then
-                    If Client.Character.Copper >= (Client.Character.Items(i).GetDurabulityCost * DiscountMod) Then
+                    'If Client.Character.Copper >= (Client.Character.Items(i).GetDurabulityCost * DiscountMod) Then
 
-                        Client.Character.Copper -= Client.Character.Items(i).GetDurabulityCost * DiscountMod
+                    '    Client.Character.Copper -= Client.Character.Items(i).GetDurabulityCost * DiscountMod
+                    Price = (Client.Character.Items(i).GetDurabulityCost * DiscountMod)
+
+                    If Client.Character.Copper >= Price Then
+                        Client.Character.Copper -= Price
                         Client.Character.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_COINAGE, Client.Character.Copper)
-                        Client.Character.SendCharacterUpdate()
+                        Client.Character.SendCharacterUpdate(False)
 
-                        Client.Character.Items(i).ModifyDurability(-100.0F, Client)
+                        'Client.Character.Items(i).ModifyDurability(-100.0F, Client)
+                        Client.Character.Items(i).ModifyToDurability(100.0F, Client)
                     Else
-                        Exit For
+                        Continue For
                     End If
 
                 End If
@@ -771,9 +783,9 @@ Public Module WS_NPCs
         End If
     End Sub
 
-    Public Sub SendListInventory(ByVal Character As CharacterObject, ByVal GUID As ULong)
+    Public Sub SendListInventory(ByRef Character As CharacterObject, ByVal GUID As ULong)
         Try
-            If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse ((CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_REPAIR) = 0 AndAlso (CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_VENDOR) = 0) Then Exit Sub
+            'If WORLD_CREATUREs.ContainsKey(GUID) = False OrElse ((CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_REPAIR) = 0 AndAlso (CType(WORLD_CREATUREs(GUID), CreatureObject).CreatureInfo.cNpcFlags And NPCFlags.UNIT_NPC_FLAG_VENDOR) = 0) Then Exit Sub
             Dim packet As New PacketClass(OPCODES.SMSG_LIST_INVENTORY)
             packet.AddUInt64(GUID)
 
@@ -897,7 +909,7 @@ Public Module WS_NPCs
 
         SendShowBank(Client.Character, GUID)
     End Sub
-    Public Sub SendShowBank(ByVal c As CharacterObject, ByVal GUID As ULong)
+    Public Sub SendShowBank(ByRef c As CharacterObject, ByVal GUID As ULong)
         Dim packet As New PacketClass(OPCODES.SMSG_SHOW_BANK)
         packet.AddUInt64(GUID)
         c.Client.Send(packet)
@@ -909,7 +921,7 @@ Public Module WS_NPCs
 #Region "Other"
 
 
-    Public Sub SendBindPointConfirm(ByVal c As CharacterObject, ByVal GUID As ULong)
+    Public Sub SendBindPointConfirm(ByRef c As CharacterObject, ByVal GUID As ULong)
         c.SendGossipComplete()
         c.ZoneCheck()
         Dim packet As New PacketClass(OPCODES.SMSG_BINDER_CONFIRM)
@@ -957,7 +969,7 @@ Public Module WS_NPCs
         Client.Character.SendToNearPlayers(response)
         response.Dispose()
     End Sub
-    Public Sub SendTalentWipeConfirm(ByVal c As CharacterObject, ByVal Cost As Integer)
+    Public Sub SendTalentWipeConfirm(ByRef c As CharacterObject, ByVal Cost As Integer)
         Dim packet As New PacketClass(OPCODES.MSG_TALENT_WIPE_CONFIRM)
         packet.AddUInt64(c.GUID)
         packet.AddInt32(Cost)
@@ -1087,12 +1099,14 @@ Public Module WS_NPCs
     Public Class TDefaultTalk
         Inherits TBaseTalk
         Public Overrides Sub OnGossipHello(ByRef c As CharacterObject, ByVal cGUID As ULong)
-            Dim TextID As Integer = 99999999
-            Dim npcText As New NPCText
-            npcText.Count = 1
-            npcText.TextID = TextID
-            npcText.TextLine1(0) = "Greetings $N."
-            SendNPCText(c.Client, npcText)
+            'Dim TextID As Integer = 99999999
+            'Dim npcText As New NPCText
+            'npcText.Count = 1
+            'npcText.TextID = TextID
+            'npcText.TextLine1(0) = "Greetings $N."
+            'SendNPCText(c.Client, npcText)
+            Dim TextID As Integer = WORLD_CREATUREs(cGUID).NPCTextID
+            c.SendTalking(TextID)
 
             Dim npcMenu As New GossipMenu
 
@@ -1167,7 +1181,7 @@ Public Module WS_NPCs
             End If
             If (CREATURESDatabase(WORLD_CREATUREs(cGUID).ID).cNpcFlags And NPCFlags.UNIT_NPC_FLAG_QUESTGIVER) = NPCFlags.UNIT_NPC_FLAG_QUESTGIVER Then
                 Dim qMenu As QuestMenu = GetQuestMenu(c, cGUID)
-                If (qMenu.IDs.Count = 0) And (npcMenu.Menus.Count = 0) Then Exit Sub
+                If (qMenu.IDs.Count = 0) AndAlso (npcMenu.Menus.Count = 0) Then Exit Sub
                 c.SendGossip(cGUID, TextID, npcMenu, qMenu)
             Else
                 c.SendGossip(cGUID, TextID, npcMenu)
@@ -1176,6 +1190,7 @@ Public Module WS_NPCs
         Public Overrides Sub OnGossipSelect(ByRef c As CharacterObject, ByVal cGUID As ULong, ByVal Selected As Integer)
             Select Case CType(c.TalkMenuTypes(Selected), Gossip_Option)
                 Case Gossip_Option.GOSSIP_OPTION_SPIRITHEALER
+                    'TODO: Ressurect the player, etc?
                     If c.DEAD = True Then
                         Dim response As New WorldServer.PacketClass(OPCODES.SMSG_SPIRIT_HEALER_CONFIRM)
                         response.AddUInt64(cGUID)
@@ -1204,7 +1219,8 @@ Public Module WS_NPCs
                 Case Gossip_Option.GOSSIP_OPTION_GUARD
                     SendGuardGossip(c, cGUID, Selected)
                 Case Gossip_Option.GOSSIP_OPTION_GOSSIP
-                    'TODO: Unhandled gossip action
+                    'TODO: Get creature gossip id
+                    c.SendTalking(0)
                 Case Gossip_Option.GOSSIP_OPTION_QUESTGIVER
                     'NOTE: This may stay unused
                     Dim qMenu As QuestMenu = GetQuestMenu(c, cGUID)

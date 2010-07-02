@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -257,7 +257,7 @@ Public Module WS_CharManagment
 
     Public Sub InitializeReputations(ByRef c As CharacterObject)
         Dim i As Byte
-        For i = 0 To 63
+        For i = 0 To 127
             c.Reputation(i) = New TReputation
             c.Reputation(i).Value = 0
             c.Reputation(i).Flags = 0
@@ -501,16 +501,16 @@ Public Module WS_CharManagment
         SMSG_BINDPOINTUPDATE.Dispose()
     End Sub
     Public Sub Send_SMSG_SET_REST_START(ByRef Client As ClientClass, ByRef Character As CharacterObject)
-        Dim SMSG_SET_REST_START As New PacketClass(OPCODES.SMSG_SET_REST_START_OBSOLETE)
-        SMSG_SET_REST_START.AddInt32(timeGetTime)
-        Client.Send(SMSG_SET_REST_START)
-        SMSG_SET_REST_START.Dispose()
+        'Dim SMSG_SET_REST_START As New PacketClass(OPCODES.SMSG_SET_REST_START_OBSOLETE) ' Was &H21E - Mangos did not have this opcode, may not be used any more?
+        'SMSG_SET_REST_START.AddInt32(timeGetTime)
+        'Client.Send(SMSG_SET_REST_START)
+        'SMSG_SET_REST_START.Dispose()
     End Sub
     Public Sub SendTutorialFlags(ByRef Client As ClientClass, ByRef Character As CharacterObject)
         Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
         '[8*Int32] or [32 Bytes] or [256 Bits Flags] Total!!!
-        'SMSG_TUTORIAL_FLAGS.AddInt8(0)
-        'SMSG_TUTORIAL_FLAGS.AddInt8(Character.TutorialFlags.Length)
+        SMSG_TUTORIAL_FLAGS.AddInt32(0)
+        SMSG_TUTORIAL_FLAGS.AddInt32(Character.TutorialFlags.Length)
         SMSG_TUTORIAL_FLAGS.AddByteArray(Character.TutorialFlags)
         Client.Send(SMSG_TUTORIAL_FLAGS)
         SMSG_TUTORIAL_FLAGS.Dispose()
@@ -519,9 +519,9 @@ Public Module WS_CharManagment
         Dim packet As New PacketClass(OPCODES.SMSG_INITIALIZE_FACTIONS)
         Dim i As Byte
 
-        packet.AddInt32(64)
-        For i = 0 To 63
-            packet.AddInt8(Character.Reputation(i).Flags)                               'Flags
+        packet.AddInt32(128)
+        For i = 0 To 127
+            packet.AddInt8(Character.Reputation(i).Flags And &HFF)                      'Flags
             packet.AddInt32(Character.Reputation(i).Value)                              'Standing
         Next i
 
@@ -532,9 +532,12 @@ Public Module WS_CharManagment
         Dim packet As New PacketClass(OPCODES.SMSG_ACTION_BUTTONS)
 
         Dim i As Byte
+
+        'packet.AddInt8(1) ' talent spec amount (in packet)
         'TODO: There are now 132 action buttons in WotLK
-        For i = 0 To 119    'or 480 ?
+        For i = 0 To 144 - 1    'or 480 ?
             If Character.ActionButtons.ContainsKey(i) Then
+                packet.AddInt8(i) ' button ?
                 packet.AddUInt16(Character.ActionButtons(i).Action)
                 packet.AddInt8(Character.ActionButtons(i).ActionType)
                 packet.AddInt8(Character.ActionButtons(i).ActionMisc)
@@ -939,6 +942,9 @@ Public Module WS_CharManagment
         Public Spell_Language As LANGUAGES = -1
         Public Spell_PET As PetObject = Nothing
 
+        'Pets
+        Public Pet As PetObject = Nothing
+
         'Honor And Arena
         Public HonorCurrency As Integer = 0
         Public ArenaCurrency As Integer = 0
@@ -1022,6 +1028,7 @@ Public Module WS_CharManagment
         Public HairColor As Byte = 0
         Public FacialHair As Byte = 0
         Public OutfitId As Byte = 0
+        Public PlayerCreateInfoID As Integer = 0
 
         Public ActionButtons As New Dictionary(Of Byte, TActionButton)
         Public TaxiZones As BitArray = New BitArray(8 * 32, False)
@@ -1287,7 +1294,7 @@ Public Module WS_CharManagment
                 If Items.ContainsKey(i) Then
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, Items(i).GUID)
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
 
                         'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_1 + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)           'ITEM_FIELD_ENCHANTMENT
                         'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_2 + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)           'ITEM_FIELD_ENCHANTMENT + 3
@@ -1296,12 +1303,13 @@ Public Module WS_CharManagment
                         'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_5 + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)           'ITEM_FIELD_ENCHANTMENT + 12
                         'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_6 + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)           'ITEM_FIELD_ENCHANTMENT + 15
                         'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_7 + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)           'ITEM_FIELD_ENCHANTMENT + 18
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
+                        'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
+                        SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + (i * PLAYER_VISIBLE_ITEM_SIZE), 0)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
                     End If
                 Else
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, CType(0, Long))
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
                     End If
                 End If
             Next
@@ -1326,13 +1334,14 @@ Public Module WS_CharManagment
                 If Items.ContainsKey(i) Then
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, Items(i).GUID)
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).RandomProperties)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
+                        'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).RandomProperties)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
+                        SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).RandomProperties)   'ITEM_FIELD_RANDOM_PROPERTIES_ID
                     End If
                 Else
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, CType(0, ULong))
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
                     End If
                 End If
             Next
@@ -1638,19 +1647,21 @@ Public Module WS_CharManagment
             For i = EQUIPMENT_SLOT_START To KEYRING_SLOT_END - 1
                 If Items.ContainsKey(i) Then
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + (i * PLAYER_VISIBLE_ITEM_SIZE), CType(Items(i).ItemEntry, Long))
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * PLAYER_VISIBLE_ITEM_SIZE), CType(Items(i).ItemEntry, Long))
 
                         'DONE: Include enchantment info
                         For Each Enchant As KeyValuePair(Of Byte, TEnchantmentInfo) In Items(i).Enchantments
-                            SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0_1 + Enchant.Key + i * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
+                            SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + Enchant.Key + i * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
                         Next
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
+                        'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
+                        SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
                     End If
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, Items(i).GUID)
                 Else
                     If i < EQUIPMENT_SLOT_END Then
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
                     End If
                     SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, 0)
                 End If
@@ -1736,19 +1747,21 @@ Public Module WS_CharManagment
             For i = EQUIPMENT_SLOT_START To EQUIPMENT_SLOT_END - 1
                 If Items.ContainsKey(i) Then
                     If i < EQUIPMENT_SLOT_END Then
-                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
+                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * PLAYER_VISIBLE_ITEM_SIZE), Items(i).ItemEntry)
 
                         'DONE: Include enchantment info
                         For Each Enchant As KeyValuePair(Of Byte, TEnchantmentInfo) In Items(i).Enchantments
-                            Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0_1 + Enchant.Key + i * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
+                            Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + Enchant.Key + i * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
                         Next
-                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
+                        'Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
+                        Update.SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + i * PLAYER_VISIBLE_ITEM_SIZE, Items(i).RandomProperties)
                     End If
                     Update.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, Items(i).GUID)
                 Else
                     If i < EQUIPMENT_SLOT_END Then
-                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
-                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        'Update.SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                        Update.SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + i * PLAYER_VISIBLE_ITEM_SIZE, 0)
                     End If
                     Update.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + i * 2, 0)
                 End If
@@ -1764,7 +1777,7 @@ Public Module WS_CharManagment
             End If
 
             If UPDATETYPE = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT Or UPDATETYPE = ObjectUpdateType.UPDATETYPE_MOVEMENT Or UPDATETYPE = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF Then
-                packet.AddInt8(&H71) 'flags
+                packet.AddInt16(&H71) 'flags
                 packet.AddInt32(0) 'flags2
                 packet.AddInt16(0) ' When was this added?
                 packet.AddInt32(timeGetTime)
@@ -2108,7 +2121,7 @@ CheckXPAgain:
         Public Sub ItemREMOVE(ByVal srcBag As Byte, ByVal srcSlot As Byte, ByVal Destroy As Boolean, ByVal Update As Boolean)
             If srcBag = 0 Then
                 If srcSlot < EQUIPMENT_SLOT_END Then
-                    SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + srcSlot * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                    SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + srcSlot * PLAYER_VISIBLE_ITEM_SIZE, 0)
                     UpdateRemoveItemStats(Items(srcSlot), srcSlot)
                 End If
                 SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + srcSlot * 2, 0)
@@ -2132,7 +2145,7 @@ CheckXPAgain:
 
                         Database.Update(String.Format("UPDATE characters_inventory SET item_slot = {0}, item_bag = {1} WHERE item_guid = {2};", ITEM_SLOT_NULL, ITEM_BAG_NULL, Items(slot).GUID - GUID_ITEM))
                         If slot < EQUIPMENT_SLOT_END Then
-                            SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + slot * PLAYER_VISIBLE_ITEM_SIZE, 0)
+                            SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + slot * PLAYER_VISIBLE_ITEM_SIZE, 0)
                             UpdateRemoveItemStats(Items(slot), slot)
                         End If
                         SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + slot * 2, 0)
@@ -2487,11 +2500,12 @@ CheckXPAgain:
 
                 SetUpdateFlag(EPlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + dstSlot * 2, Item.GUID)
                 If dstSlot < EQUIPMENT_SLOT_END Then
-                    SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0 + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Item.ItemEntry)
+                    SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENTRYID + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Item.ItemEntry)
                     For Each Enchant As KeyValuePair(Of Byte, TEnchantmentInfo) In Item.Enchantments
-                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_0_1 + Enchant.Key + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
+                        SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + Enchant.Key + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Enchant.Value.ID)
                     Next
-                    SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Item.RandomProperties)
+                    'SetUpdateFlag(EPlayerFields.PLAYER_VISIBLE_ITEM_1_PROPERTIES + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Item.RandomProperties)
+                    SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID + dstSlot * PLAYER_VISIBLE_ITEM_SIZE, Item.RandomProperties)
                     'DONE: Bind a nonbinded BIND WHEN EQUIPPED item
                     If Item.ItemInfo.Bonding = ITEM_BONDING_TYPE.BIND_WHEN_EQUIPED AndAlso Item.IsSoulBound = False Then Item.SoulbindItem()
                 End If
@@ -3463,6 +3477,38 @@ CheckXPAgain:
             Client.Send(SMSG_GOSSIP_POI)
             SMSG_GOSSIP_POI.Dispose()
         End Sub
+        Public Sub SendTalking(ByVal TextID As Integer)
+            'TODO: Load it into the memory instead
+
+            If NPCTexts.ContainsKey(TextID) = False Then
+                Dim tmpText As New NPCText(TextID)
+            End If
+
+            'DONE: Load TextID
+            Dim response As New PacketClass(OPCODES.SMSG_NPC_TEXT_UPDATE)
+            response.AddInt32(TextID)
+
+            For i As Integer = 0 To 7
+                response.AddSingle(NPCTexts(TextID).Probability(i))     'Probability
+                response.AddString(NPCTexts(TextID).TextLine1(i))       'Text1
+                If NPCTexts(TextID).TextLine2(i) = "" Then
+                    response.AddString(NPCTexts(TextID).TextLine1(i))   'Text2
+                Else
+                    response.AddString(NPCTexts(TextID).TextLine2(i))   'Text2
+                End If
+                response.AddInt32(NPCTexts(TextID).Language(i))         'Language
+                response.AddInt32(NPCTexts(TextID).EmoteDelay1(i))      'Emote1.Delay
+                response.AddInt32(NPCTexts(TextID).Emote1(i))           'Emote1.Emote
+                response.AddInt32(NPCTexts(TextID).EmoteDelay2(i))      'Emote2.Delay
+                response.AddInt32(NPCTexts(TextID).Emote2(i))           'Emote2.Emote
+                response.AddInt32(NPCTexts(TextID).EmoteDelay3(i))      'Emote3.Delay
+                response.AddInt32(NPCTexts(TextID).Emote3(i))           'Emote3.Emote
+            Next
+
+
+            Client.Send(response)
+            response.Dispose()
+        End Sub
         Public Sub BindPlayer(ByVal cGUID As ULong)
             bindpoint_positionX = positionX
             bindpoint_positionY = positionY
@@ -3826,7 +3872,7 @@ CheckXPAgain:
 
         'Reputation
         Public WatchedFactionIndex As Byte = &HFF
-        Public Reputation(63) As TReputation
+        Public Reputation(127) As TReputation
         Public Sub InitializeReputation(ByVal FactionID As Integer)
             If FactionInfo(FactionID).VisibleID > -1 Then
                 Reputation(FactionInfo(FactionID).VisibleID).Value = 0
@@ -3867,11 +3913,11 @@ CheckXPAgain:
 
             'DONE: Hostile by reputation
             Dim Rank As ReputationRank = GetReputation(FactionTemplatesInfo(FactionID).FactionID)
-            If Rank >= ReputationRank.Hostile Then
+            If Rank <= ReputationRank.Hostile Then
                 Return TReaction.HOSTILE
-            ElseIf Rank <= ReputationRank.Revered Then
+            ElseIf Rank >= ReputationRank.Revered Then
                 Return TReaction.FIGHT_SUPPORT
-            ElseIf Rank <= ReputationRank.Friendly Then
+            ElseIf Rank >= ReputationRank.Friendly Then
                 Return TReaction.FRIENDLY
             Else
                 Return TReaction.NEUTRAL
@@ -3918,8 +3964,12 @@ CheckXPAgain:
             End Select
         End Function
         Public Sub SetReputation(ByVal FactionID As Integer, ByVal Value As Integer)
-            If FactionInfo(FactionID).VisibleID > -1 Then
-                Reputation(FactionInfo(FactionID).VisibleID).Value = Reputation(FactionInfo(FactionID).VisibleID).Value + Value
+            If FactionInfo(FactionID).VisibleID = -1 Then Exit Sub
+
+            Reputation(FactionInfo(FactionID).VisibleID).Value += Value
+
+            If (Reputation(FactionInfo(FactionID).VisibleID).Flags And 1) = 0 Then
+                Reputation(FactionInfo(FactionID).VisibleID).Flags = Reputation(FactionInfo(FactionID).VisibleID).Flags Or 1
             End If
 
             If Not Client Is Nothing Then
@@ -3933,8 +3983,8 @@ CheckXPAgain:
         End Sub
         Public Function GetDiscountMod(ByVal FactionID As Integer) As Single
             Dim Rank As ReputationRank = GetReputation(FactionID)
-            If Rank <= ReputationRank.Neutral Then Return 1
-            Return (1 - 0.05 * (Rank - ReputationRank.Neutral))
+            If Rank >= ReputationRank.Honored Then Return 0.9F
+            Return 1.0F
         End Function
         'Death
         Public Overrides Sub Die(ByRef Attacker As BaseUnit)
@@ -4052,6 +4102,19 @@ CheckXPAgain:
                         CType(Attacker, CharacterObject).SendCharacterUpdate()
                     End If
                 End If
+
+                'DONE: Fight support by NPCs
+                For Each cGUID As ULong In creaturesNear.ToArray
+                    If WORLD_CREATUREs.ContainsKey(cGUID) AndAlso WORLD_CREATUREs(cGUID).aiScript IsNot Nothing AndAlso WORLD_CREATUREs(cGUID).isGuard Then
+                        If WORLD_CREATUREs(cGUID).isDead = False AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                            If inCombatWith.Contains(cGUID) Then Continue For
+                            If GetReaction(WORLD_CREATUREs(cGUID).Faction) = TReaction.FIGHT_SUPPORT AndAlso GetDistance(WORLD_CREATUREs(cGUID), Me) <= WORLD_CREATUREs(cGUID).AggroRange(Me) Then
+                                WORLD_CREATUREs(cGUID).aiScript.OnGenerateHate(Attacker, Damage)
+                            End If
+                        End If
+                    End If
+                Next
+
             End If
 
             'TODO: Enter combat for PvP combat, and then remove it after a 10 seconds non combat period (remember incombatwith array)
@@ -4060,6 +4123,7 @@ CheckXPAgain:
 
             If Life.Current = 0 Then
                 Me.Die(Attacker)
+                Exit Sub
             Else
                 SetUpdateFlag(EUnitFields.UNIT_FIELD_HEALTH, CType(Life.Current, Integer))
                 SendCharacterUpdate()
@@ -4075,6 +4139,8 @@ CheckXPAgain:
         End Sub
         Public Overrides Sub Heal(ByVal Damage As Integer, Optional ByRef Attacker As BaseUnit = Nothing)
             If DEAD Then Exit Sub
+
+            'TODO: Healing generates thread on the NPCs that has this character in their combat array
 
             Life.Current += Damage
             SetUpdateFlag(EUnitFields.UNIT_FIELD_HEALTH, CType(Life.Current, Integer))
@@ -4158,7 +4224,12 @@ CheckXPAgain:
 
             'Loading map cell if not loaded
             GetMapTile(positionX, positionY, CellX, CellY)
-            If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            'If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            Try
+                If Maps(MapID).Tiles(CellX, CellY) Is Nothing Then MAP_Load(CellX, CellY, MapID)
+            Catch ex As Exception
+                Log.WriteLine(LogType.CRITICAL, "Failed loading maps at character logging in.{0}{1}", vbNewLine, ex.ToString())
+            End Try
 
             'DONE: SMSG_BINDPOINTUPDATE
             SendBindPointUpdate(Client, Me)
@@ -4465,7 +4536,7 @@ CheckXPAgain:
 
             'DONE: Get ReputationPoints -> Saved as STRING like "Flags1:Standing1 Flags2:Standing2"
             tmp = Split(CType(MySQLQuery.Rows(0).Item("char_reputation"), String), " ")
-            For i = 0 To 63
+            For i = 0 To 127
                 Dim tmp2() As String
                 tmp2 = Split(tmp(i), ":")
                 Reputation(i) = New TReputation
@@ -4845,6 +4916,7 @@ CheckXPAgain:
 
         'Party/Raid
         Public Group As Group = Nothing
+        Public GroupUpdateFlag As UInteger = 0
         Public ReadOnly Property IsInGroup() As Boolean
             Get
                 Return Not (Group Is Nothing)
@@ -5559,17 +5631,19 @@ CheckXPAgain:
             Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo table for race={0}, class={1}", c.Race, c.Classe)
         End If
 
+        Dim PlayerInfoIndex As Integer = CreateInfo.Rows(0).Item("index")
+
         Database.Query(String.Format("SELECT * FROM playercreateinfo_bars WHERE race = {0} AND class = {1} ORDER BY button;", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoBars)
         If CreateInfoBars.Rows.Count <= 0 Then
             Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
         End If
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_skills WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoSkills)
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_skills WHERE indexid = {0};", PlayerInfoIndex), CreateInfoSkills)
         If CreateInfoSkills.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_skills table for race={0}, class={1}", c.Race, c.Classe)
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_skills table for indexid={0}", PlayerInfoIndex)
         End If
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_spells WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoSpells)
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_spells WHERE indexid = {0};", PlayerInfoIndex), CreateInfoSpells)
         If CreateInfoSpells.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_spells table for race={0}, class={1}", c.Race, c.Classe)
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_spells table for indexid={0}", PlayerInfoIndex)
         End If
 
         ' Initialize Character Variables
@@ -5587,7 +5661,7 @@ CheckXPAgain:
         c.RunicPower.Current = 0
         c.RunicPower.Base = 0
         c.ManaType = CreateInfo.Rows(0).Item("PowerType")
-
+        c.PlayerCreateInfoID = PlayerInfoIndex
 
         ' Set Character Create Information
         c.Model = GetRaceModel(c.Race, c.Gender)
@@ -5651,21 +5725,21 @@ CheckXPAgain:
             c.LearnSpell(SpellRow.Item("spellid"))
         Next
 
-        ' Set Player Reputation
-        If c.Side = False Then 'Alliance
-            c.InitializeReputation(Factions.Stormwind)
-            c.InitializeReputation(Factions.GnomereganExiles)
-            c.InitializeReputation(Factions.Darnassus)
-            c.InitializeReputation(Factions.Ironforge)
-            c.InitializeReputation(Factions.Exodar)
+        ''' Set Player Reputation
+        ''If c.Side = False Then 'Alliance
+        ''    c.InitializeReputation(Factions.Stormwind)
+        ''    c.InitializeReputation(Factions.GnomereganExiles)
+        ''    c.InitializeReputation(Factions.Darnassus)
+        ''    c.InitializeReputation(Factions.Ironforge)
+        ''    c.InitializeReputation(Factions.Exodar)
 
-        Else 'Horde
-            c.InitializeReputation(Factions.Orgrimmar)
-            c.InitializeReputation(Factions.Undercity)
-            c.InitializeReputation(Factions.ThunderBluff)
-            c.InitializeReputation(Factions.DarkspearTrolls)
-            c.InitializeReputation(Factions.SilvermoonCity)
-        End If
+        ''Else 'Horde
+        ''    c.InitializeReputation(Factions.Orgrimmar)
+        ''    c.InitializeReputation(Factions.Undercity)
+        ''    c.InitializeReputation(Factions.ThunderBluff)
+        ''    c.InitializeReputation(Factions.DarkspearTrolls)
+        ''    c.InitializeReputation(Factions.SilvermoonCity)
+        ''End If
 
         ' Set Player Taxi Zones (May have to change this in the future)
         Select Case c.Race
@@ -5688,8 +5762,11 @@ CheckXPAgain:
             Case Races.RACE_UNDEAD
                 c.TaxiZones.Set(11, True)
 
-            Case Races.RACE_DRAENEI, Races.RACE_BLOOD_ELF
-                'TODO: Get taxi flags
+            Case Races.RACE_DRAENEI
+                c.TaxiZones.Set(94, True)
+
+            Case Races.RACE_BLOOD_ELF
+                c.TaxiZones.Set(82, True)
 
         End Select
 
@@ -5704,10 +5781,63 @@ CheckXPAgain:
     End Sub
     Public Sub CreateCharacterItems(ByRef c As CharacterObject)
 
+        'Dim RaceClassGender As Integer = 0
+        'Dim ItemIDs(23) As Integer
+        'Dim ItemDisplayIDs(23) As Integer
+        'Dim ItemInventorySlots(23) As Integer
+
+        'RaceClassGender = CType(CType(c.Race, Integer) + (CType(c.Classe, Integer) << 8) + (CType(c.Gender, Integer) << 16), Integer)
+
+        'If CharStartOutfit.ContainsKey(RaceClassGender) Then
+        '    For i As Integer = 0 To 23
+
+        '        Dim ItemID As Integer = CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)
+        '        If ItemID <= 0 Then Continue For
+
+        '        Dim ItemSlot As Byte = CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte)
+
+        '        Dim ItemTemplate As New DataTable
+        '        Database.Query(String.Format("SELECT * FROM items WHERE entry = {0}", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer)), ItemTemplate)
+
+        '        Log.WriteLine(LogType.WARNING, "Found ItemID={0}, ItemName={1}, ItemSlot={2}", ItemID, ItemTemplate.Rows(0).Item("name1"), CType(CharStartOutfit(RaceClassGender).ItemInventorySlot(i), Byte))
+
+        '        If ItemTemplate.Rows.Count > 0 Then
+
+        '            ' Calculate Amount For This Item
+        '            Dim ItemAmount As Integer = ItemTemplate.Rows(0).Item("buycount")
+        '            Dim ItemClass As Integer = ItemTemplate.Rows(0).Item("class")
+        '            Dim ItemSubClass As Integer = ItemTemplate.Rows(0).Item("subclass")
+        '            Dim ItemSpellCategory As Integer = ItemTemplate.Rows(0).Item("spellcategory_1")
+        '            Dim ItemStackable As Integer = ItemTemplate.Rows(0).Item("stackable")
+
+        '            ' Special Amount For Food/Drink
+        '            If ItemClass = ITEM_CLASS.ITEM_CLASS_CONSUMABLE And ItemSubClass = ITEM_SUBCLASS.ITEM_SUBCLASS_FOOD Then
+        '                Select Case ItemSpellCategory
+
+        '                    Case 11 ' Food
+        '                        ItemAmount = 4
+        '                        If c.Classe = Classes.CLASS_DEATH_KNIGHT Then ItemAmount = 10
+
+        '                    Case 59 ' Drink
+        '                        ItemAmount = 2
+
+        '                End Select
+        '                If ItemStackable < ItemAmount Then ItemAmount = ItemStackable
+        '            End If
+
+        '            c.ItemADD(ItemID, CType(0, Byte), ItemSlot, ItemAmount)
+        '        Else
+        '            Log.WriteLine(LogType.FAILED, "ItemID({0}) From CharStartOutfit({1}) NOT Found in items Table!", CType(CharStartOutfit(RaceClassGender).ItemID(i), Integer), RaceClassGender)
+        '        End If
+        '    Next
+        'Else
+        '    Log.WriteLine(LogType.FAILED, "No information found in CharStartOutfit for race={0}, class={1}, gender={2}", c.Race, c.Classe, c.Gender)
+        'End If
+
         Dim CreateInfoItems As New DataTable
-        Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfoItems)
+        Database.Query(String.Format("SELECT * FROM playercreateinfo_items WHERE indexid = {0};", c.PlayerCreateInfoID), CreateInfoItems)
         If CreateInfoItems.Rows.Count <= 0 Then
-            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for race={0}, class={1}", c.Race, c.Classe)
+            Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_bars table for indexid={0}", c.PlayerCreateInfoID)
         End If
 
         ' Set Player Create Items

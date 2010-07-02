@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ Imports System.IO
 Imports System.Net
 Imports System.Security.Cryptography
 Imports System.Reflection
+Imports System.Collections.Generic
 Imports Spurious.Common
 
 Public Module RS_Main
@@ -45,8 +46,12 @@ Public Module RS_Main
     '2.00.8 - 6403
     '2.00.10 - 6448
     '2.00.12 - 6546
-    Const REQUIRED_BUILD_LOW As Integer = 9506
-    Const REQUIRED_BUILD_HIGH As Integer = 9551
+    'Version
+    Public Const REQUIRED_VERSION_1 As Integer = 3
+    Public Const REQUIRED_VERSION_2 As Integer = 3
+    Public Const REQUIRED_VERSION_3 As Integer = 3
+    Const REQUIRED_BUILD_LOW As Integer = 11723
+    Const REQUIRED_BUILD_HIGH As Integer = 11723
     Const CONNETION_SLEEP_TIME As Integer = 100
 
     'RealmServ OP Codes
@@ -90,6 +95,29 @@ Public Module RS_Main
         LOGIN_DOWNLOADFILE = &HA
         LOGIN_SUSPENDED = &HC                  'This World Of Warcraft account has been temporarily suspended. Please go to http://www.wow-europe.com/en/misc/banned.html for furhter information.
         LOGIN_PARENTALCONTROL = &HF            'Access to this account has been blocked by parental controls.  Your settings may be changed in your account preferences at http://www.worldofwarcraft.com.
+        ''LOGIN_OK = &HB
+        ''LOGIN_FAILED = &HC                     'Unable to connect
+        ''LOGIN_REJECT = &HD
+        ''LOGIN_BAD_SERVER_PROOF = &HE
+        ''LOGIN_UNAVAILABLE = &HF
+        ''LOGIN_SYSTEM_ERROR = &H10
+        ''LOGIN_BILLING_ERROR = &H11
+        ''LOGIN_BILLING_EXPIRED = &H12
+        ''LOGIN_BADVERSION = &H13                'Unable to validate game version.  This may be caused by file corruption or the interference of another program.  Please visit www.blizzard.com/support/wow/ for more information and possible solutions to this issue.
+        ''LOGIN_UNKNOWN_ACCOUNT = &H14           'The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account, see www.worldofwarcraft.com for more information.
+        ''LOGIN_BAD_PASS = &H15                  'The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account, see www.worldofwarcraft.com for more information.
+        ''LOGIN_SESSION_EXPIRED = &H16
+        ''LOGIN_SERVER_SHUTTING_DOWN = &H17
+        ''LOGIN_ALREADY_LOGGING_IN = &H18
+        ''LOGIN_LOGIN_SERVER_NOT_FOUND = &H19
+        ''LOGIN_WAIT_QUEUE = &H1A
+        ''LOGIN_BANNED = &H1B                    'This World of Warcraft account has been closed and is no longer in service -- Please check the registered email address of this account for further information.
+        ''LOGIN_ALREADYONLINE = &H1C             'This account is already logged into World of Warcraft.  Please check the spelling and try again.
+        ''LOGIN_NOTIME = &H1D                    'You have used up your prepaid time for this account. Please purchase more to continue playing.
+        ''LOGIN_DBBUSY = &H1E                     'Could not log in to World of Warcraft at this time.  Please try again later.
+        ''LOGIN_SUSPENDED = &H1F                 'This World Of Warcraft account has been temporarily suspended. Please go to http://www.wow-europe.com/en/misc/banned.html for furhter information.
+        ''LOGIN_PARENTALCONTROL = &H20           'Access to this account has been blocked by parental controls.  Your settings may be changed in your account preferences at http://www.worldofwarcraft.com.
+        ''LOGIN_LOCKED_ENFORCED = &H21
     End Enum
 
 #End Region
@@ -151,6 +179,7 @@ Public Module RS_Main
 #End Region
 
 #Region "RS.Sockets"
+    Public LastConnections As New Dictionary(Of UInteger, Date)
     Public RS As RealmServerClass
     Class RealmServerClass
         Public _flagStopListen As Boolean = False
@@ -230,7 +259,7 @@ Public Module RS_Main
         Public Port As Int32 = 0
         Public AuthEngine As AuthEngineClass
         Public Account As String = ""
-        Public Language As String = "enGB"
+        Public Language As String = "enUS"
         Public Expansion As ExpansionLevel = ExpansionLevel.NORMAL
         Public UpdateFile As String = ""
 		Public Access As AccessLevel = AccessLevel.Player
@@ -270,6 +299,20 @@ Public Module RS_Main
             IP = CType(Socket.RemoteEndPoint, IPEndPoint).Address
             Port = CType(Socket.RemoteEndPoint, IPEndPoint).Port
 
+            'DONE: Connection spam protection
+            Dim IpInt As UInteger = IP2Int(IP.ToString)
+            If LastConnections.ContainsKey(IpInt) Then
+                If Now > LastConnections(IpInt) Then
+                    LastConnections(IpInt) = Now.AddSeconds(5)
+                Else
+                    Socket.Close()
+                    Me.Dispose()
+                    Exit Sub
+                End If
+            Else
+                LastConnections.Add(IpInt, Now.AddSeconds(5))
+            End If
+
             Dim Buffer() As Byte
             Dim bytes As Integer
 
@@ -282,6 +325,9 @@ Public Module RS_Main
                 While Not RS._flagStopListen
                     Thread.Sleep(CONNETION_SLEEP_TIME)
                     If Socket.Available > 0 Then
+                        If Socket.Available > 500 Then 'DONE: Data flood protection
+                            Exit While
+                        End If
                         ReDim Buffer(Socket.Available - 1)
                         bytes = Socket.Receive(Buffer, Buffer.Length, 0)
                         OnData(Buffer)
@@ -321,9 +367,9 @@ Public Module RS_Main
             End Try
         End Sub
         Public Sub Dispose() Implements System.IDisposable.Dispose
-            Console.ForegroundColor = System.ConsoleColor.DarkGray
-            Console.WriteLine("[{0}] Connection from [{1}:{2}] deleted", Format(TimeOfDay, "hh:mm:ss"), IP, Port)
-            Console.ForegroundColor = System.ConsoleColor.Gray
+            'Console.ForegroundColor = System.ConsoleColor.DarkGray
+            'Console.WriteLine("[{0}] Connection from [{1}:{2}] deleted", Format(TimeOfDay, "hh:mm:ss"), IP, Port)
+            'Console.ForegroundColor = System.ConsoleColor.Gray
         End Sub
     End Class
 
@@ -358,8 +404,9 @@ Public Module RS_Main
         Console.WriteLine("[{0}] [{1}:{2}] CMD_AUTH_LOGON_CHALLENGE [{3}] [{4}], WoW Version [{5}.{6}.{7}.{8}] [{9}].", Format(TimeOfDay, "hh:mm:ss"), Client.IP, Client.Port, packet_account, packet_ip, bMajor.ToString, bMinor.ToString, bRevision.ToString, ClientBuild.ToString, ClientLanguage)
 
         'DONE: Check if our build can join the server
-        'TODO: for good practice should use the whole build info
-        If ((ClientBuild) >= REQUIRED_BUILD_LOW) And ((ClientBuild) <= REQUIRED_BUILD_HIGH) Then
+        If ((REQUIRED_VERSION_1 = 0 AndAlso REQUIRED_VERSION_2 = 0 AndAlso REQUIRED_VERSION_3 = 0) OrElse _
+            (bMajor = REQUIRED_VERSION_1 AndAlso bMinor = REQUIRED_VERSION_2 AndAlso bRevision = REQUIRED_VERSION_3)) AndAlso _
+            ClientBuild >= REQUIRED_BUILD_LOW AndAlso ClientBuild <= REQUIRED_BUILD_HIGH Then
             'TODO: in the far future should check if the account is expired too
             Dim result As DataTable = Nothing
             Try
@@ -393,7 +440,13 @@ Public Module RS_Main
 
                     Client.Language = ClientLanguage
                     Client.Expansion = result.Rows(0).Item("expansion")
-                    Client.AuthEngine = New AuthEngineClass
+                    Try
+                        Client.AuthEngine = New AuthEngineClass
+                    Catch ex As Exception
+                        Console.ForegroundColor = System.ConsoleColor.Red
+                        Console.WriteLine("[{0}] [{1}:{2}] Error loading AuthEngine: {3}{4}", Format(TimeOfDay, "hh:mm:ss"), Client.IP, Client.Port, vbNewLine, ex)
+                        Console.ForegroundColor = System.ConsoleColor.White
+                    End Try
                     Client.AuthEngine.CalculateX(account, password)
 
                     Dim data_response(118) As Byte
@@ -478,8 +531,8 @@ Public Module RS_Main
         Array.Copy(data, 1, A, 0, 32)
         Dim M1(19) As Byte
         Array.Copy(data, 33, M1, 0, 20)
-        'Dim CRC_Hash(19) As Byte
-        'Array.Copy(data, 53, CRC_Hash, 0, 20)
+        Dim CRC_Hash(19) As Byte
+        Array.Copy(data, 53, CRC_Hash, 0, 20)
         'Dim NumberOfKeys as Byte = data(73)
         'Dim unk as Byte = data(74)
 
@@ -509,13 +562,13 @@ Public Module RS_Main
         If pass_check Then
             If pass_crc Then
                 Client.AuthEngine.CalculateM2(M1)
-                Client.AuthEngine.CalculateTrafficKey()
+                'Client.AuthEngine.CalculateTrafficKey()
 
                 Dim data_response(31) As Byte
                 data_response(0) = CMD_AUTH_LOGON_PROOF
                 data_response(1) = AccountState.LOGIN_OK
                 Array.Copy(Client.AuthEngine.M2, 0, data_response, 2, 20)
-                data_response(22) = 0
+                data_response(22) = 1 ' <-- ARENA TOURNAMENT ACC FLAG!
                 data_response(23) = 0
                 data_response(24) = 0
                 data_response(25) = 0
@@ -530,8 +583,8 @@ Public Module RS_Main
                 Client.Send(data_response)
                 'Set SSHash in DB
                 Dim sshash As String = ""
-                'For i = 0 To Client.AuthEngine.SS_Hash.Length - 1
-                For i = 0 To 20 - 1
+                For i = 0 To Client.AuthEngine.SS_Hash.Length - 1
+                    'For i = 0 To 20 - 1
                     If Client.AuthEngine.SS_Hash(i) < 16 Then
                         sshash = sshash + "0" + Hex(Client.AuthEngine.SS_Hash(i))
                     Else
@@ -586,8 +639,8 @@ Public Module RS_Main
         data_response(0) = CMD_AUTH_REALMLIST
 
         '(uint16) Packet Length
-        data_response(2) = (packet_len + 8) \ 256
         data_response(1) = (packet_len + 8) Mod 256
+        data_response(2) = (packet_len + 8) \ 256
 
         '(uint32) Unk
         data_response(3) = data(1)
@@ -888,4 +941,19 @@ Public Module RS_Main
             Next
         End While
     End Sub
+
+    Function IP2Int(ByVal IP As String) As UInteger
+        Dim IpSplit() As String = IP.Split(".")
+        If IpSplit.Length <> 4 Then Return 0
+        Dim IpBytes(3) As Byte
+        Try
+            IpBytes(0) = CByte(IpSplit(3))
+            IpBytes(1) = CByte(IpSplit(2))
+            IpBytes(2) = CByte(IpSplit(1))
+            IpBytes(3) = CByte(IpSplit(0))
+            Return BitConverter.ToUInt32(IpBytes, 0)
+        Catch
+            Return 0
+        End Try
+    End Function
 End Module

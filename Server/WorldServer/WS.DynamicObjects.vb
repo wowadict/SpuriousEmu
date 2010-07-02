@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -64,10 +64,11 @@ Public Module WS_DynamicObjects
             Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_BYTES, Bytes)
             Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_SPELLID, SpellID)
             Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_RADIUS, Radius)
-            Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_X, positionX)
-            Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_Y, positionY)
-            Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_Z, positionZ)
-            Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_FACING, orientation)
+            ' TODO: Fix These Remarked for 3.3.3a
+            ''Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_X, positionX)
+            ''Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_Y, positionY)
+            ''Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_POS_Z, positionZ)
+            ''Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_FACING, orientation)
             Update.SetUpdateFlag(EDynamicObjectFields.DYNAMICOBJECT_CASTTIME, casttime)
         End Sub
 

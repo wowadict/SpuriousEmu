@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -1514,6 +1514,7 @@ SkipShapeShift:
     Public Class SpellEffect
         Public ID As SpellEffects_Names = SpellEffects_Names.SPELL_EFFECT_NOTHING
 
+        Public diceSides As Integer = 0
         Public diceBase As Integer = 0
         Public dicePerLevel As Integer = 0
         Public valueBase As Integer = 0
@@ -5236,7 +5237,6 @@ SkipShapeShift:
                 packet.AddPackGUID(Target.GUID)
                 Target.SendToNearPlayers(packet)
                 packet.Dispose()
-
         End Select
 
     End Sub

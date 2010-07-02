@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -54,9 +54,45 @@ Module WS_CharMovement
         MOVEMENTFLAG_UNK3 = &H40000000
     End Enum
 
+    Public Enum MovementFlagsMangos As Integer
+        MOVEMENTFLAG_NONE = &H0
+        MOVEMENTFLAG_FORWARD = &H1
+        MOVEMENTFLAG_BACKWARD = &H2
+        MOVEMENTFLAG_STRAFE_LEFT = &H4
+        MOVEMENTFLAG_STRAFE_RIGHT = &H8
+        MOVEMENTFLAG_TURN_LEFT = &H10
+        MOVEMENTFLAG_TURN_RIGHT = &H20
+        MOVEMENTFLAG_PITCH_UP = &H40
+        MOVEMENTFLAG_PITCH_DOWN = &H80
+        MOVEMENTFLAG_WALK_MODE = &H100               ' Walking
+        MOVEMENTFLAG_ONTRANSPORT = &H200
+        MOVEMENTFLAG_LEVITATING = &H400
+        MOVEMENTFLAG_ROOT = &H800
+        MOVEMENTFLAG_FALLING = &H1000
+        MOVEMENTFLAG_FALLINGFAR = &H2000
+        MOVEMENTFLAG_PENDINGSTOP = &H4000
+        MOVEMENTFLAG_PENDINGSTRAFESTOP = &H8000
+        MOVEMENTFLAG_PENDINGFORWARD = &H10000
+        MOVEMENTFLAG_PENDINGBACKWARD = &H20000
+        MOVEMENTFLAG_PENDINGSTRAFELEFT = &H40000
+        MOVEMENTFLAG_PENDINGSTRAFERIGHT = &H80000
+        MOVEMENTFLAG_PENDINGROOT = &H100000
+        MOVEMENTFLAG_SWIMMING = &H200000               ' appears with fly flag also
+        MOVEMENTFLAG_ASCENDING = &H400000               ' swim up also
+        MOVEMENTFLAG_DESCENDING = &H800000               ' swim down also
+        MOVEMENTFLAG_CAN_FLY = &H1000000               ' can fly in 3.3?
+        MOVEMENTFLAG_FLYING = &H2000000               ' Actual flying mode
+        MOVEMENTFLAG_SPLINE_ELEVATION = &H4000000               ' used for flight paths
+        MOVEMENTFLAG_SPLINE_ENABLED = &H8000000               ' used for flight paths
+        MOVEMENTFLAG_WATERWALKING = &H10000000               ' prevent unit from falling through water
+        MOVEMENTFLAG_SAFE_FALL = &H20000000               ' active rogue safe fall spell (passive)
+        MOVEMENTFLAG_HOVER = &H40000000
+    End Enum
+
     Public Sub OnMovementPacket(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
 
+        Dim movGUID As ULong = packet.GetPackGUID()
         Client.Character.movementFlags = packet.GetInt32()
         Dim unkFlags As Integer = packet.GetInt16()
         Dim Time As UInteger = packet.GetUInt32()
@@ -79,11 +115,13 @@ Module WS_CharMovement
 
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_ONTRANSPORT) Then
-            Dim transportGUID As ULong = packet.GetUInt64
+            Dim transportGUID As ULong = packet.GetPackGUID
             Dim transportX As Single = packet.GetFloat
             Dim transportY As Single = packet.GetFloat
             Dim transportZ As Single = packet.GetFloat
             Dim transportO As Single = packet.GetFloat
+            Dim transportTime As Single = packet.GetFloat
+            Dim transportSeat As Byte = packet.GetInt8
         End If
         If (Client.Character.movementFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING2)) OrElse (unkFlags And &H20) Then
             Dim swimAngle As Single = packet.GetFloat
@@ -92,7 +130,7 @@ Module WS_CharMovement
             '#End If
         End If
 
-        packet.GetInt32() 'Fall time
+        'packet.GetInt32() 'Fall time
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_JUMPING) Then
             Dim airTime As UInteger = packet.GetUInt32
@@ -440,14 +478,8 @@ Module WS_CharMovement
         'DONE: Update zone on cluster
         WS.Cluster.ClientUpdate(Client.Index, Client.Character.ZoneID, Client.Character.Level)
 
-        'DONE: Send weather
-        Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM weather WHERE weather_zone = {0};", Client.Character.ZoneID), MySQLQuery)
-        If MySQLQuery.Rows.Count = 0 Then
-            SendWeather(0, 0, Client)
-        Else
-            SendWeather(MySQLQuery.Rows(0).Item("weather_type"), MySQLQuery.Rows(0).Item("weather_intensity"), Client)
-        End If
+        'DONE: Update Weather
+        UpdateWeather(Client)
     End Sub
     Public Sub On_MSG_MOVE_HEARTBEAT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         'Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_MOVE_HEARTBEAT", Client.IP, Client.Port)
@@ -480,7 +512,9 @@ Module WS_CharMovement
         'DONE: Aggro range
         For Each cGUID As ULong In Client.Character.creaturesNear.ToArray
             If WORLD_CREATUREs.ContainsKey(cGUID) AndAlso WORLD_CREATUREs(cGUID).aiScript IsNot Nothing AndAlso ((TypeOf WORLD_CREATUREs(cGUID).aiScript Is DefaultAI) OrElse (TypeOf WORLD_CREATUREs(cGUID).aiScript Is GuardAI)) Then
-                If WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_DEAD AndAlso WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_RESPAWN AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                'If WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_DEAD AndAlso WORLD_CREATUREs(cGUID).aiScript.State <> TBaseAI.AIState.AI_RESPAWN AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                If WORLD_CREATUREs(cGUID).isDead = False AndAlso WORLD_CREATUREs(cGUID).aiScript.InCombat() = False Then
+                    If Client.Character.inCombatWith.Contains(cGUID) Then Continue For
                     If Client.Character.GetReaction(WORLD_CREATUREs(cGUID).Faction) = TReaction.HOSTILE AndAlso GetDistance(WORLD_CREATUREs(cGUID), Client.Character) <= WORLD_CREATUREs(cGUID).AggroRange(Client.Character) Then
                         WORLD_CREATUREs(cGUID).aiScript.aiHateTable.Add(Client.Character, 0)
                         SetPlayerInCombat(Client.Character)
@@ -496,9 +530,12 @@ Module WS_CharMovement
         For Each CombatUnit As ULong In Client.Character.inCombatWith.ToArray
             If GuidIsCreature(CombatUnit) AndAlso WORLD_CREATUREs.ContainsKey(CombatUnit) AndAlso CType(WORLD_CREATUREs(CombatUnit), CreatureObject).aiScript IsNot Nothing Then
                 With CType(WORLD_CREATUREs(CombatUnit), CreatureObject)
-                    If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget.GUID = Client.Character.GUID Then
+                    'If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget.GUID = Client.Character.GUID Then
+                    If (Not .aiScript.aiTarget Is Nothing) AndAlso .aiScript.aiTarget Is Client.Character Then
+                        .GetPosition(.positionX, .positionY, .positionZ) 'Make sure it moves from it's location and not from where it was already heading before this
                         .aiScript.State = TBaseAI.AIState.AI_MOVE_FOR_ATTACK
-                        .aiScript.DoThink()
+                        '.aiScript.DoThink()
+                        .aiScript.DoMove()
                     End If
                 End With
             End If
@@ -980,21 +1017,36 @@ Module WS_CharMovement
 #End Region
 
     Public Enum WeatherSounds As Integer
+        'WEATHER_SOUND_NOSOUND = 0
+        'WEATHER_SOUND_RAINLIGHT = 8533
+        'WEATHER_SOUND_RAINMEDIUM = 8534
+        'WEATHER_SOUND_RAINHEAVY = 8535
+        'WEATHER_SOUND_SNOWLIGHT = 8536
+        'WEATHER_SOUND_SNOWMEDIUM = 8537
+        'WEATHER_SOUND_SNOWHEAVY = 8538
+        'WEATHER_SOUND_SANDSTORMLIGHT = 8556
+        'WEATHER_SOUND_SANDSTORMMEDIUM = 8557
+        'WEATHER_SOUND_SANDSTORMHEAVY = 8558
         WEATHER_SOUND_NOSOUND = 0
-        WEATHER_SOUND_RAINLIGHT = 8533
-        WEATHER_SOUND_RAINMEDIUM = 8534
-        WEATHER_SOUND_RAINHEAVY = 8535
-        WEATHER_SOUND_SNOWLIGHT = 8536
-        WEATHER_SOUND_SNOWMEDIUM = 8537
-        WEATHER_SOUND_SNOWHEAVY = 8538
-        WEATHER_SOUND_SANDSTORMLIGHT = 8556
-        WEATHER_SOUND_SANDSTORMMEDIUM = 8557
-        WEATHER_SOUND_SANDSTORMHEAVY = 8558
+        WEATHER_SOUND_RAINLIGHT = 3
+        WEATHER_SOUND_RAINMEDIUM = 4
+        WEATHER_SOUND_RAINHEAVY = 5
+        WEATHER_SOUND_SNOWLIGHT = 6
+        WEATHER_SOUND_SNOWMEDIUM = 7
+        WEATHER_SOUND_SNOWHEAVY = 8
+        WEATHER_SOUND_SANDSTORMLIGHT = 22
+        WEATHER_SOUND_SANDSTORMMEDIUM = 41
+        WEATHER_SOUND_SANDSTORMHEAVY = 42
+        WEATHER_SOUND_THUNDERS = 86
+        WEATHER_SOUND_BLACKRAIN = 90
     End Enum
     Public Enum WeatherType As Integer
+        WEATHER_FINE = 0
         WEATHER_RAIN = 1
         WEATHER_SNOW = 2
         WEATHER_SANDSTORM = 3
+        WEATHER_TYPE_THUNDERS = 86
+        WEATHER_TYPE_BLACKRAIN = 90
     End Enum
     Public Sub SendWeather(ByVal Type As Byte, ByVal Intensity As Single, ByRef Client As ClientClass)
 
@@ -1002,22 +1054,55 @@ Module WS_CharMovement
         SMSG_WEATHER.AddInt32(Type)
         SMSG_WEATHER.AddSingle(Intensity)
         'SMSG_WEATHER.AddInt32(Sound)
-        Select Case Intensity
-            Case 0
-                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
-            Case Is <= 0.33
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
-            Case Is <= 0.66
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+        Select Case Type
+            Case WeatherType.WEATHER_RAIN
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
+                End If
+            Case WeatherType.WEATHER_SNOW
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
+                End If
+            Case WeatherType.WEATHER_SANDSTORM
+                If Intensity < 0.4 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
+                ElseIf Intensity < 0.7 Then
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+                Else
+                    SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+                End If
+            Case WeatherType.WEATHER_TYPE_BLACKRAIN
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_BLACKRAIN)
+            Case WeatherType.WEATHER_TYPE_THUNDERS
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_THUNDERS)
             Case Else
-                If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
-                If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
-                If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+                SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
         End Select
+
+        'Select Case Intensity
+        '    Case 0
+        '        SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_NOSOUND)
+        '    Case Is <= 0.33
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINLIGHT)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWLIGHT)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMLIGHT)
+        '    Case Is <= 0.66
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINMEDIUM)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWMEDIUM)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMMEDIUM)
+        '    Case Else
+        '        If Type = WeatherType.WEATHER_RAIN Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_RAINHEAVY)
+        '        If Type = WeatherType.WEATHER_SNOW Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SNOWHEAVY)
+        '        If Type = WeatherType.WEATHER_SANDSTORM Then SMSG_WEATHER.AddInt32(WeatherSounds.WEATHER_SOUND_SANDSTORMHEAVY)
+        'End Select
         Client.Send(SMSG_WEATHER)
         'Client.Character.SendToNearPlayers(SMSG_WEATHER)
         SMSG_WEATHER.Dispose()

@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -38,10 +38,10 @@ Public Module WC_Handlers_Auth
 
         Dim response As New PacketClass(OPCODES.SMSG_AUTH_RESPONSE)
         response.AddInt8(AuthResponseCodes.AUTH_OK)
-        response.AddInt32(0)
-        response.AddInt8(2) 'BillingPlanFlags
-        response.AddUInt32(0) 'BillingTimeRested
-        response.AddInt8(Client.Expansion)      'ExpansionRacesEnable
+        'response.AddInt32(0)
+        'response.AddInt8(2) 'BillingPlanFlags
+        'response.AddUInt32(0) 'BillingTimeRested
+        'response.AddInt8(Client.Expansion)      'ExpansionRacesEnable
         Client.Send(response)
     End Sub
     Public Sub On_CMSG_AUTH_SESSION(ByRef packet As PacketClass, ByRef Client As ClientClass)
@@ -51,10 +51,12 @@ Public Module WC_Handlers_Auth
 
         packet.GetInt16()
         Dim clientVersion As Integer = packet.GetInt32
-        Dim clientSesionID As Integer = packet.GetInt32        
+        'Dim clientSesionID As Integer = packet.GetInt32
+        Dim WoTLKUnk As Integer = packet.GetInt32
         Dim clientAccount As String = packet.GetString
-        Dim clientWoTLKUnk As String = packet.GetInt32
+        Dim unk322 As Integer = packet.GetInt32
         Dim clientSalt As Integer = packet.GetInt32
+        Dim unk3 As Long = packet.GetInt64
         Dim clientEncryptedPassword(19) As Byte
         For i = 0 To 19
             clientEncryptedPassword(i) = packet.GetInt8
@@ -99,14 +101,12 @@ Public Module WC_Handlers_Auth
             Client.Send(response_no_acc)
             Exit Sub
         End If
-        ReDim Client.SS_Hash(19)
+        ReDim Client.SS_Hash(39)
         For i = 0 To Len(tmp) - 1 Step 2
             Client.SS_Hash(i \ 2) = Val("&H" & Mid(tmp, i + 1, 2))
         Next
         Client.Encryption = True
-
-
-
+        Client.Crypt = New AuthCrypt(Client.SS_Hash)
 
         'DONE: If server full then queue, If GM/Admin let in
         If CLIENTs.Count > Config.ServerLimit And Client.Access <= AccessLevel.Player Then
@@ -119,63 +119,73 @@ Public Module WC_Handlers_Auth
 
 
         'DONE: Addons info reading
-        Dim decompressBuffer(packet.Data.Length - packet.Offset) As Byte
-        Array.Copy(packet.Data, packet.Offset, decompressBuffer, 0, packet.Data.Length - packet.Offset)
-        packet.Data = DeCompress(decompressBuffer)
-        packet.Offset = 0
-        'DumpPacket(packet.Data)
+        If clientAddOnsSize > 0 AndAlso clientAddOnsSize < &HFFFFF Then
+            'DONE: Addons info reading
+            Dim decompressBuffer((packet.Data.Length - packet.Offset) - 1) As Byte
+            Array.Copy(packet.Data, packet.Offset, decompressBuffer, 0, decompressBuffer.Length)
+            packet.Data = DeCompress(decompressBuffer)
+            packet.Offset = 0
+            'DumpPacket(packet.Data)
+            If packet.Data Is Nothing Then
+                Log.WriteLine(LogType.WARNING, "[{0}:{1}] Failed to decompress addon data.", Client.IP, Client.Port)
+                Exit Sub
+            End If
 
-        Dim AddOnsNames As New List(Of String)
-        Dim AddOnsHashes As New List(Of UInteger)
-        Dim AddOnsCount As Integer
+            Dim AddOnsNames As New List(Of String)
+            Dim AddOnsHashes As New List(Of UInteger)
+            Dim AddOnsCount As Integer
 
-        AddOnsCount = packet.GetInt32()
+            AddOnsCount = packet.GetInt32()
 
-        'Log.WriteLine(LogType.DEBUG, String.Format("AddOnsCount = {0}....", AddOnsCount))
+            For i = 0 To AddOnsCount - 1
+                If (packet.Offset + 1) > packet.Data.Length Then Exit For
+                AddOnsNames.Add(packet.GetString)
+                packet.GetInt8() 'Enable
+                AddOnsHashes.Add(packet.GetUInt32)
+                packet.GetInt32() 'Unk1
+            Next
 
-        'Dim AddOnsConsoleWrite As String = String.Format("[{0}:{1}] Client addons loaded:", Client.IP, Client.Port)
-        ''''While packet.Offset < clientAddOnsSize
-        For i = 0 To AddOnsCount - 1
-            AddOnsNames.Add(packet.GetString)
-            packet.GetInt8() 'Enable
-            AddOnsHashes.Add(packet.GetUInt32)
-            packet.GetInt32() 'Unk
-            'AddOnsConsoleWrite &= String.Format("{0}{1} AddOnName: [{2,-30}], AddOnHash: [{3:X}]", vbNewLine, vbTab, AddOnsNames(AddOnsNames.Count - 1), AddOnsHashes(AddOnsHashes.Count - 1))
-        Next
-        ''''End While
-        'Log.WriteLine(LogType.DEBUG, AddOnsConsoleWrite)
-
-        'DONE: Build mysql addons query
-        'Not needed already - in 1.11 addons list is removed.
-
-        'DONE: Send packet
-        Dim addOnsEnable As New PacketClass(OPCODES.SMSG_ADDON_INFO)
-        For i = 0 To AddOnsNames.Count - 1
-            If IO.File.Exists(String.Format("interface\{0}.pub", AddOnsNames(i))) And (AddOnsHashes(i) <> &H4C1C776D) Then
+            'DONE: Send packet
+            Dim addOnsEnable As New PacketClass(OPCODES.SMSG_ADDON_INFO)
+            For i = 0 To AddOnsNames.Count - 1
                 'We have hash data
                 addOnsEnable.AddInt8(2)                    'AddOn Type [1-enabled, 0-banned, 2-blizzard]
                 addOnsEnable.AddInt8(1)                    'Unk
 
-                Dim fs As New IO.FileStream(String.Format("interface\{0}.pub", AddOnsNames(i)), IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read, 258, IO.FileOptions.SequentialScan)
-                Dim fb(256) As Byte
-                fs.Read(fb, 0, 257)
+                If IO.File.Exists(String.Format("interface\{0}.pub", AddOnsNames(i))) And (AddOnsHashes(i) <> &H4C1C776DUI) Then ' If we should add the addon signature
+                    addOnsEnable.AddInt8(1)
+                    Dim fs As New IO.FileStream(String.Format("interface\{0}.pub", AddOnsNames(i)), IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read, 258, IO.FileOptions.SequentialScan)
+                    Dim fb(256) As Byte
+                    fs.Read(fb, 0, 257)
 
-                'NOTE: Read from file
-                addOnsEnable.AddByteArray(fb)
-                'addOnsEnable.AddInt8(0)
-                'addOnsEnable.AddInt32(0)
-                'addOnsEnable.AddInt8(0) ' 3.0.8 Unknown
-            Else
-                'We don't have hash data or already sent to client
-                addOnsEnable.AddInt8(2)                    'AddOn Type [1-enabled, 0-banned, 2-blizzard]
-                addOnsEnable.AddInt8(1)                    'Unk
-                addOnsEnable.AddInt8(0)                    'Hash       [0-NoData, 1-256bytes of data]
+                    'NOTE: Read from file
+                    addOnsEnable.AddByteArray(fb)
+                Else
+                    addOnsEnable.AddInt8(0)
+                End If
+
                 addOnsEnable.AddInt32(0)
                 addOnsEnable.AddInt8(0) ' 3.0.8 Unknown
-            End If
-        Next
-        Client.Send(addOnsEnable)
-        addOnsEnable.Dispose()
+            Next
+            addOnsEnable.AddInt32(0) ' 'Banned addon count?
+            'for each banned addon
+            '  uint32
+            '  string (16 bytes)
+            '  string (16 bytes)
+            '  uint32
+            '  uint32
+            'next
+            Client.Send(addOnsEnable)
+            addOnsEnable.Dispose()
+        End If
+
+        'DONE: Send SMSG_CLIENTCACHE_VERSION
+        Dim SMSG_CLIENTCACHE_VERSION As New PacketClass(OPCODES.SMSG_CLIENTCACHE_VERSION)
+        SMSG_CLIENTCACHE_VERSION.AddInt32(0)
+        Client.Send(SMSG_CLIENTCACHE_VERSION)
+
+        'DONE: Send tutorial flags (don't know why, official seems to do it here nowadays)
+        SendTutorialFlags(Client)
     End Sub
     Public Sub On_CMSG_PING(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub
@@ -224,6 +234,12 @@ Public Module WC_Handlers_Auth
             'DONE: Clear the entry
             If UncompressedSize = 0 Then
                 Database.Update(String.Format("UPDATE account_data SET account_time{0} = 0, account_data{0} = '' WHERE account_id = {1}", DataID, AccID))
+
+                Dim responseClear As New PacketClass(OPCODES.SMSG_UPDATE_ACCOUNT_DATA_COMPLETE)
+                responseClear.AddInt32(DataID)
+                responseClear.AddInt32(0)
+                Client.Send(responseClear)
+                responseClear.Dispose()
                 Exit Sub
             End If
 
@@ -276,7 +292,11 @@ Public Module WC_Handlers_Auth
         End If
 
         Dim response As New PacketClass(OPCODES.SMSG_UPDATE_ACCOUNT_DATA)
-        response.AddUInt64(Client.Character.GUID)
+        If (Client.Character IsNot Nothing) Then
+            response.AddUInt64(Client.Character.GUID)
+        Else
+            response.AddUInt64(0)
+        End If
         response.AddUInt32(DataID)
 
         If FoundData = False Then
@@ -286,7 +306,7 @@ Public Module WC_Handlers_Auth
             Dim AccountData() As Byte = AccData.Rows(0).Item("account_data" & DataID)
             If AccountData.Length > 0 Then
                 response.AddUInt32(CType(AccData.Rows(0).Item("account_time" & DataID), UInteger)) 'unix time
-                response.AddInt32(AccountData.Length) 'Uncompressed buffer length
+                response.AddUInt32(AccountData.Length) 'Uncompressed buffer length
                 'DONE: Compress buffer if it's longer than 200 bytes
                 If AccountData.Length > 200 Then
                     Dim CompressedBuffer() As Byte = Compress(AccountData, 0, AccountData.Length)
@@ -404,8 +424,8 @@ Public Module WC_Handlers_Auth
                     playerState += CharacterFlagState.CHARACTER_FLAG_GHOST
                 End If
 
-                response.AddUInt32(0)    'added in WoTLK
-                response.AddUInt32(playerState)
+                response.AddUInt32(playerState) ' Character Flags
+                response.AddUInt32(0)    'added in WoTLK (Character Re-Customize Flags)
                 response.AddInt8(MySQLQuery.Rows(i).Item("char_restState"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_infoId"))
                 response.AddInt32(0)    'response.AddInt32(MySQLQuery.Rows(i).Item("pet_level"))
@@ -422,7 +442,8 @@ Public Module WC_Handlers_Auth
                 Dim r As DataRow = e.Current
 
                 'DONE: Add model info
-                For slot As Byte = 0 To EQUIPMENT_SLOT_END '- 1
+                'For slot As Byte = 0 To EQUIPMENT_SLOT_END '- 1
+                For slot As Byte = 0 To INVENTORY_SLOT_BAG_END - 1
                     If r Is Nothing OrElse CInt(r.Item("item_slot")) <> slot Then
                         'No equiped item in this slot
                         response.AddInt32(0) 'Item Model

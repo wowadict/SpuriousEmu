@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -32,8 +32,12 @@ Public Module WS_GameObjects
         Public Model As Integer = 0
         Public Type As Byte = 0
         Public Name As String = ""
+        Public IconName As String = ""
+        Public CastBarCaption As String = ""
         Public RespawnTime As Integer = 0
         Public Fields(23) As Integer
+        Public Size As Single = 0.0F
+        Public QuestItem(5) As Integer
         Private found_ As Boolean = False
 
         Public Sub New(ByVal ID_ As Integer)
@@ -52,10 +56,18 @@ Public Module WS_GameObjects
             Model = MySQLQuery.Rows(0).Item("gameObject_Model")
             Type = MySQLQuery.Rows(0).Item("gameObject_Type")
             Name = MySQLQuery.Rows(0).Item("gameObject_Name")
+            IconName = MySQLQuery.Rows(0).Item("gameObject_IconName")
+            CastBarCaption = MySQLQuery.Rows(0).Item("gameObject_CastBarCaption")
             RespawnTime = MySQLQuery.Rows(0).Item("gameObject_RespawnTime")
 
             For i As Byte = 0 To 23
                 Fields(i) = MySQLQuery.Rows(0).Item("gameObject_Field" & i)
+            Next
+
+            Size = MySQLQuery.Rows(0).Item("gameObject_Size")
+
+            For i As Byte = 0 To 5
+                QuestItem(i) = MySQLQuery.Rows(0).Item("gameObject_QuestItem" & i)
             Next
 
             GAMEOBJECTSDatabase.Add(ID, Me)
@@ -74,10 +86,17 @@ Public Module WS_GameObjects
             tmp = tmp & " gameObject_Model=""" & Model & """"
             tmp = tmp & ", gameObject_Type=""" & Type & """"
             tmp = tmp & ", gameObject_Name='" & Name & "'"
+            tmp = tmp & ", gameObject_IconName='" & IconName & "'"
+            tmp = tmp & ", gameObject_CastBarCaption='" & CastBarCaption & "'"
             tmp = tmp & ", gameObject_RespawnTime='" & RespawnTime & "'"
+            tmp = tmp & ", gameObject_Size=""" & Size & """"
 
             For i As Byte = 0 To 23
                 tmp = tmp & ", gameObject_Field" & i & " =""" & Fields(i) & """"
+            Next
+
+            For i As Byte = 0 To 5
+                tmp = tmp & ", gameObject_QuestItem" & i & " =""" & QuestItem(i) & """"
             Next
 
             tmp = tmp + String.Format(" WHERE gameObject_id = ""{0}"";", ID)
@@ -182,16 +201,23 @@ Public Module WS_GameObjects
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
 
             If Owner Then Update.SetUpdateFlag(EGameObjectFields.OBJECT_FIELD_CREATED_BY, Owner)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_X, positionX)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Y, positionY)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Z, positionZ)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
+            ' TODO: Fix These Remarked for 3.3.3a
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_X, positionX)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Y, positionY)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_POS_Z, positionZ)
+            ''Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
 
             Dim Rotation As Long = 0
             Dim f_rot1 As Single = Math.Sin(orientation / 2)
+            Dim f_rot2 As Single = Math.Cos(orientation / 2)
             Dim i_rot1 As Long = f_rot1 / Math.Atan(Math.Pow(2, -20))
             Rotation = Rotation Or ((CLng(i_rot1) << CLng(43) >> CLng(43)) And &H1FFFFFL)
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotation)
+            'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotation)
+
+            If (Rotations(2) = 0 And Rotations(3) = 0) Then
+                Rotations(2) = f_rot1
+                Rotations(3) = f_rot2
+            End If
 
             'If a game object has bit 4 set in the flag it needs to be activated (used for quests)
             'DynFlags = Activate a game object (Chest = 9, Goober = 1)
@@ -218,9 +244,9 @@ Public Module WS_GameObjects
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FLAGS, Flags)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_DISPLAYID, ObjectInfo.Model)
             Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_1, Rotations(1))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_2, Rotations(2))
-            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION_3, Rotations(3))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 1, Rotations(1))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 2, Rotations(2))
+            Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 3, Rotations(3))
             'Update.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_TIMESTAMP, 0)
         End Sub
         Private Sub Dispose() Implements System.IDisposable.Dispose
@@ -419,8 +445,11 @@ Public Module WS_GameObjects
             'TODO: Check if we're in a heroic instance!
             Loot = New LootObject(GUID, LootType.LOOTTYPE_SKINNNING)
             For Each LootRow As DataRow In MySQLQuery.Rows
+                Dim lootmin As Integer = LootRow.Item("loot_min")
+                If lootmin < 1 Then lootmin = 1 'TODO: Find out why Mangos has Negative Loot Minimums
+
                 If CType(LootRow.Item("loot_chance"), Single) * 10000 > (Rnd.Next(1, 2000001) Mod 1000000) Then
-                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(LootRow.Item("loot_min"), Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
+                    Dim ItemCount As Byte = CByte(Rnd.Next(CType(lootmin, Byte), CType(LootRow.Item("loot_max"), Byte) + 1))
                     Loot.Items.Add(New LootItem(CType(LootRow.Item("loot_item"), Integer), ItemCount))
                 End If
             Next
@@ -504,11 +533,12 @@ Public Module WS_GameObjects
                 packet.AddInt32(2)
                 'packet.AddInt8(0)
                 Dim tmpUpdate As New UpdateClass(FIELD_MASK_SIZE_GAMEOBJECT)
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION, Rotations(0))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 1, Rotations(1))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 2, Rotations(2))
-                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_ROTATION + 3, Rotations(3))
+                ' TODO: Fix This Remarked for 3.3.3a                
+                ''tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_FACING, orientation)
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION, Rotations(0))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 1, Rotations(1))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 2, Rotations(2))
+                tmpUpdate.SetUpdateFlag(EGameObjectFields.GAMEOBJECT_PARENTROTATION + 3, Rotations(3))
                 tmpUpdate.AddToPacket(packet, ObjectUpdateType.UPDATETYPE_VALUES, Me)
                 tmpUpdate.Dispose()
 
@@ -586,12 +616,14 @@ Public Module WS_GameObjects
     End Enum
 
     Public Sub On_CMSG_GAMEOBJECT_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        If (packet.Data.Length - 1) < 17 Then Exit Sub
+        'If (packet.Data.Length - 1) < 11 Then Exit Sub
         Dim response As New PacketClass(OPCODES.SMSG_GAMEOBJECT_QUERY_RESPONSE)
 
         packet.GetInt16()
         Dim GameObjectID As Integer = packet.GetInt32
         Dim GameObjectGUID As ULong = packet.GetUInt64
+
+        Dim UnknownString As String = ""
 
         Try
             Dim GameObject As GameObjectInfo
@@ -611,12 +643,22 @@ Public Module WS_GameObjects
             response.AddInt32(GameObject.Type)
             response.AddInt32(GameObject.Model)
             response.AddString(GameObject.Name)
-            response.AddInt32(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk)
-            response.AddInt16(0)                    'New in 2.0.3 - (1 = Cast Bar Text, 1 = unk)
+            response.AddInt8(0)                    'New in 1.12 - 4 strings (3 = names, 1 = unk) unk = IconName?
+            response.AddInt8(0)
+            response.AddInt8(0)
+            response.AddString(GameObject.IconName)       ' 2.0.3, string. Icon name to use instead of default icon for go's (ex: "Attack" makes sword)
+            response.AddString(GameObject.CastBarCaption) ' 2.0.3, string. Text will appear in Cast Bar when using GO (ex: "Collecting")
+            response.AddString(UnknownString)             ' 2.0.3, string.
+            'response.AddInt16(0)                    'New in 2.0.3 - (1 = Cast Bar Text, 1 = unk)
 
             For i As Byte = 0 To 23
                 response.AddInt32(GameObject.Fields(i))
             Next i
+
+            response.AddSingle(GameObject.Size)
+            For i As Integer = 0 To 5
+                response.AddInt32(GameObject.QuestItem(i)) 'QuestItem, quest drop
+            Next
 
             Client.Send(response)
             response.Dispose()

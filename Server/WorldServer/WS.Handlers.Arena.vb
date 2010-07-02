@@ -1,5 +1,5 @@
 ﻿' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ Public Module WS_Handlers_Arena
         Client.Send(packet)
         packet.Dispose()
     End Sub
+
     Public Sub SendArenaRoster(ByRef Client As ClientClass, ByVal ArenaTeamID As UInteger)
         Dim q As New DataTable
         Database.Query(String.Format("SELECT * FROM arena_members WHERE member_team = {0}", ArenaTeamID), q)
@@ -143,8 +144,6 @@ NextMember:
         Client.Send(response)
         response.Dispose()
     End Sub
-
-
 
     Public Sub On_CMSG_ARENA_TEAM_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub

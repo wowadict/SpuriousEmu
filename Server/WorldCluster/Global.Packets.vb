@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -57,6 +57,67 @@ Public Module Packets
             Log.WriteLine(LogType.FAILED, "Error dumping packet: {0}{1}", vbNewLine, e.ToString)
         End Try
     End Sub
+
+    Public Sub LogPacket(ByVal data() As Byte, ByVal Server As Boolean, Optional ByRef Client As ClientClass = Nothing)
+        Dim j As Integer
+        Dim buffer As String = ""
+        Try
+            Dim opcode As OPCODES = BitConverter.ToInt16(data, 2)
+            If IgnorePacket(opcode) Then Exit Sub
+            Dim StartAt As Integer = 6
+            If Server Then StartAt = 4
+
+            Dim TypeStr As String = "IN"
+            If Server Then TypeStr = "OUT"
+            If Client Is Nothing Then
+                buffer = buffer + [String].Format("{4} Packet: (0x{0:X4}) {1} PacketSize = {2}{3}", CInt(opcode), opcode, data.Length - StartAt, vbNewLine, TypeStr)
+            Else
+                buffer = buffer + [String].Format("[{0}:{1}] {6} Packet: (0x{2:X4}) {3} PacketSize = {4}{5}", Client.IP, Client.Port, CInt(opcode), opcode, data.Length - StartAt, vbNewLine, TypeStr)
+            End If
+
+            buffer += "|------------------------------------------------|----------------|" & vbNewLine
+            buffer += "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|" & vbNewLine
+            buffer += "|------------------------------------------------|----------------|" & vbNewLine
+            For j = StartAt To data.Length - 1 Step 16
+                If (j + 16 > data.Length) Then
+                    buffer += "|" & BitConverter.ToString(data, j, data.Length - j).Replace("-", " ")
+                    buffer += New String(" ", ((j + 16) - data.Length) * 3)
+                    buffer += " |" & FormatPacketStr(System.Text.Encoding.ASCII.GetString(data, j, data.Length - j))
+                    buffer += New String(" ", ((j + 16) - data.Length))
+                Else
+                    buffer += "|" & BitConverter.ToString(data, j, 16).Replace("-", " ")
+                    buffer += " |" & FormatPacketStr(System.Text.Encoding.ASCII.GetString(data, j, 16))
+                End If
+                buffer += "|" & vbNewLine
+            Next
+            buffer += "-------------------------------------------------------------------" & vbNewLine & vbNewLine
+
+            File.AppendAllText("packets.log", buffer)
+        Catch e As Exception
+        End Try
+    End Sub
+
+    Private Function IgnorePacket(ByVal opcode As OPCODES) As Boolean
+        Dim OpcodeName As String = String.Format("{0}", opcode)
+        If OpcodeName.StartsWith("MSG_MOVE") Then Return True
+        Select Case opcode
+            Case OPCODES.SMSG_MONSTER_MOVE
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    Private Function FormatPacketStr(ByVal str As String) As String
+        Dim tmpChar() As Char = str.ToCharArray
+        Dim tmpStr As String = ""
+        For i As Integer = 0 To tmpChar.Length - 1
+            If tmpChar(i) < "A"c OrElse tmpChar(i) > "z"c Then
+                tmpChar(i) = "."c
+            End If
+        Next i
+        Return CStr(tmpChar)
+    End Function
 
     Public Class PacketClass
         Implements IDisposable

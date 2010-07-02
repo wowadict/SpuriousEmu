@@ -9,6 +9,9 @@ Module Main
     Public SourceDB As New SQL
     Public DestDB As New SQL
     Public FailMsg As String = ""
+    Public FillEmptyOnly As Boolean = False
+    Public SQLSourceDB As String = ""
+    Public SQLDestDB As String = ""
 
     Public Sub SLQEventHandler(ByVal MessageID As SQL.EMessages, ByVal OutBuf As String)
         Select Case MessageID
@@ -36,7 +39,7 @@ Module Main
             Console.WriteLine()
 
             Console.ForegroundColor = System.ConsoleColor.Magenta
-            Console.WriteLine("http://www.SpuriousEmu.com")
+            Console.WriteLine("http://www.spuriousemu.com")
             Console.WriteLine()
 
             'DONE: Get all the sql info
@@ -66,21 +69,20 @@ Module Main
             If SQLPass = "" Then SQLPass = "root"
 
             Console.ForegroundColor = ConsoleColor.Green
-            Console.Write("SQL Source Database [ncdb]: ")
+            Console.Write("SQL Source Database [whydb]: ")
             Console.ForegroundColor = ConsoleColor.Cyan
-            Dim SQLSourceDB As String = Console.ReadLine()
-            If SQLSourceDB = "" Then SQLSourceDB = "ncdb"
+            SQLSourceDB = Console.ReadLine()
+            If SQLSourceDB = "" Then SQLSourceDB = "whydb"
 
             Console.ForegroundColor = ConsoleColor.Green
             Console.Write("SQL Destination Database [spurious]: ")
             Console.ForegroundColor = ConsoleColor.Cyan
-            Dim SQLDestDB As String = Console.ReadLine()
+            SQLDestDB = Console.ReadLine()
             If SQLDestDB = "" Then SQLDestDB = "spurious"
 
             Console.ForegroundColor = ConsoleColor.Green
             Console.Write("Only fill empty tables [false]: ")
             Console.ForegroundColor = ConsoleColor.Cyan
-            Dim FillEmptyOnly As Boolean = False
             Dim strFillEmptyOnly As String = Console.ReadLine()
             If strFillEmptyOnly = "" Then strFillEmptyOnly = "false"
             If strFillEmptyOnly = "1" OrElse LCase(strFillEmptyOnly) = "true" OrElse LCase(strFillEmptyOnly) = "yes" Then FillEmptyOnly = True
@@ -122,15 +124,15 @@ Module Main
             End If
             Console.WriteLine("Done.")
 
-            'DONE: Prepair the DB
-            Console.Write("Prepairing the database... ")
+            'DONE: Prepare the DB
+            Console.Write("Preparing the database... ")
             SourceDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
             DestDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
 
-            Dim SourceTables As New NCDB
+            Dim SourceTables As New WhyDB
             Dim DestTables As New Spurious
             If FillEmptyOnly = False Then
-                For Each DestTable As BaseDB.TTable In DestTables.Tables
+                For Each DestTable As WhyDBBaseDB.TTable In DestTables.Tables
                     'DONE: Empty the table before we start inserting data into it
                     DestDB.Update("DELETE FROM " & DestTable.Name)
                 Next
@@ -141,7 +143,7 @@ Module Main
 
             Dim StartedConvert As Integer = timeGetTime
             Dim AcceptedTypes As New List(Of String)
-            For Each DestTable As BaseDB.TTable In DestTables.Tables
+            For Each DestTable As WhyDBBaseDB.TTable In DestTables.Tables
                 If AcceptedTypes.Contains(DestTable.Name) = False AndAlso FillEmptyOnly Then
                     'DONE: Skip table if it includes data and it's only supposed to fill empty tables
                     Dim tmpResult As New DataTable
@@ -160,7 +162,7 @@ Module Main
                 Dim LastTable As Integer = 0
                 SqlLine = "SELECT "
                 SqlLine2 = ""
-                For Each SourceTable As BaseDB.TTable In SourceTables.Tables
+                For Each SourceTable As WhyDBBaseDB.TTable In SourceTables.Tables
                     CurrTable += 1
                     If DestTable.Type = SourceTable.Type Then
                         If FirstTable = 0 Then FirstTable = CurrTable
@@ -272,6 +274,9 @@ Module Main
                 ColumnUse.Clear()
             Next
 
+            'DONE: Perform Any Special Table Handling
+            SpecialTableHandling()
+
             Dim TimeTaken As Integer = timeGetTime - StartedConvert
             Dim TimeTakenMin As Integer = ((TimeTaken / 1000) / 60)
             Dim TimeTakenSec As Integer = (TimeTaken / 1000) Mod 60
@@ -291,6 +296,258 @@ ExitNow:
             Console.WriteLine("Press any key to close this window.")
         End Try
         Console.ReadKey()
+    End Sub
+
+    Public Sub SpecialTableHandling()
+        'DONE: Prepare the DB
+        Console.Write("Preparing the database... ")
+        SourceDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
+        DestDB.Update("SET SESSION sql_mode='STRICT_ALL_TABLES';")
+
+        'PROCESS AREATRIGGERS!!!!
+        Console.Write("Creating query for {0}... ", "areatriggers (tavern)")
+
+        If FillEmptyOnly = False Then
+            'DONE: Empty the table before we start inserting data into it
+            DestDB.Update("DELETE FROM areatrigger_tavern")
+        End If
+
+        Dim SqlLine As String = ""
+        Dim SqlLine2 As String = ""
+        Dim SqlQuests As String = ""
+        Dim SqlResult As New DataTable
+        Dim SqlQuestsResult As New DataTable
+        Dim SqlExists As String = ""
+        Dim SqlExistsResults As New DataTable
+        Dim SqlTrainer As String = ""
+        Dim SqlTrainerResults As New DataTable
+        Dim NextPercent As Integer = 0
+        Dim CurrentRow As Integer = 0
+
+        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='3';"
+        Console.WriteLine("Done.")
+
+        Console.Write("Collecting data... ")
+
+        SourceDB.Query(SqlLine, SqlResult)
+        If FailMsg <> "" Then
+            Console.WriteLine("Failed.")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.WriteLine(FailMsg)
+            FailMsg = ""
+            GoTo NextAreaTrigger
+        End If
+        Console.WriteLine("Done.")
+
+        Console.Write("Transfer data to {0}", "areatrigger_tavern")
+
+        For Each RowData As DataRow In SqlResult.Rows
+            SqlLine2 = "INSERT INTO areatrigger_tavern (id, name) VALUES ('" & RowData.Item("entry") & "', '" & RowData.Item("name") & "');"
+
+            CurrentRow += 1
+
+            'DONE: Execute the SQL Line
+            DestDB.Update(SqlLine2)
+            If FailMsg <> "" Then
+                Console.WriteLine(" Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo NextAreaTrigger
+            End If
+
+            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                Console.Write(".")
+                NextPercent += 10
+            End If
+
+        Next
+
+        Console.WriteLine("Done.")
+
+        CurrentRow = 0
+
+NextAreaTrigger:
+        Console.Write("Creating query for {0}... ", "areatriggers (teleport)")
+
+        If FillEmptyOnly = False Then
+            'DONE: Empty the table before we start inserting data into it
+            DestDB.Update("DELETE FROM areatrigger_teleport")
+        End If
+
+        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='1';"
+        Console.WriteLine("Done.")
+
+        Console.Write("Collecting data... ")
+
+        SourceDB.Query(SqlLine, SqlResult)
+        If FailMsg <> "" Then
+            Console.WriteLine("Failed.")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.WriteLine(FailMsg)
+            FailMsg = ""
+            GoTo NextAreaTrigger2
+        End If
+        Console.WriteLine("Done.")
+
+        Console.Write("Transfer data to {0}", "areatrigger_teleport")
+
+        For Each RowData As DataRow In SqlResult.Rows
+            SqlLine2 = "INSERT INTO areatrigger_teleport (id, name, required_level, required_item, required_item2, heroic_key, heroic_key2, required_quest_done, required_quest_done_heroic, required_failed_text, target_map, target_position_x, target_position_y, target_position_z, target_orientation) VALUES ('" & _
+            RowData.Item("entry") & "', '" & RowData.Item("name") & "', '" & RowData.Item("required_level") & "', '0', '0', '0', '0', '0', '0', '', '" & RowData.Item("map") & "', '" & _
+            RowData.Item("position_x") & "', '" & RowData.Item("position_y") & "', '" & RowData.Item("position_z") & "', '" & RowData.Item("orientation") & "');"
+
+            CurrentRow += 1
+
+            'DONE: Execute the SQL Line
+            DestDB.Update(SqlLine2)
+            If FailMsg <> "" Then
+                Console.WriteLine(" Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo NextAreaTrigger2
+            End If
+
+            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                Console.Write(".")
+                NextPercent += 10
+            End If
+
+        Next
+
+        Console.WriteLine("Done.")
+
+NextAreaTrigger2:
+        Console.Write("Creating query for {0}... ", "areatriggers (involvedrelation)")
+
+        If FillEmptyOnly = False Then
+            'DONE: Empty the table before we start inserting data into it
+            DestDB.Update("DELETE FROM areatrigger_involvedrelation")
+        End If
+
+        SqlLine = "SELECT * FROM " & SQLSourceDB & ".areatriggers WHERE type='2';"
+        Console.WriteLine("Done.")
+
+        Console.Write("Collecting data... ")
+
+        SourceDB.Query(SqlLine, SqlResult)
+        If FailMsg <> "" Then
+            Console.WriteLine("Failed.")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.WriteLine(FailMsg)
+            FailMsg = ""
+            GoTo NextTable
+        End If
+        Console.WriteLine("Done.")
+
+        Console.Write("Transfer data to {0}", "areatrigger_involvedrelation")
+
+        For Each RowData As DataRow In SqlResult.Rows
+            SqlExists = "SELECT id FROM " & SQLDestDB & ".areatrigger_involvedrelation WHERE id = '" & RowData.Item("entry") & "';"
+            DestDB.Query(SqlExists, SqlExistsResults)
+            If SqlExistsResults.Rows.Count > 0 Then
+                'Duplicate Entry
+                Continue For
+            Else
+                SqlQuests = "SELECT * FROM " & SQLSourceDB & ".quests WHERE ExploreTrigger1 = '" & RowData.Item("entry") & "' OR ExploreTrigger2 = '" & RowData.Item("entry") & "' OR ExploreTrigger3 = '" & RowData.Item("entry") & "' OR ExploreTrigger4 = '" & RowData.Item("entry") & "';"
+                SourceDB.Query(SqlQuests, SqlQuestsResult)
+                If SqlQuestsResult.Rows.Count > 0 Then
+                    SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '" & SqlQuestsResult.Rows(CurrentRow).Item("entry") & "');"
+                Else
+                    SqlLine2 = "INSERT INTO areatrigger_involvedrelation (id, quest) VALUES ('" & RowData.Item("entry") & "', '0');"
+                End If
+
+            End If
+
+            CurrentRow += 1
+
+            'DONE: Execute the SQL Line
+            DestDB.Update(SqlLine2)
+            If FailMsg <> "" Then
+                Console.WriteLine(" Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                GoTo NextTable
+            End If
+
+            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                Console.Write(".")
+                NextPercent += 10
+            End If
+
+        Next
+
+        Console.WriteLine(" Done.")
+
+NextTable:
+        'PROCESS TRAINER_SPELLS!!!!
+        Console.Write("Creating query for {0}... ", "trainer_spells")
+
+        If FillEmptyOnly = False Then
+            'DONE: Empty the table before we start inserting data into it
+            DestDB.Update("DELETE FROM trainer_spells")
+        End If
+
+        SqlLine = "SELECT * FROM " & SQLSourceDB & ".trainer_spells;"
+        Console.WriteLine("Done.")
+
+        Console.Write("Collecting data... ")
+
+        SourceDB.Query(SqlTrainer, SqlTrainerResults)
+        If FailMsg <> "" Then
+            Console.WriteLine("Failed.")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.WriteLine(FailMsg)
+            FailMsg = ""
+            GoTo NextAreaTrigger
+        End If
+        Console.WriteLine("Done.")
+
+        Console.Write("Transfer data to {0}", "trainer_spells")
+
+        Dim isCast As Integer = 0
+        Dim SpellID As Integer = 0
+
+        CurrentRow = 0
+
+        For Each RowData As DataRow In SqlTrainerResults.Rows
+            'Is this a Cast Spell Record?
+            If RowData.Item("cast_spell") <> 0 Then
+                isCast = 1
+                SpellID = RowData.Item("cast_spell")
+            Else
+                isCast = 0
+                SpellID = RowData.Item("learn_spell")
+            End If
+
+            SqlLine2 = "INSERT INTO trainer_spells (entry, spellid, spellcost, reqspell, reqskill, reqskillvalue, reqlevel, deletespell, is_prof, is_cast) VALUES ('" & _
+            RowData.Item("entry") & "', '" & SpellID & "', '" & RowData.Item("spellcost") & "', '" & RowData.Item("reqspell") & "', '" & RowData.Item("reqskill") & _
+            "', '" & RowData.Item("reqskillvalue") & "', '" & RowData.Item("reqlevel") & "', '" & RowData.Item("deletespell") & "', '" & RowData.Item("is_prof") & _
+            "', '" & isCast & "');"
+
+            CurrentRow += 1
+
+            'DONE: Execute the SQL Line
+            DestDB.Update(SqlLine2)
+            If FailMsg <> "" Then
+                Console.WriteLine(" Failed.")
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine(FailMsg)
+                FailMsg = ""
+                Continue For
+            End If
+
+            If Int(CurrentRow / SqlResult.Rows.Count * 100) >= NextPercent Then
+                Console.Write(".")
+                NextPercent += 10
+            End If
+
+        Next
+
+        Console.WriteLine(" Done.")
+
     End Sub
 
     Public Function ReplaceValue(ByVal Value As Object, ByVal VarType As Type) As String
