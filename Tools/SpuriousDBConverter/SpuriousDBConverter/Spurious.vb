@@ -348,6 +348,7 @@
         'ItemLoot
         Table = New TTable("itemloot", TableTypes.LootsItem)
         Tables.Add(Table)
+        Table.Columns.Add(ItemsLoot_Columns.Index, "index")
         Table.Columns.Add(ItemsLoot_Columns.Entry, "entryid")
         Table.Columns.Add(ItemsLoot_Columns.Item, "itemid")
         Table.Columns.Add(ItemsLoot_Columns.Chance, "percentchance")
@@ -379,7 +380,7 @@
         Table.Columns.Add(FishingLoot_Columns.FFA, "loot_ffa")
 
         'Loots_PickPocketing
-        Table = New TTable("loots_skinning", TableTypes.LootsPickPocketing)
+        Table = New TTable("loots_pickpocketing", TableTypes.LootsPickPocketing)
         Tables.Add(Table)
         Table.Columns.Add(PickPocketingLoot_Columns.Entry, "loot_creature")
         Table.Columns.Add(PickPocketingLoot_Columns.Item, "loot_item")
@@ -741,6 +742,7 @@
         'PlayerCreateInfo
         Table = New TTable("playercreateinfo", TableTypes.PlayerCreateInfo)
         Tables.Add(Table)
+        Table.Columns.Add(PlayerCreateInfo_Columns.Index, "Index")
         Table.Columns.Add(PlayerCreateInfo_Columns.Race, "race")
         Table.Columns.Add(PlayerCreateInfo_Columns.Classe, "class")
         Table.Columns.Add(PlayerCreateInfo_Columns.BaseStrength, "BaseStrength")
@@ -763,6 +765,7 @@
         'PlayerCreateInfo_Items
         Table = New TTable("playercreateinfo_items", TableTypes.PlayerCreateInfo_Items)
         Tables.Add(Table)
+        Table.Columns.Add(PlayerCreateInfoItem_Columns.IndexID, "indexid")
         Table.Columns.Add(PlayerCreateInfoItem_Columns.ProtoID, "protoid")
         Table.Columns.Add(PlayerCreateInfoItem_Columns.SlotID, "slotid")
         Table.Columns.Add(PlayerCreateInfoItem_Columns.Amount, "amount")
@@ -770,6 +773,7 @@
         'PlayerCreateInfo_Skills
         Table = New TTable("playercreateinfo_skills", TableTypes.PlayerCreateInfo_Skills)
         Tables.Add(Table)
+        Table.Columns.Add(PlayerCreateInfoSkill_Columns.IndexID, "indexid")
         Table.Columns.Add(PlayerCreateInfoSkill_Columns.SkillID, "skillid")
         Table.Columns.Add(PlayerCreateInfoSkill_Columns.Level, "level")
         Table.Columns.Add(PlayerCreateInfoSkill_Columns.MaxLevel, "maxlevel")
@@ -777,6 +781,7 @@
         'PlayerCreateInfo_Spells
         Table = New TTable("playercreateinfo_spells", TableTypes.PlayerCreateInfo_Spells)
         Tables.Add(Table)
+        Table.Columns.Add(PlayerCreateInfoSpell_Columns.IndexID, "indexid")
         Table.Columns.Add(PlayerCreateInfoSpell_Columns.SpellID, "spellid")
 
         'Npc_MonsterSay

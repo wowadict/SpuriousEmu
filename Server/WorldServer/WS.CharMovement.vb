@@ -130,7 +130,7 @@ Module WS_CharMovement
             '#End If
         End If
 
-        'packet.GetInt32() 'Fall time
+        packet.GetInt32() 'Fall time
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_JUMPING) Then
             Dim airTime As UInteger = packet.GetUInt32

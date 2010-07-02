@@ -7,6 +7,11 @@
         Items
         CreatureLoot
         GameobjectLoot
+        LootsItem
+        LootsSkinning
+        LootsFishing
+        Fishing
+        LootsPickPocketing
         Quests
         BattleGround_BattleMaster
         BattleGround_Template
@@ -34,11 +39,6 @@
         PlayerCreateInfo_Skills
         PlayerCreateInfo_Spells
         MonsterSay
-        LootsSkinning
-        LootsItem
-        LootsFishing
-        Fishing
-        LootsPickPocketing
         CmdTeleports
         creature_movement
     End Enum

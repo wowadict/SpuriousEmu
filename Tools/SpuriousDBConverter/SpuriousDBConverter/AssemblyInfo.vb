@@ -1,5 +1,5 @@
 ' 
-' Copyright (C) 2008-2010 Spurious <http://SpuriousEmu.com>
+' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("A database tool used to transfer and convert data between databases.")> 
 <Assembly: AssemblyCompany("The Spurious Team")> 
 <Assembly: AssemblyProduct("Spurious DB Converter by UniX")> 
-<Assembly: AssemblyCopyright("Copyright (C) 2008-2010, The Spurious Team")> 
+<Assembly: AssemblyCopyright("Copyright (C) 2008, The Spurious Team")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: CLSCompliant(False)> 
 
