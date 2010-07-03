@@ -367,9 +367,10 @@ ExitNow:
 
             Console.WriteLine("Done.")
 
-            CurrentRow = 0
-
 AreaTriggerTeleport:
+            CurrentRow = 0
+            NextPercent = 0
+
             '****Area Triggers Teleport****
             If FillEmptyOnly = False Then
                 'DONE: Empty the table before we start inserting data into it
@@ -427,6 +428,9 @@ AreaTriggerTeleport:
             Console.WriteLine("Done.")
 
 AreaTriggerInvolvedRelation:
+            CurrentRow = 0
+            NextPercent = 0
+
             'Area Triggers Involved Relation
             If FillEmptyOnly = False Then
                 'DONE: Empty the table before we start inserting data into it
@@ -496,6 +500,9 @@ AreaTriggerInvolvedRelation:
             Console.WriteLine(" Done.")
 
 TrainerSpells:
+            CurrentRow = 0
+            NextPercent = 0
+
             'PROCESS TRAINER_SPELLS!!!!
             If FillEmptyOnly = False Then
                 'DONE: Empty the table before we start inserting data into it
@@ -528,8 +535,6 @@ TrainerSpells:
 
             Dim isCast As Integer = 0
             Dim SpellID As Integer = 0
-
-            CurrentRow = 0
 
             For Each RowData As DataRow In SqlTrainerResults.Rows
                 'Is this a Cast Spell Record?
