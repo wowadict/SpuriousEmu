@@ -913,7 +913,7 @@ Public Module WS_Items
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
                 If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
+                ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
