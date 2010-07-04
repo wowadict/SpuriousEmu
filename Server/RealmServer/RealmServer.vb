@@ -49,9 +49,9 @@ Public Module RS_Main
     'Version
     Public Const REQUIRED_VERSION_1 As Integer = 3
     Public Const REQUIRED_VERSION_2 As Integer = 3
-    Public Const REQUIRED_VERSION_3 As Integer = 3
-    Const REQUIRED_BUILD_LOW As Integer = 11723
-    Const REQUIRED_BUILD_HIGH As Integer = 11723
+    Public Const REQUIRED_VERSION_3 As Integer = 5
+    Const REQUIRED_BUILD_LOW As Integer = 12340
+    Const REQUIRED_BUILD_HIGH As Integer = 12340
     Const CONNETION_SLEEP_TIME As Integer = 100
 
     'RealmServ OP Codes
