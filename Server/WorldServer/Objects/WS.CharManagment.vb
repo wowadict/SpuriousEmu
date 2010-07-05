@@ -440,11 +440,9 @@ Public Module WS_CharManagment
     End Class
     Public Class TActionButton
         Public ActionType As Byte = 0
-        Public ActionMisc As Byte = 0
         Public Action As Integer = 0
-        Public Sub New(ByVal Action_ As Integer, ByVal Type_ As Byte, ByVal Misc_ As Byte)
+        Public Sub New(ByVal Action_ As Integer, ByVal Type_ As Byte)
             ActionType = Type_
-            ActionMisc = Misc_
             Action = Action_
         End Sub
     End Class
@@ -532,15 +530,10 @@ Public Module WS_CharManagment
         Dim packet As New PacketClass(OPCODES.SMSG_ACTION_BUTTONS)
 
         Dim i As Byte
-
-        'packet.AddInt8(1) ' talent spec amount (in packet)
-        'TODO: There are now 132 action buttons in WotLK
-        For i = 0 To 144 - 1    'or 480 ?
+        packet.AddInt8(1) ' talent spec amount (in packet)
+        For i = 0 To 144 - 1
             If Character.ActionButtons.ContainsKey(i) Then
-                packet.AddInt8(i) ' button ?
-                packet.AddUInt16(Character.ActionButtons(i).Action)
-                packet.AddInt8(Character.ActionButtons(i).ActionType)
-                packet.AddInt8(Character.ActionButtons(i).ActionMisc)
+                packet.AddInt32(Character.ActionButtons(i).Action Or (Character.ActionButtons(i).ActionType << 24))
             Else
                 packet.AddInt32(0)
             End If
@@ -662,6 +655,7 @@ Public Module WS_CharManagment
             'packet.AddInt16(Spell.Key)      'SpellID
             'packet.AddInt16(Spell.Value)    'SlotID
             packet.AddInt32(Spell)
+            packet.AddInt16(0)
         Next
         packet.AddInt16(0)
 
@@ -4538,7 +4532,7 @@ CheckXPAgain:
                     If Trim(tmp(i)) <> "" Then
                         Dim tmp2() As String
                         tmp2 = Split(tmp(i), ":")
-                        ActionButtons(CType(tmp2(0), Byte)) = New TActionButton(tmp2(1), tmp2(2), tmp2(3))
+                        ActionButtons(CType(tmp2(0), Byte)) = New TActionButton(tmp2(1), tmp2(2))
                     End If
                 Next i
             End If
@@ -4759,7 +4753,7 @@ CheckXPAgain:
             'char_actionBar
             temp.Clear()
             For Each ActionButton As KeyValuePair(Of Byte, TActionButton) In ActionButtons
-                temp.Add(String.Format("{0}:{1}:{2}:{3}", ActionButton.Key, ActionButton.Value.Action, ActionButton.Value.ActionType, ActionButton.Value.ActionMisc))
+                temp.Add(String.Format("{0}:{1}:{2}", ActionButton.Key, ActionButton.Value.Action, ActionButton.Value.ActionType))
             Next
             tmpCMD = tmpCMD & ", char_actionBar"
             tmpValues = tmpValues & ", """ & Join(temp.ToArray, " ") & """"
@@ -4897,7 +4891,7 @@ CheckXPAgain:
             'char_actionBar
             temp.Clear()
             For Each ActionButton As KeyValuePair(Of Byte, TActionButton) In ActionButtons
-                temp.Add(String.Format("{0}:{1}:{2}:{3}", ActionButton.Key, ActionButton.Value.Action, ActionButton.Value.ActionType, ActionButton.Value.ActionMisc))
+                temp.Add(String.Format("{0}:{1}:{2}", ActionButton.Key, ActionButton.Value.Action, ActionButton.Value.ActionType))
             Next
             tmp = tmp & ", char_actionBar=""" & Join(temp.ToArray, " ") & """"
 
@@ -5243,22 +5237,27 @@ CheckXPAgain:
     Public Sub On_CMSG_SET_ACTION_BUTTON(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 10 Then Exit Sub
         packet.GetInt16()
-        Dim button As Byte = packet.GetInt8(6)
-        Dim action As UShort = packet.GetUInt16(7)
-        Dim actionMisc As Byte = packet.GetInt8(9)
-        Dim actionType As Byte = packet.GetInt8(10)
+        Dim button As Byte = packet.GetInt8()
+        Dim packedData As Integer = packet.GetInt32()
 
-        If action = 0 Then
-            Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_SET_ACTION_BUTTON [Remove action from button {2}]", Client.IP, Client.Port, button)
+        Dim action As Integer = (packedData And &HFFFFFF)
+        Dim actionType As Byte = ((packedData And &HFF000000) >> 24)
+
+        If packedData = 0 Then
+            Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Remove action from button {2}]", Client.IP, Client.Port, button)
             Client.Character.ActionButtons.Remove(button)
-        ElseIf actionType = 64 Then
-            Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Macro {2} into button {3}]", Client.IP, Client.Port, action, button)
-        ElseIf actionType = 128 Then
-            Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Item {2} into button {3}]", Client.IP, Client.Port, action, button)
         Else
-            Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Action {2}:{4}:{5} into button {3}]", Client.IP, Client.Port, action, button, actionType, actionMisc)
+            If actionType = 64 OrElse actionType = 65 Then
+                Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Macro {2} into button {3}]", Client.IP, Client.Port, action, button)
+            ElseIf actionType = 128 Then
+                Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Item {2} into button {3}]", Client.IP, Client.Port, action, button)
+            ElseIf actionType = 32 Then
+                Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added EquipmentSet {2} into button {3}]", Client.IP, Client.Port, action, button)
+            Else
+                Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTION_BUTTON [Added Spell {2} into button {3}]", Client.IP, Client.Port, action, button)
+            End If
+            Client.Character.ActionButtons(button) = New TActionButton(action, actionType)
         End If
-        Client.Character.ActionButtons(button) = New TActionButton(action, actionType, actionMisc)
     End Sub
 
     Public Enum LogoutResponseCode As Byte
@@ -5782,7 +5781,7 @@ CheckXPAgain:
         ' Set Player Create Action Buttons
         For Each BarRow As DataRow In CreateInfoBars.Rows
             If BarRow.Item("action") > 0 Then
-                c.ActionButtons(ButtonPos) = New TActionButton(BarRow.Item("action"), BarRow.Item("type"), BarRow.Item("misc"))
+                c.ActionButtons(ButtonPos) = New TActionButton(BarRow.Item("action"), BarRow.Item("type"))
                 ButtonPos = ButtonPos + 1
             End If
         Next

@@ -82,6 +82,7 @@ Public Module WS_Base
 
         Public cUnitFlags As Integer = UnitFlags.UNIT_FLAG_ATTACKABLE
         Public cDynamicFlags As Integer = 0 'DynamicFlags.UNIT_DYNFLAG_SPECIALINFO
+        Public cBytes0 As Integer = 0
         Public cBytes1 As Integer = 0
         Public cBytes2 As Integer = 0
 

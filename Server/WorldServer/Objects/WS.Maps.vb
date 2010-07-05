@@ -763,15 +763,15 @@ Public Module WS_Maps
         '    End If
         'Next
 
-        'MysqlQuery.Clear()
-        'Database.Query(String.Format("SELECT * FROM spawns_gameobjects WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
-        'For Each InfoRow As DataRow In MysqlQuery.Rows
-        '    If Not WORLD_GAMEOBJECTs.ContainsKey(CType(InfoRow.Item("spawn_id"), ULong) + GUID_GAMEOBJECT) Then
-        '        Dim tmpGo As GameObjectObject = New GameObjectObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
-        '        tmpGo.instance = TileInstance
-        '        tmpGo.AddToWorld()
-        '    End If
-        'Next
+        MysqlQuery.Clear()
+        Database.Query(String.Format("SELECT * FROM spawns_gameobjects WHERE spawn_map = {0} AND spawn_positionX BETWEEN '{1}' AND '{2}' AND spawn_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)
+        For Each InfoRow As DataRow In MysqlQuery.Rows
+            If Not WORLD_GAMEOBJECTs.ContainsKey(CType(InfoRow.Item("spawn_id"), ULong) + GUID_GAMEOBJECT) Then
+                Dim tmpGo As GameObjectObject = New GameObjectObject(CType(InfoRow.Item("spawn_id"), Long), InfoRow)
+                tmpGo.instance = TileInstance
+                tmpGo.AddToWorld()
+            End If
+        Next
 
         MysqlQuery.Clear()
         Database.Query(String.Format("SELECT * FROM tmpspawnedcorpses WHERE corpse_mapId IN ({0}) AND corpse_positionX BETWEEN '{1}' AND '{2}' AND corpse_positionY BETWEEN '{3}' AND '{4}';", TileMap, MinX, MaxX, MinY, MaxY), MysqlQuery)

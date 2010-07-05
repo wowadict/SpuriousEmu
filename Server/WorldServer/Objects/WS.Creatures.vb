@@ -93,15 +93,16 @@ Public Module WS_Creatures
             LevelMin = MySQLQuery.Rows(0).Item("creature_minLevel")
             LevelMax = MySQLQuery.Rows(0).Item("creature_maxLevel")
 
-            EquipModel(0) = MySQLQuery.Rows(0).Item("creature_equipmodel1")
-            EquipModel(1) = MySQLQuery.Rows(0).Item("creature_equipmodel2")
-            EquipModel(2) = MySQLQuery.Rows(0).Item("creature_equipmodel3")
-            EquipInfo(0) = MySQLQuery.Rows(0).Item("creature_equipinfo1")
-            EquipInfo(1) = MySQLQuery.Rows(0).Item("creature_equipinfo2")
-            EquipInfo(2) = MySQLQuery.Rows(0).Item("creature_equipinfo3")
-            EquipSlot(0) = MySQLQuery.Rows(0).Item("creature_equipslot1")
-            EquipSlot(1) = MySQLQuery.Rows(0).Item("creature_equipslot2")
-            EquipSlot(2) = MySQLQuery.Rows(0).Item("creature_equipslot3")
+            ' These are no longer used, information is in creature spawn table.
+            'EquipModel(0) = MySQLQuery.Rows(0).Item("creature_equipmodel1")
+            'EquipModel(1) = MySQLQuery.Rows(0).Item("creature_equipmodel2")
+            'EquipModel(2) = MySQLQuery.Rows(0).Item("creature_equipmodel3")
+            'EquipInfo(0) = MySQLQuery.Rows(0).Item("creature_equipinfo1")
+            'EquipInfo(1) = MySQLQuery.Rows(0).Item("creature_equipinfo2")
+            'EquipInfo(2) = MySQLQuery.Rows(0).Item("creature_equipinfo3")
+            'EquipSlot(0) = MySQLQuery.Rows(0).Item("creature_equipslot1")
+            'EquipSlot(1) = MySQLQuery.Rows(0).Item("creature_equipslot2")
+            'EquipSlot(2) = MySQLQuery.Rows(0).Item("creature_equipslot3")
 
             AIScriptSource = MySQLQuery.Rows(0).Item("creature_aiScript")
 
@@ -250,10 +251,10 @@ Public Module WS_Creatures
         Public UnkFloat1 As Single = 1
         Public UnkFloat2 As Single = 2
 
-        'Public EquipedItems() As Integer = {0, 0, 0}
-        Public EquipModel() As Integer = {0, 0, 0}
-        Public EquipInfo() As Integer = {0, 0, 0}
-        Public EquipSlot() As Byte = {0, 0, 0}
+        Public EquipedItems() As Integer = {0, 0, 0}
+        'Public EquipModel() As Integer = {0, 0, 0}
+        'Public EquipInfo() As Integer = {0, 0, 0}
+        'Public EquipSlot() As Byte = {0, 0, 0}
 
         Public AIScriptSource As String = ""
 
@@ -439,8 +440,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_GUID, GUID)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_SCALE_X, Size)
             Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_TYPE, CType(ObjectType.TYPE_OBJECT + ObjectType.TYPE_UNIT, Integer))
-            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer))
-            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, GuidLOW(GUID))
+            Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, ID)
+            'Update.SetUpdateFlag(EObjectFields.OBJECT_FIELD_ENTRY, CType(GUID, Integer)) ' Possible wrong ID for this field trying ID.
 
             If (Not aiScript Is Nothing) AndAlso (Not aiScript.aiTarget Is Nothing) Then
                 Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_TARGET, aiScript.aiTarget.GUID)
@@ -455,7 +456,8 @@ Public Module WS_Creatures
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_NATIVEDISPLAYID, Me.Model)
             If Mount > 0 Then Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_MOUNTDISPLAYID, Mount)
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_0, CType(CType(CREATURESDatabase(ID).ManaType, Integer) << 24, Integer))
+            'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_0, CType(CType(CREATURESDatabase(ID).ManaType, Integer) << 24, Integer)) ' Seeing if info in spawn table works better here.
+            Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_0, cBytes0)
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_1, cBytes1)
             Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BYTES_2, cBytes2)
 
@@ -493,15 +495,15 @@ Public Module WS_Creatures
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_2 + 2, EquipedItems(2))
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4 + 1, 0)
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, CreatureInfo.EquipModel(0))
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID, EquipedItems(0))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1, CreatureInfo.EquipInfo(0))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 1, CreatureInfo.EquipSlot(0))
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 1, CreatureInfo.EquipModel(1))
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 1, EquipedItems(1))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2, CreatureInfo.EquipInfo(1))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 2 + 1, CreatureInfo.EquipSlot(1))
 
-            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 2, CreatureInfo.EquipModel(2))
+            Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID + 2, EquipedItems(2))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4, CreatureInfo.EquipInfo(2))
             ''Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_SLOT_ID_1 + 4 + 1, CreatureInfo.EquipSlot(2))
 
@@ -1251,15 +1253,16 @@ Public Module WS_Creatures
             Faction = Info.Item("spawn_faction")
             Mount = Info.Item("spawn_mount")
             cUnitFlags = Info.Item("spawn_flags")
-            'cBytes0 = Info.Item("spawn_bytes0") NOT USED ATM
+            cBytes0 = Info.Item("spawn_bytes0") 'Now using this field.
             cBytes1 = Info.Item("spawn_bytes1")
             cBytes2 = Info.Item("spawn_bytes2")
             cEmoteState = Info.Item("spawn_emotestate")
             cStandState = Info.Item("spawn_standstate")
 
-            'EquipedItems(0) = Info.Item("spawn_equipslot1")
-            'EquipedItems(1) = Info.Item("spawn_equipslot2")
-            'EquipedItems(2) = Info.Item("spawn_equipslot3")
+            ' Using this instead of the creature table entries.
+            EquipedItems(0) = Info.Item("spawn_equipslot1")
+            EquipedItems(1) = Info.Item("spawn_equipslot2")
+            EquipedItems(2) = Info.Item("spawn_equipslot3")
 
             If Not CREATURESDatabase.ContainsKey(ID) Then
                 Dim baseCreature As New CreatureInfo(ID)

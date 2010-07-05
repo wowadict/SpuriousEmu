@@ -460,15 +460,15 @@ Public Module WS_GameObjects
         End Function
 
         Public Sub CalculateMineRemaning(Optional ByVal Force As Boolean = False)
-            If Type <> GameObjectType.GAMEOBJECT_TYPE_CHEST Then Exit Sub
-            For i As Integer = 0 To 4
-                If Locks(LockID).KeyType(i) = LockKeyType.LOCK_KEY_SKILL AndAlso (Locks(LockID).KeyType(i) = LockType.LOCKTYPE_MINING OrElse Locks(LockID).KeyType(i) = LockType.LOCKTYPE_HERBALISM) Then
-                    If Force OrElse MineRemaining = 0 Then
-                        MineRemaining = Rnd.Next(Sound(4), Sound(5) + 1)
-                    End If
-                    Exit Sub
-                End If
-            Next i
+            'If Type <> GameObjectType.GAMEOBJECT_TYPE_CHEST Then Exit Sub
+            'For i As Integer = 0 To 4
+            '    If Locks(LockID).KeyType(i) = LockKeyType.LOCK_KEY_SKILL AndAlso (Locks(LockID).KeyType(i) = LockType.LOCKTYPE_MINING OrElse Locks(LockID).KeyType(i) = LockType.LOCKTYPE_HERBALISM) Then
+            '        If Force OrElse MineRemaining = 0 Then
+            '            MineRemaining = Rnd.Next(Sound(4), Sound(5) + 1)
+            '        End If
+            '        Exit Sub
+            '    End If
+            'Next i
         End Sub
 
         Public Sub SpawnAnimation()

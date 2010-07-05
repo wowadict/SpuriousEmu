@@ -302,7 +302,9 @@ Public Module Functions
                     SMSG_ACCOUNT_DATA_TIMES.AddUInt32(CType(AccData.Rows(0).Item("account_time" & i), UInteger))
                 End If
             Else
-                SMSG_ACCOUNT_DATA_TIMES.AddUInt32(0)
+                If (mask And (1 << i)) Then
+                    SMSG_ACCOUNT_DATA_TIMES.AddUInt32(0)
+                End If
             End If
         Next
 

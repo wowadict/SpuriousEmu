@@ -15,12 +15,12 @@ Namespace Scripts
 			'response.Dispose()
 			'Exit Sub
 
-			Dim npcText As New NPCText
+            Dim npcText As New NPCText(34, "It is not yet your time. I shall aid your journey back to the realm of the living... for a price.")
 			npcText.Count=1
 			npcText.TextID=34
-			npcText.TextLine1(0)="It is not yet your time. I shall aid your journey back to the realm of the living... for a price."
-			SendNPCText(c.Client,npcText)
-
+            'npcText.TextLine1(0)="It is not yet your time. I shall aid your journey back to the realm of the living... for a price."
+            'SendNPCText(c.Client,npcText)
+            c.SendTalking(34)
 
 			Dim npcMenu As New GossipMenu
             npcMenu.AddMenu("Bring me back to life.", 4, 0)

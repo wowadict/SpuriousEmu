@@ -106,7 +106,7 @@ Public Module Constants
     Public Const UNIT_NORMAL_FLY_SPEED As Single = 7.0F
     Public Const UNIT_NORMAL_FLY_BACK_SPEED As Single = 4.5F
     Public Const UNIT_NORMAL_TAXI_SPEED As Single = 32.0F
-    Public Const UNIT_NORMAL_PITCH_SPEED As Single = 7
+    Public Const UNIT_NORMAL_PITCH_SPEED As Single = 3.14F '7 was the old value
 
     Public Const PLAYER_VISIBLE_ITEM_SIZE As Integer = 18
     Public Const PLAYER_SKILL_INFO_SIZE As Integer = 384 - 1
