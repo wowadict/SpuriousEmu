@@ -912,7 +912,7 @@ Public Module WS_Items
 
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
-                If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
+                ''If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
                 ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
@@ -937,10 +937,10 @@ Public Module WS_Items
 
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
-                If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
+                ''If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
                 ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error, check this.
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
-                'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, ITEMDatabase(ItemEntry).ExistingDuration) ' Was 0???
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_SPELL_CHARGES, ChargesLeft)         'NOTE: There are other 4 unused charges fields
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
 

@@ -56,6 +56,9 @@ Public Module WC_Handlers_Auth
         Dim clientAccount As String = packet.GetString
         Dim unk322 As Integer = packet.GetInt32
         Dim clientSalt As Integer = packet.GetInt32
+        Dim unk5 As Integer = packet.GetInt32
+        Dim unk6 As Integer = packet.GetInt32
+        Dim unk7 As Integer = packet.GetInt32
         Dim unk3 As Long = packet.GetInt64
         Dim clientEncryptedPassword(19) As Byte
         For i = 0 To 19

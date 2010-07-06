@@ -48,11 +48,11 @@ Public Module WS_CharManagment
         RESTRICT_HIDEHELM = &H10
     End Enum
 
-    Public Const groundFlagsMask As Integer = &HFFFFFFFF And Not (MovementFlags.MOVEMENTFLAG_LEFT Or MovementFlags.MOVEMENTFLAG_RIGHT Or MovementFlags.MOVEMENTFLAG_BACKWARD Or MovementFlags.MOVEMENTFLAG_FORWARD Or MovementFlags.MOVEMENTFLAG_WALK)
+    Public Const groundFlagsMask As Integer = &HFFFFFFFF And Not (MovementFlags.MOVEMENTFLAG_TURN_LEFT Or MovementFlags.MOVEMENTFLAG_TURN_RIGHT Or MovementFlags.MOVEMENTFLAG_BACKWARD Or MovementFlags.MOVEMENTFLAG_FORWARD Or MovementFlags.MOVEMENTFLAG_WALK_mode)
     Public Const movementFlagsMask As Integer = MovementFlags.MOVEMENTFLAG_FORWARD Or MovementFlags.MOVEMENTFLAG_BACKWARD Or MovementFlags.MOVEMENTFLAG_STRAFE_LEFT Or _
-    MovementFlags.MOVEMENTFLAG_STRAFE_RIGHT Or MovementFlags.MOVEMENTFLAG_PITCH_UP Or MovementFlags.MOVEMENTFLAG_PITCH_DOWN Or MovementFlags.MOVEMENTFLAG_FLY_UNK1 Or MovementFlags.MOVEMENTFLAG_JUMPING Or _
-    MovementFlags.MOVEMENTFLAG_FALLING Or MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLY_UP Or MovementFlags.MOVEMENTFLAG_FLYING Or MovementFlags.MOVEMENTFLAG_SPLINE
-    Public Const TurningFlagsMask As Integer = MovementFlags.MOVEMENTFLAG_LEFT Or MovementFlags.MOVEMENTFLAG_RIGHT
+    MovementFlags.MOVEMENTFLAG_STRAFE_RIGHT Or MovementFlags.MOVEMENTFLAG_PITCH_UP Or MovementFlags.MOVEMENTFLAG_PITCH_DOWN Or MovementFlags.MOVEMENTFLAG_LEVITATING Or _
+    MovementFlags.MOVEMENTFLAG_FALLING Or MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_ASCENDING Or MovementFlags.MOVEMENTFLAG_FLYING Or MovementFlags.MOVEMENTFLAG_SPLINE_ELEVATION ' Removed Jumping, not found in Mangos apparently they use Falling
+    Public Const TurningFlagsMask As Integer = MovementFlags.MOVEMENTFLAG_TURN_LEFT Or MovementFlags.MOVEMENTFLAG_TURN_RIGHT
     Public Const movementOrTurningFlagsMask As Integer = movementFlagsMask Or TurningFlagsMask
 
     Public XPTable(80) As Integer
@@ -1040,6 +1040,7 @@ Public Module WS_CharManagment
         Public TurnRate As Single = UNIT_NORMAL_TURN_RATE
 
         Public movementFlags As Integer = 0
+        Public movementFlags2 As Integer = 0
         Public ZoneID As Integer = 0
         Public AreaID As Integer = 0
         Public bindpoint_positionX As Single = 0
