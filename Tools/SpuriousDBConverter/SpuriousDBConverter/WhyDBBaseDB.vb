@@ -24,6 +24,7 @@
         QuestFinishersGameobject
         SpellTeleportCoords
         GameObjectQuestAssociation
+        ItemQuestAssociation
         NpcText
         NpcVendor
         NpcGossipTextID
@@ -640,6 +641,12 @@
         Entry = 0
         Quest
         Item
+        ItemCount
+    End Enum
+
+    Public Enum ItemQuestAssociation_Columns
+        Item = 0
+        Quest
         ItemCount
     End Enum
 

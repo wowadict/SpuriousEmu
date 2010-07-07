@@ -913,10 +913,10 @@ Public Module WS_Items
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
                 ''If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
-                ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error check this?
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, 0)
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
+                'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ITEM_TEXT_ID, ItemText)
 
                 Update.SetUpdateFlag(EContainerFields.CONTAINER_FIELD_NUM_SLOTS, ItemInfo.ContainerSlots)
@@ -937,15 +937,29 @@ Public Module WS_Items
 
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_OWNER, OwnerGUID)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CONTAINED, OwnerGUID)
-                ''If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
-                ''''Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error, check this.
+                If CreatorGUID > 0 Then Update.SetUpdateFlag(EItemFields.ITEM_FIELD_CREATOR, CreatorGUID)
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_GIFTCREATOR, GiftCreatorGUID) 'TODO: Hits out of range error, check this.
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_STACK_COUNT, StackCount)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURATION, ITEMDatabase(ItemEntry).ExistingDuration) ' Was 0???
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_SPELL_CHARGES, ChargesLeft)         'NOTE: There are other 4 unused charges fields
+
+                'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_SPELL_CHARGES, ChargesLeft)         'NOTE: There are other 4 unused charges fields
+                ' See If This Will Handle All 5 Spell Charges
+                For sc As Integer = 0 To 4
+                    Update.SetUpdateFlag(EItemFields.ITEM_FIELD_SPELL_CHARGES, ITEMDatabase(ItemEntry).Spells(sc).SpellCharges)
+                Next
+
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURABILITY, Durability)
+                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_MAXDURABILITY, ITEMDatabase(ItemEntry).Durability)
+
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_FLAGS, Flags)
 
-                'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_PROPERTY_SEED, 0)
                 Update.SetUpdateFlag(EItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID, RandomProperties)
+
+                If RandomProperties < 0 Then
+                    Update.SetUpdateFlag(EItemFields.ITEM_FIELD_PROPERTY_SEED, ITEMDatabase(ItemEntry).RandomSuffix)
+                Else
+                    Update.SetUpdateFlag(EItemFields.ITEM_FIELD_PROPERTY_SEED, 0)
+                End If
 
                 For Each Enchant As KeyValuePair(Of Byte, TEnchantmentInfo) In Enchantments
                     Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ENCHANTMENT_1_1 + Enchant.Key * 3, Enchant.Value.ID)
@@ -954,9 +968,7 @@ Public Module WS_Items
                 Next
 
                 'Update.SetUpdateFlag(EItemFields.ITEM_FIELD_ITEM_TEXT_ID, ItemText) ' Item Field Name NOT Found in Mangos, may need to look into this.
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_DURABILITY, Durability)
-                Update.SetUpdateFlag(EItemFields.ITEM_FIELD_MAXDURABILITY, ITEMDatabase(ItemEntry).Durability)
-            End If
+                End If
         End Sub
         Public Sub SendContainedItemsUpdate(ByRef Client As ClientClass, Optional ByVal UPDATETYPE As Integer = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT)
             Dim packet As New PacketClass(OPCODES.SMSG_UPDATE_OBJECT)

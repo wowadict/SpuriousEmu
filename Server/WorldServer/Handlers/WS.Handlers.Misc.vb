@@ -135,7 +135,7 @@ Public Module WS_Handlers_Misc
             'Asking for player name
             If GuidIsPlayer(GUID) Then
                 If CHARACTERs.ContainsKey(GUID) = True Then
-                    SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
+                    SMSG_NAME_QUERY_RESPONSE.AddPackGUID(GUID)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(0)
                     SMSG_NAME_QUERY_RESPONSE.AddString(CType(CHARACTERs(GUID), CharacterObject).Name)
                     SMSG_NAME_QUERY_RESPONSE.AddInt8(0) ' Realm Name I think( if player from another realm)?

@@ -612,6 +612,13 @@
         Table.Columns.Add(GameObjectQuestAssociation_Columns.Item, "item")
         Table.Columns.Add(GameObjectQuestAssociation_Columns.ItemCount, "item_count")
 
+        'Item_Quest_Association
+        Table = New TTable("item_quest_association", TableTypes.ItemQuestAssociation)
+        Tables.Add(Table)
+        Table.Columns.Add(ItemQuestAssociation_Columns.Item, "item")
+        Table.Columns.Add(ItemQuestAssociation_Columns.Quest, "quest")
+        Table.Columns.Add(ItemQuestAssociation_Columns.ItemCount, "item_count")
+
         'Npc_Text
         Table = New TTable("npc_text", TableTypes.NpcText)
         Tables.Add(Table)

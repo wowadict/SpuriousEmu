@@ -507,9 +507,10 @@ Public Module WS_CharManagment
     Public Sub SendTutorialFlags(ByRef Client As ClientClass, ByRef Character As CharacterObject)
         Dim SMSG_TUTORIAL_FLAGS As New PacketClass(OPCODES.SMSG_TUTORIAL_FLAGS)
         '[8*Int32] or [32 Bytes] or [256 Bits Flags] Total!!!
-        SMSG_TUTORIAL_FLAGS.AddInt32(0)
-        SMSG_TUTORIAL_FLAGS.AddInt32(Character.TutorialFlags.Length)
+        'SMSG_TUTORIAL_FLAGS.AddInt8(0)
+        'SMSG_TUTORIAL_FLAGS.AddInt8(Character.TutorialFlags.Length)
         SMSG_TUTORIAL_FLAGS.AddByteArray(Character.TutorialFlags)
+
         Client.Send(SMSG_TUTORIAL_FLAGS)
         SMSG_TUTORIAL_FLAGS.Dispose()
     End Sub
@@ -5633,6 +5634,8 @@ CheckXPAgain:
         Dim CreateInfoSkills As New DataTable
         Dim CreateInfoSpells As New DataTable
 
+        Dim PowerType As ManaTypes = CharClasses(c.Classe).PowerType
+
         Dim ButtonPos As Integer = 0
 
         Database.Query(String.Format("SELECT * FROM playercreateinfo WHERE race = {0} AND class = {1};", CType(c.Race, Integer), CType(c.Classe, Integer)), CreateInfo)
@@ -5655,6 +5658,8 @@ CheckXPAgain:
             Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_spells table for indexid={0}", PlayerInfoIndex)
         End If
 
+        PowerType = CharClasses(c.Classe).PowerType
+
         ' Initialize Character Variables
         c.Copper = 0
         c.XP = 0
@@ -5669,13 +5674,13 @@ CheckXPAgain:
         c.Energy.Base = 0
         c.RunicPower.Current = 0
         c.RunicPower.Base = 0
-        c.ManaType = CreateInfo.Rows(0).Item("PowerType")
+        c.ManaType = ManaTypes.TYPE_MANA
         c.PlayerCreateInfoID = PlayerInfoIndex
 
         ' Set Character Create Information
         c.Model = GetRaceModel(c.Race, c.Gender)
 
-        c.Faction = CreateInfo.Rows(0).Item("factiontemplate")
+        c.Faction = CharRaces(c.Race).FactionID
         c.MapID = CreateInfo.Rows(0).Item("mapID")
         c.ZoneID = CreateInfo.Rows(0).Item("zoneID")
         c.positionX = CreateInfo.Rows(0).Item("positionX")
@@ -5686,7 +5691,7 @@ CheckXPAgain:
         c.bindpoint_positionX = c.positionX
         c.bindpoint_positionY = c.positionY
         c.bindpoint_positionZ = c.positionZ
-        Dim PowerType As ManaTypes = CreateInfo.Rows(0).Item("PowerType")
+        c.ManaType = PowerType
         c.Strength.Base = CreateInfo.Rows(0).Item("BaseStrength")
         c.Agility.Base = CreateInfo.Rows(0).Item("BaseAgility")
         c.Stamina.Base = CreateInfo.Rows(0).Item("BaseStamina")
@@ -5694,6 +5699,9 @@ CheckXPAgain:
         c.Spirit.Base = CreateInfo.Rows(0).Item("BaseSpirit")
         c.Life.Base = CreateInfo.Rows(0).Item("BaseHealth")
         c.Life.Current = c.Life.Maximum
+        Dim strTaxiMask As String = String.Empty
+        strTaxiMask = CreateInfo.Rows(0).Item("taximask")
+        Dim TaxiMask() As String = Split(strTaxiMask, " ")
 
         Select Case PowerType
             Case ManaTypes.TYPE_MANA
@@ -5706,7 +5714,7 @@ CheckXPAgain:
                 c.Energy.Base = CreateInfo.Rows(0).Item("BasePower")
                 c.Energy.Current = 0
             Case ManaTypes.TYPE_RUNICPOWER
-                c.RunicPower.Base = CreateInfo.Rows(0).Item("BasePower")  'need to add a new collum for NCDB compatibility
+                c.RunicPower.Base = CreateInfo.Rows(0).Item("BasePower")
                 c.RunicPower.Current = 0
         End Select
 
@@ -5750,7 +5758,12 @@ CheckXPAgain:
         ''    c.InitializeReputation(Factions.SilvermoonCity)
         ''End If
 
-        ' Set Player Taxi Zones (May have to change this in the future)
+        ' Set Player Taxi Zones From Player Create Information. NOT WORKING YET
+        'For i As Integer = 0 To UBound(TaxiMask)
+        '    c.TaxiZones.Set(TaxiMask(i), True)
+        'Next
+
+        'Set Player Taxi Zones (May have to change this in the future)
         Select Case c.Race
             Case Races.RACE_DWARF, Races.RACE_GNOME
                 c.TaxiZones.Set(6, True)
@@ -5782,7 +5795,7 @@ CheckXPAgain:
         ' Set Player Create Action Buttons
         For Each BarRow As DataRow In CreateInfoBars.Rows
             If BarRow.Item("action") > 0 Then
-                c.ActionButtons(ButtonPos) = New TActionButton(BarRow.Item("action"), BarRow.Item("type"))
+                c.ActionButtons(BarRow.Item("button")) = New TActionButton(BarRow.Item("action"), BarRow.Item("type"))
                 ButtonPos = ButtonPos + 1
             End If
         Next
