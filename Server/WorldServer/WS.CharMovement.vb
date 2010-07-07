@@ -25,7 +25,7 @@ Module WS_CharMovement
 #Region "WS.CharacterMovement.MovementHandlers"
 
 
-    Public Enum MovementFlags As Integer
+    Public Enum MovementFlagsOld As Integer
         MOVEMENTFLAG_NONE = &H0
         MOVEMENTFLAG_FORWARD = &H1
         MOVEMENTFLAG_BACKWARD = &H2
@@ -54,7 +54,7 @@ Module WS_CharMovement
         MOVEMENTFLAG_UNK3 = &H40000000
     End Enum
 
-    Public Enum MovementFlagsMangos As Integer
+    Public Enum MovementFlags As Integer
         MOVEMENTFLAG_NONE = &H0
         MOVEMENTFLAG_FORWARD = &H1
         MOVEMENTFLAG_BACKWARD = &H2
@@ -89,12 +89,33 @@ Module WS_CharMovement
         MOVEMENTFLAG_HOVER = &H40000000
     End Enum
 
+    Public Enum MovementFlags2 As Integer
+        MOVEFLAG2_NONE = &H0
+        MOVEFLAG2_UNK1 = &H1
+        MOVEFLAG2_UNK2 = &H2
+        MOVEFLAG2_UNK3 = &H4
+        MOVEFLAG2_FULLSPEEDTURNING = &H8
+        MOVEFLAG2_FULLSPEEDPITCHING = &H10
+        MOVEFLAG2_ALLOW_PITCHING = &H20
+        MOVEFLAG2_UNK4 = &H40
+        MOVEFLAG2_UNK5 = &H80
+        MOVEFLAG2_UNK6 = &H100
+        MOVEFLAG2_UNK7 = &H200
+        MOVEFLAG2_INTERP_MOVEMENT = &H400
+        MOVEFLAG2_INTERP_TURNING = &H800
+        MOVEFLAG2_INTERP_PITCHING = &H1000
+        MOVEFLAG2_UNK8 = &H2000
+        MOVEFLAG2_UNK9 = &H4000
+        MOVEFLAG2_UNK10 = &H8000
+        MOVEFLAG2_INTERP_MASK = MOVEFLAG2_INTERP_MOVEMENT Or MOVEFLAG2_INTERP_TURNING Or MOVEFLAG2_INTERP_PITCHING
+    End Enum
+
     Public Sub OnMovementPacket(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
 
         Dim movGUID As ULong = packet.GetPackGUID()
         Client.Character.movementFlags = packet.GetInt32()
-        Dim unkFlags As Integer = packet.GetInt16()
+        Client.Character.movementFlags2 = packet.GetInt16()
         Dim Time As UInteger = packet.GetUInt32()
         Client.Character.positionX = packet.GetFloat()
         Client.Character.positionY = packet.GetFloat()
@@ -122,8 +143,11 @@ Module WS_CharMovement
             Dim transportO As Single = packet.GetFloat
             Dim transportTime As Single = packet.GetFloat
             Dim transportSeat As Byte = packet.GetInt8
+            If (Client.Character.movementFlags2 And MovementFlags2.MOVEFLAG2_INTERP_MOVEMENT) Then
+                Dim transportTime2 As Integer = packet.GetInt32
+            End If
         End If
-        If (Client.Character.movementFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING2)) OrElse (unkFlags And &H20) Then
+        If (Client.Character.movementFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING)) OrElse (Client.Character.movementFlags2 And MovementFlags2.MOVEFLAG2_ALLOW_PITCHING) Then
             Dim swimAngle As Single = packet.GetFloat
             '#If DEBUG Then
             '                Console.WriteLine("[{0}] [{1}:{2}] Client swim angle:{3}", Format(TimeOfDay, "hh:mm:ss"), Client.IP, Client.Port, swimAngle)
@@ -132,7 +156,7 @@ Module WS_CharMovement
 
         packet.GetInt32() 'Fall time
 
-        If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_JUMPING) Then
+        If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_FALLING) Then
             Dim airTime As UInteger = packet.GetUInt32
             Dim sinAngle As Single = packet.GetFloat
             Dim cosAngle As Single = packet.GetFloat
@@ -142,7 +166,7 @@ Module WS_CharMovement
             '#End If
         End If
 
-        If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_SPLINE) Then
+        If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_SPLINE_ELEVATION) Then
             Dim unk1 As Single = packet.GetFloat
         End If
 
@@ -251,19 +275,19 @@ Module WS_CharMovement
             packet.GetFloat()
             packet.GetInt32()
         End If
-        If (flags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING2)) Then
+        If (flags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING)) Then
             packet.GetFloat()
         End If
 
         Dim falltime As Single = packet.GetInt32()
 
-        If (flags And MovementFlags.MOVEMENTFLAG_JUMPING) Or (flags And MovementFlags.MOVEMENTFLAG_FALLING) Then
+        If (flags And MovementFlags.MOVEMENTFLAG_FALLING) Then 'Or (flags And MovementFlags.MOVEMENTFLAG_JUMPING) Then ' Could not find Jumping in Mangos apparently they use Falling.
             packet.GetFloat()
             packet.GetFloat()
             packet.GetFloat()
             packet.GetFloat()
         End If
-        If (flags And MovementFlags.MOVEMENTFLAG_SPLINE) Then
+        If (flags And MovementFlags.MOVEMENTFLAG_SPLINE_ELEVATION) Then
             packet.GetFloat()
         End If
 
@@ -388,21 +412,27 @@ Module WS_CharMovement
             OnMovementPacket(packet, Client)
 
             packet.Offset = 6
+
             Dim movFlags As Integer = packet.GetInt32()
-            Dim unkFlags As Integer = packet.GetInt16()
-            packet.GetUInt32()
-            packet.GetFloat()
-            packet.GetFloat()
-            packet.GetFloat()
-            packet.GetFloat()
+            Dim movFlags2 As Integer = packet.GetInt16()
+            packet.GetUInt32() ' Time
+            packet.GetFloat() ' X
+            packet.GetFloat() ' Y
+            packet.GetFloat() ' Z
+            packet.GetFloat() ' Orientation
             If (movFlags And MovementFlags.MOVEMENTFLAG_ONTRANSPORT) Then
-                packet.GetUInt64()
+                packet.GetPackGUID()
                 packet.GetFloat()
                 packet.GetFloat()
                 packet.GetFloat()
                 packet.GetFloat()
+                packet.GetFloat() ' Time
+                packet.GetInt8() ' Seat
+                If (movFlags2 And MovementFlags2.MOVEFLAG2_INTERP_MOVEMENT) Then
+                    packet.GetInt32() ' Time2
+                End If
             End If
-            If (movFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING2)) OrElse (unkFlags And &H20) Then
+            If (movFlags And (MovementFlags.MOVEMENTFLAG_SWIMMING Or MovementFlags.MOVEMENTFLAG_FLYING)) OrElse (movFlags2 And MovementFlags2.MOVEFLAG2_ALLOW_PITCHING) Then
                 packet.GetFloat()
             End If
             Dim FallTime As Integer = packet.GetInt32()
