@@ -92,7 +92,8 @@ Public Module WC_Handlers_Auth
         Dim result As New DataTable
         Dim query As String
         query = "SELECT * FROM accounts WHERE account = '" & Client.Account & "';"
-        Database.Query(query, result)
+        '        Database.Query(query, result)
+        AccountDatabase.Query(query, result)
         If result.Rows.Count > 0 Then
             tmp = result.Rows(0).Item("last_sshash")
             Client.Access = result.Rows(0).Item("plevel")
@@ -225,7 +226,8 @@ Public Module WC_Handlers_Auth
             If DataID > 8 Then Exit Sub
 
             Dim AccData As New DataTable
-            Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+            'Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+            AccountDatabase.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
             If AccData.Rows.Count = 0 Then
                 Log.WriteLine(LogType.WARNING, "[{0}:{1}] CMSG_UPDATE_ACCOUNT_DATA [Account ID not found]", Client.IP, Client.Port)
                 Exit Sub
@@ -236,7 +238,8 @@ Public Module WC_Handlers_Auth
 
             'DONE: Clear the entry
             If UncompressedSize = 0 Then
-                Database.Update(String.Format("UPDATE account_data SET account_time{0} = 0, account_data{0} = '' WHERE account_id = {1}", DataID, AccID))
+                'Database.Update(String.Format("UPDATE account_data SET account_time{0} = 0, account_data{0} = '' WHERE account_id = {1}", DataID, AccID))
+                AccountDatabase.Update(String.Format("UPDATE account_data SET account_time{0} = 0, account_data{0} = '' WHERE account_id = {1}", DataID, AccID))
 
                 Dim responseClear As New PacketClass(OPCODES.SMSG_UPDATE_ACCOUNT_DATA_COMPLETE)
                 responseClear.AddInt32(DataID)
@@ -260,9 +263,11 @@ Public Module WC_Handlers_Auth
                 packet.Data = DeCompress(decompressBuffer)
                 packet.Offset = 0
 
-                Database.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1}", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 0, UncompressedSize).Replace("'", "\'"), DataTime))
+                'Database.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1}", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 0, UncompressedSize).Replace("'", "\'"), DataTime))
+                AccountDatabase.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1};", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 0, UncompressedSize).Replace("'", "\'"), DataTime))
             Else
-                Database.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1}", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 14, UncompressedSize).Replace("'", "\'"), DataTime))
+                'Database.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1}", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 14, UncompressedSize).Replace("'", "\'"), DataTime))
+                AccountDatabase.Update(String.Format("UPDATE account_data SET account_time{0} = {3}, account_data{0} = '{2}' WHERE account_id = {1};", DataID, AccID, System.Text.Encoding.ASCII.GetString(packet.Data, 14, UncompressedSize).Replace("'", "\'"), DataTime))
             End If
 
             'This is sent once the server saves it? Official sends it at logout
@@ -285,12 +290,14 @@ Public Module WC_Handlers_Auth
 
         Dim FoundData As Boolean = False
         Dim AccData As New DataTable
-        Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+        'Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+        AccountDatabase.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
         If AccData.Rows.Count > 0 Then
             Dim AccID As Integer = CType(AccData.Rows(0).Item("account_id"), Integer)
 
             AccData.Clear()
-            Database.Query(String.Format("SELECT account_time{1}, account_data{1} FROM account_data WHERE account_id = {0}", AccID, DataID), AccData)
+            'Database.Query(String.Format("SELECT account_time{1}, account_data{1} FROM account_data WHERE account_id = {0}", AccID, DataID), AccData)
+            AccountDatabase.Query(String.Format("SELECT account_time{1}, account_data{1} FROM account_data WHERE account_id = {0}", AccID, DataID), AccData)
             If AccData.Rows.Count > 0 Then FoundData = True
         End If
 
@@ -378,12 +385,15 @@ Public Module WC_Handlers_Auth
         Dim response As New PacketClass(OPCODES.SMSG_CHAR_ENUM)
         Dim MySQLQuery As New DataTable
         Dim Account_ID As Integer
+        Dim Item_Slot As Integer
 
         Try
-            Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), MySQLQuery)
+            'Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), MySQLQuery)
+            AccountDatabase.Query(String.Format("SELECT account_id FROM accounts WHERE account = '{0}';", Client.Account), MySQLQuery)
             Account_ID = CType(MySQLQuery.Rows(0).Item("account_id"), Integer)
             MySQLQuery.Clear()
-            Database.Query(String.Format("SELECT * FROM characters WHERE account_id = ""{0}"" ORDER BY char_guid;", Account_ID), MySQLQuery)
+            'Database.Query(String.Format("SELECT * FROM characters WHERE account_id = ""{0}"" ORDER BY char_guid;", Account_ID), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT * FROM characters WHERE account_id = ""{0}"" ORDER BY char_guid;", Account_ID), MySQLQuery)
 
 
             'DONE: Make The Packet
@@ -391,7 +401,8 @@ Public Module WC_Handlers_Auth
             For i As Integer = 0 To MySQLQuery.Rows.Count - 1
                 Dim DEAD As Boolean = False
                 Dim DeadMySQLQuery As New DataTable
-                Database.Query(String.Format("SELECT COUNT(*) FROM tmpspawnedcorpses WHERE corpse_owner = {0};", MySQLQuery.Rows(i).Item("char_guid")), DeadMySQLQuery)
+                'Database.Query(String.Format("SELECT COUNT(*) FROM tmpspawnedcorpses WHERE corpse_owner = {0};", MySQLQuery.Rows(i).Item("char_guid")), DeadMySQLQuery)
+                CharacterDatabase.Query(String.Format("SELECT COUNT(*) FROM tmpspawnedcorpses WHERE corpse_owner = {0};", MySQLQuery.Rows(i).Item("char_guid")), DeadMySQLQuery)
                 If CInt(DeadMySQLQuery.Rows(0).Item(0)) > 0 Then DEAD = True
 
                 response.AddInt64(MySQLQuery.Rows(i).Item("char_guid"))
@@ -437,7 +448,9 @@ Public Module WC_Handlers_Auth
                 'DONE: Get items
                 Dim GUID As Long = MySQLQuery.Rows(i).Item("char_guid")
                 Dim ItemsMySQLQuery As New DataTable
-                Database.Query(String.Format("SELECT item_slot, displayid, inventorytype FROM characters_inventory, items WHERE item_bag = {0} AND item_slot <> 255 AND entry = item_id  ORDER BY item_slot;", GUID), ItemsMySQLQuery)
+
+                'Database.Query(String.Format("SELECT item_slot, displayid, inventorytype FROM characters_inventory, items WHERE item_bag = {0} AND item_slot <> 255 AND entry = item_id  ORDER BY item_slot;", GUID), ItemsMySQLQuery)
+                CharacterDatabase.Query(String.Format("SELECT item_slot, item_id FROM characters_inventory WHERE item_bag = {0} AND item_slot <> 255 ORDER BY item_slot;", GUID), ItemsMySQLQuery)
 
                 Dim e As IEnumerator = ItemsMySQLQuery.Rows.GetEnumerator
                 e.Reset()
@@ -460,8 +473,10 @@ Public Module WC_Handlers_Auth
                             response.AddInt8(0)  'Item Slot
                             response.AddInt32(0) ' New in 2.4 (Enchant maybe?)
                         Else
-                            response.AddInt32(r.Item("displayid"))          'Item Model
-                            response.AddInt8(r.Item("inventorytype"))       'Item Slot
+                            Dim ItemQuery As New DataTable
+                            WorldDatabase.Query(String.Format("SELECT displayid, inventorytype FROM items WHERE entry = {0}", r.Item("item_id")), ItemQuery)
+                            response.AddInt32(ItemQuery.Rows(0).Item("displayid"))          'Item Model
+                            response.AddInt8(ItemQuery.Rows(0).Item("inventorytype"))       'Item Slot
                             response.AddInt32(0)                            ' New in 2.4 (Enchant maybe?)
                         End If
 
@@ -505,36 +520,56 @@ Public Module WC_Handlers_Auth
             'End If
             ' q.Clear()
 
-            Database.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_bag = {0};", guid), q)
+            'Database.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_bag = {0};", guid), q)
+            CharacterDatabase.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_bag = {0};", guid), q)
             For Each row As DataRow In q.Rows
                 'DONE: Delete items
-                Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = ""{0}"";", row.Item("item_guid")))
+                'Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = ""{0}"";", row.Item("item_guid")))
+                CharacterDatabase.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = ""{0}"";", row.Item("item_guid")))
                 'DONE: Delete items in bags
-                Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_bag = ""{0}"";", CULng(row.Item("item_guid")) + GUID_ITEM))
+                'Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_bag = ""{0}"";", CULng(row.Item("item_guid")) + GUID_ITEM))
+                CharacterDatabase.Update(String.Format("DELETE FROM characters_inventory WHERE item_bag = ""{0}"";", CULng(row.Item("item_guid")) + GUID_ITEM))
             Next
-            Database.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_owner = {0};", guid), q)
+            'Database.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_owner = {0};", guid), q)
+            CharacterDatabase.Query(String.Format("SELECT item_guid FROM characters_inventory WHERE item_owner = {0};", guid), q)
             q.Clear()
-            Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = ""{0}"";", guid), q)
+            'Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = ""{0}"";", guid), q)
+            CharacterDatabase.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = ""{0}"";", guid), q)
             For Each row As DataRow In q.Rows
+                'TODO: Return mails?
                 'DONE: Delete mails
-                Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = ""{0}"";", row.Item("mail_id")))
+                'Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = ""{0}"";", row.Item("mail_id")))
+                CharacterDatabase.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = ""{0}"";", row.Item("mail_id")))
                 'DONE: Delete mail items
-                Database.Update(String.Format("DELETE FROM mail_items WHERE mail_id = ""{0}"";", row.Item("mail_id")))
+                'Database.Update(String.Format("DELETE FROM mail_items WHERE mail_id = ""{0}"";", row.Item("mail_id")))
+                CharacterDatabase.Update(String.Format("DELETE FROM mail_items WHERE mail_id = ""{0}"";", row.Item("mail_id")))
             Next
-            Database.Update(String.Format("DELETE FROM characters WHERE char_guid = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM characters_honor WHERE char_guid = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM characters_quests WHERE char_guid = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM characters_social WHERE char_guid = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM petitions WHERE petition_owner = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM auctionhouse WHERE auction_owner = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = ""{0}"";", guid))
-            Database.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters WHERE char_guid = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_honor WHERE char_guid = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_quests WHERE char_guid = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_social WHERE char_guid = ""{0}"";", guid))
+            'CharacterDatabase.Update(String.Format("DELETE FROM characters_spells WHERE guid = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM petitions WHERE petition_owner = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM auctionhouse WHERE auction_owner = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = ""{0}"";", guid))
+            CharacterDatabase.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM characters WHERE char_guid = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM characters_honor WHERE char_guid = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM characters_quests WHERE char_guid = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM characters_social WHERE char_guid = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM petitions WHERE petition_owner = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM auctionhouse WHERE auction_owner = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = ""{0}"";", guid))
+            'Database.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", guid))
 
             q.Clear()
-            Database.Query(String.Format("SELECT guild_id FROM guilds WHERE guild_leader = ""{0}"";", guid), q)
+            'Database.Query(String.Format("SELECT guild_id FROM guilds WHERE guild_leader = ""{0}"";", guid), q)
+            CharacterDatabase.Query(String.Format("SELECT guild_id FROM guilds WHERE guild_leader = ""{0}"";", guid), q)
             If q.Rows.Count > 0 Then
-                Database.Update(String.Format("UPDATE characters SET char_guildid=0, char_guildrank=0, char_guildpnote='', charguildoffnote='' WHERE char_guildid=""{0}"";", q.Rows(0).Item("guild_id")))
-                Database.Update(String.Format("DELETE FROM guild WHERE guild_id=""{0}"";", q.Rows(0).Item("guild_id")))
+                CharacterDatabase.Update(String.Format("UPDATE characters SET char_guildid=0, char_guildrank=0, char_guildpnote='', charguildoffnote='' WHERE char_guildid=""{0}"";", q.Rows(0).Item("guild_id")))
+                CharacterDatabase.Update(String.Format("DELETE FROM guild WHERE guild_id=""{0}"";", q.Rows(0).Item("guild_id")))
+                'Database.Update(String.Format("UPDATE characters SET char_guildid=0, char_guildrank=0, char_guildpnote='', charguildoffnote='' WHERE char_guildid=""{0}"";", q.Rows(0).Item("guild_id")))
+                'Database.Update(String.Format("DELETE FROM guild WHERE guild_id=""{0}"";", q.Rows(0).Item("guild_id")))
             End If
             response.AddInt8(AuthResponseCodes.CHAR_DELETE_SUCCESS)
         Catch e As Exception
@@ -554,13 +589,15 @@ Public Module WC_Handlers_Auth
 
         'DONE: Check for existing name
         Dim q As New DataTable
-        Database.Query(String.Format("SELECT char_name FROM characters WHERE char_name LIKE ""{0}"";", Name), q)
+        'Database.Query(String.Format("SELECT char_name FROM characters WHERE char_name LIKE ""{0}"";", Name), q)
+        CharacterDatabase.Query(String.Format("SELECT char_name FROM characters WHERE char_name LIKE ""{0}"";", Name), q)
         If q.Rows.Count > 0 Then
             ErrCode = AuthResponseCodes.CHAR_CREATE_NAME_IN_USE
         End If
 
         'DONE: Do the rename
-        If ErrCode = AuthResponseCodes.RESPONSE_SUCCESS Then Database.Update(String.Format("UPDATE characters SET char_name = ""{1}"", force_restrictions = 0 WHERE char_guid = {0};", GUID, Name))
+        'If ErrCode = AuthResponseCodes.RESPONSE_SUCCESS Then Database.Update(String.Format("UPDATE characters SET char_name = ""{1}"", force_restrictions = 0 WHERE char_guid = {0};", GUID, Name))
+        If ErrCode = AuthResponseCodes.RESPONSE_SUCCESS Then CharacterDatabase.Update(String.Format("UPDATE characters SET char_name = ""{1}"", force_restrictions = 0 WHERE char_guid = {0};", GUID, Name))
 
         'DONE: Send response
         Dim response As New PacketClass(OPCODES.SMSG_CHAR_RENAME)

@@ -111,10 +111,13 @@ Public Module WC_Battlegrounds
 
                 With WorldSafeLocs(Battlegrounds(MapType).AllianceStartLoc)
                     Dim q As New DataTable
-                    Database.Query(String.Format("SELECT char_guid FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
+                    'Database.Query(String.Format("SELECT char_guid FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
+                    CharacterDatabase.Query(String.Format("SELECT char_guid FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
                     If q.Rows.Count = 0 Then
                         'Save only first BG location
-                        Database.Update(String.Format("INSERT INTO characters_locations(char_guid, char_positionX, char_positionY, char_positionZ, char_zone_id, char_map_id, char_orientation) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6});", _
+                        'Database.Update(String.Format("INSERT INTO characters_locations(char_guid, char_positionX, char_positionY, char_positionZ, char_zone_id, char_map_id, char_orientation) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6});", _
+                        '                                                c.GUID, Trim(Str(c.PositionX)), Trim(Str(c.PositionY)), Trim(Str(c.PositionZ)), c.Zone, c.Map, 0))
+                        CharacterDatabase.Update(String.Format("INSERT INTO characters_locations(char_guid, char_positionX, char_positionY, char_positionZ, char_zone_id, char_map_id, char_orientation) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6});", _
                                                                         c.GUID, Trim(Str(c.PositionX)), Trim(Str(c.PositionY)), Trim(Str(c.PositionZ)), c.Zone, c.Map, 0))
                     End If
                     c.Transfer(.x, .y, .z, Battlegrounds(MapType).AllianceStartO, .map)
@@ -131,7 +134,8 @@ Public Module WC_Battlegrounds
                 MembersTeam2.Remove(c)
 
                 Dim q As New DataTable
-                Database.Query(String.Format("SELECT * FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
+                'Database.Query(String.Format("SELECT * FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
+                CharacterDatabase.Query(String.Format("SELECT * FROM characters_locations WHERE char_guid = {0};", c.GUID), q)
                 If q.Rows.Count = 0 Then
                     SendMessageSystem(c.Client, "You don't have location saved!")
                 Else

@@ -65,7 +65,8 @@ Public Module WC_Handlers_Tickets
 
         Dim SMSG_GMTICKET_GETTICKET As New PacketClass(OPCODES.SMSG_GMTICKET_GETTICKET)
         Dim MySQLResult As New DataTable
-        Database.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
+        'Database.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
+        CharacterDatabase.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
         If MySQLResult.Rows.Count > 0 Then
             SMSG_GMTICKET_GETTICKET.AddInt32(GMTicketGetResult.GMTICKET_AVAILABLE)
             SMSG_GMTICKET_GETTICKET.AddString(MySQLResult.Rows(0).Item("ticket_text"))
@@ -94,7 +95,8 @@ Public Module WC_Handlers_Tickets
         Dim ticket_text As String = EscapeString(packet.GetString)
 
         Dim MySQLResult As New DataTable
-        Database.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
+        'Database.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
+        CharacterDatabase.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
 
 
         Dim SMSG_GMTICKET_CREATE As New PacketClass(OPCODES.SMSG_GMTICKET_CREATE)
@@ -103,7 +105,8 @@ Public Module WC_Handlers_Tickets
             SMSG_GMTICKET_CREATE.AddInt32(GMTicketCreateResult.GMTICKET_ALREADY_HAVE)
         Else
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GMTICKET_CREATE [{2}]", Client.IP, Client.Port, ticket_text)
-            Database.Update(String.Format("INSERT INTO characters_tickets (char_guid, ticket_text, ticket_x, ticket_y, ticket_z, ticket_map) VALUES ({0} , ""{1}"", {2}, {3}, {4}, {5});", Client.Character.GUID, ticket_text, Trim(Str(ticket_x)), Trim(Str(ticket_y)), Trim(Str(ticket_z)), ticket_map))
+            'Database.Update(String.Format("INSERT INTO characters_tickets (char_guid, ticket_text, ticket_x, ticket_y, ticket_z, ticket_map) VALUES ({0} , ""{1}"", {2}, {3}, {4}, {5});", Client.Character.GUID, ticket_text, Trim(Str(ticket_x)), Trim(Str(ticket_y)), Trim(Str(ticket_z)), ticket_map))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_tickets (char_guid, ticket_text, ticket_x, ticket_y, ticket_z, ticket_map) VALUES ({0} , ""{1}"", {2}, {3}, {4}, {5});", Client.Character.GUID, ticket_text, Trim(Str(ticket_x)), Trim(Str(ticket_y)), Trim(Str(ticket_z)), ticket_map))
             SMSG_GMTICKET_CREATE.AddInt32(GMTicketCreateResult.GMTICKET_CREATE_OK)
         End If
         Client.Send(SMSG_GMTICKET_CREATE)
@@ -129,7 +132,8 @@ Public Module WC_Handlers_Tickets
     End Enum
     Public Sub On_CMSG_GMTICKET_DELETETICKET(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GMTICKET_DELETETICKET", Client.IP, Client.Port)
-        Database.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID))
+        'Database.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID))
+        CharacterDatabase.Update(String.Format("DELETE FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID))
 
         Dim SMSG_GMTICKET_DELETETICKET As New PacketClass(OPCODES.SMSG_GMTICKET_DELETETICKET)
         SMSG_GMTICKET_DELETETICKET.AddInt32(GMTicketDeleteResult.GMTICKET_DELETE_SUCCESS)
@@ -141,7 +145,8 @@ Public Module WC_Handlers_Tickets
         packet.GetInt16()
         Dim ticket_text As String = EscapeString(packet.GetString)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GMTICKET_UPDATETEXT [{2}]", Client.IP, Client.Port, ticket_text)
-        Database.Update(String.Format("UPDATE characters_tickets SET char_guid={0}, ticket_text=""{1}"";", Client.Character.GUID, ticket_text))
+        'Database.Update(String.Format("UPDATE characters_tickets SET char_guid={0}, ticket_text=""{1}"";", Client.Character.GUID, ticket_text))
+        CharacterDatabase.Update(String.Format("UPDATE characters_tickets SET char_guid={0}, ticket_text=""{1}"";", Client.Character.GUID, ticket_text))
     End Sub
 
     Public Sub On_CMSG_GMSURVEY_SUBMIT(ByRef packet As PacketClass, ByRef Client As ClientClass)

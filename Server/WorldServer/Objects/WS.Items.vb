@@ -458,7 +458,8 @@ Public Module WS_Items
 
             'DONE: Load Item Data from MySQL
             Dim MySQLQuery As New DataTable
-            Database.Query(String.Format("SELECT * FROM items WHERE entry = {0};", ItemId), MySQLQuery)
+            'Database.Query(String.Format("SELECT * FROM items WHERE entry = {0};", ItemId), MySQLQuery)
+            WorldDatabase.Query(String.Format("SELECT * FROM items WHERE entry = {0};", ItemId), MySQLQuery)
             If MySQLQuery.Rows.Count = 0 Then
                 Log.WriteLine(LogType.FAILED, "ItemID {0} not found in SQL database! Loading default ""Unknown Item"" info.", ItemId)
                 found_ = False
@@ -1066,7 +1067,8 @@ Public Module WS_Items
         Public Sub New(ByVal GUIDVal As ULong, Optional ByVal Owner As CharacterObject = Nothing, Optional ByVal Equipped As Boolean = False)
             'DONE: Get from SQLDB
             Dim MySQLQuery As New DataTable
-            Database.Query(String.Format("SELECT * FROM characters_inventory WHERE item_guid = ""{0}"";", GUIDVal), MySQLQuery)
+            'Database.Query(String.Format("SELECT * FROM characters_inventory WHERE item_guid = ""{0}"";", GUIDVal), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT * FROM characters_inventory WHERE item_guid = ""{0}"";", GUIDVal), MySQLQuery)
             If MySQLQuery.Rows.Count = 0 Then Err.Raise(1, "ItemObject.New", String.Format("ItemGUID {0} not found in SQL database!", GUIDVal))
 
             GUID = MySQLQuery.Rows(0).Item("item_guid") + GUID_ITEM
@@ -1107,7 +1109,8 @@ Public Module WS_Items
 
             'DONE: Get Items
             MySQLQuery.Clear()
-            Database.Query(String.Format("SELECT * FROM characters_inventory WHERE item_bag = {0};", GUID), MySQLQuery)
+            'Database.Query(String.Format("SELECT * FROM characters_inventory WHERE item_bag = {0};", GUID), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT * FROM characters_inventory WHERE item_bag = {0};", GUID), MySQLQuery)
             For Each row As DataRow In MySQLQuery.Rows
                 If row.Item("item_slot") <> ITEM_SLOT_NULL Then
                     Dim tmpItem As New ItemObject(CType(row.Item("item_guid"), Long))
@@ -1169,7 +1172,8 @@ Public Module WS_Items
 
 
             tmpCMD = tmpCMD & ") " & tmpValues & ");"
-            Database.Update(tmpCMD)
+            'Database.Update(tmpCMD)
+            CharacterDatabase.Update(tmpCMD)
         End Sub
         Public Sub Save(Optional ByVal saveAll As Boolean = True)
             Dim tmp As String = "UPDATE characters_inventory SET"
@@ -1195,7 +1199,8 @@ Public Module WS_Items
 
             tmp = tmp & " WHERE item_guid = """ & (GUID - GUID_ITEM) & """;"
 
-            Database.Update(tmp)
+            'Database.Update(tmp)
+            CharacterDatabase.Update(tmp)
 
             If ITEMDatabase(ItemEntry).IsContainer() AndAlso saveAll Then
                 For Each Item As KeyValuePair(Of Byte, ItemObject) In Items
@@ -1205,9 +1210,13 @@ Public Module WS_Items
         End Sub
         Public Sub Delete()
             'DONE: Check if item is petition
-            If ItemEntry = PETITION_GUILD OrElse ItemEntry = PETITION_2v2 OrElse ItemEntry = PETITION_3v3 OrElse ItemEntry = PETITION_5v5 Then Database.Update("DELETE FROM petitions WHERE petition_itemGuid = " & GUID - GUID_ITEM & ";")
+            'If ItemEntry = PETITION_GUILD OrElse ItemEntry = PETITION_2v2 OrElse ItemEntry = PETITION_3v3 OrElse ItemEntry = PETITION_5v5 Then Database.Update("DELETE FROM petitions WHERE petition_itemGuid = " & GUID - GUID_ITEM & ";")
 
-            Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0}", GUID - GUID_ITEM))
+            'Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0}", GUID - GUID_ITEM))
+            If ItemEntry = PETITION_GUILD OrElse ItemEntry = PETITION_2v2 OrElse ItemEntry = PETITION_3v3 OrElse ItemEntry = PETITION_5v5 Then CharacterDatabase.Update("DELETE FROM petitions WHERE petition_itemGuid = " & GUID - GUID_ITEM & ";")
+
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0}", GUID - GUID_ITEM))
+
 
             If ITEMDatabase(ItemEntry).IsContainer() Then
                 For Each Item As KeyValuePair(Of Byte, ItemObject) In Items
@@ -1728,7 +1737,8 @@ Public Module WS_Items
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_PAGE_TEXT_QUERY [pageID={2}, itemGUID={3:X}]", Client.IP, Client.Port, pageID, itemGUID)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM itempages WHERE entry = ""{0}"";", pageID), MySQLQuery)
+        'Database.Query(String.Format("SELECT * FROM itempages WHERE entry = ""{0}"";", pageID), MySQLQuery)
+        WorldDatabase.Query(String.Format("SELECT * FROM itempages WHERE entry = ""{0}"";", pageID), MySQLQuery)
 
         Dim response As New PacketClass(OPCODES.SMSG_PAGE_TEXT_QUERY_RESPONSE)
         response.AddInt32(pageID)

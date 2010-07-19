@@ -130,7 +130,8 @@ Module WS_Auction
         queryString += "mail_read"
         valuesString += "0);"
 
-        Database.Update(queryString & valuesString)
+        'Database.Update(queryString & valuesString)
+        CharacterDatabase.Update(queryString & valuesString)
     End Sub
 
 #End Region
@@ -240,7 +241,8 @@ Module WS_Auction
     Public Sub SendAuctionListOwnerItems(ByRef Client As ClientClass)
         Dim response As New PacketClass(OPCODES.SMSG_AUCTION_OWNER_LIST_RESULT)
         Dim MySQLQuery As New DataTable
-        Database.Query("SELECT * FROM auctionhouse WHERE auction_owner = " & Client.Character.GUID & ";", MySQLQuery)
+        'Database.Query("SELECT * FROM auctionhouse WHERE auction_owner = " & Client.Character.GUID & ";", MySQLQuery)
+        CharacterDatabase.Query("SELECT * FROM auctionhouse WHERE auction_owner = " & Client.Character.GUID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count > 50 Then
             response.AddInt32(50)                               'Count
         Else
@@ -262,7 +264,8 @@ Module WS_Auction
     Public Sub SendAuctionListBidderItems(ByRef Client As ClientClass)
         Dim response As New PacketClass(OPCODES.SMSG_AUCTION_BIDDER_LIST_RESULT)
         Dim MySQLQuery As New DataTable
-        Database.Query("SELECT * FROM auctionhouse WHERE auction_bidder = " & Client.Character.GUID & ";", MySQLQuery)
+        'Database.Query("SELECT * FROM auctionhouse WHERE auction_bidder = " & Client.Character.GUID & ";", MySQLQuery)
+        CharacterDatabase.Query("SELECT * FROM auctionhouse WHERE auction_bidder = " & Client.Character.GUID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count > 50 Then
             response.AddInt32(50)                               'Count
         Else
@@ -331,11 +334,13 @@ Module WS_Auction
         Client.Character.ItemREMOVE(iGUID, False, True)
 
         'DONE: Add auction entry into table
-        Database.Update(String.Format("INSERT INTO auctionhouse (auction_bid, auction_buyout, auction_timeleft, auction_bidder, auction_owner, auction_itemId, auction_itemGUID, auction_itemCount) VALUES ({0},{1},{2},{3},{4},{5},{6},{7});", Bid, Buyout, Time, 0, Client.Character.GUID, CType(WORLD_ITEMs(iGUID), ItemObject).ItemEntry, iGUID - GUID_ITEM, CType(WORLD_ITEMs(iGUID), ItemObject).StackCount))
+        'Database.Update(String.Format("INSERT INTO auctionhouse (auction_bid, auction_buyout, auction_timeleft, auction_bidder, auction_owner, auction_itemId, auction_itemGUID, auction_itemCount) VALUES ({0},{1},{2},{3},{4},{5},{6},{7});", Bid, Buyout, Time, 0, Client.Character.GUID, CType(WORLD_ITEMs(iGUID), ItemObject).ItemEntry, iGUID - GUID_ITEM, CType(WORLD_ITEMs(iGUID), ItemObject).StackCount))
+        CharacterDatabase.Update(String.Format("INSERT INTO auctionhouse (auction_bid, auction_buyout, auction_timeleft, auction_bidder, auction_owner, auction_itemId, auction_itemGUID, auction_itemCount) VALUES ({0},{1},{2},{3},{4},{5},{6},{7});", Bid, Buyout, Time, 0, Client.Character.GUID, CType(WORLD_ITEMs(iGUID), ItemObject).ItemEntry, iGUID - GUID_ITEM, CType(WORLD_ITEMs(iGUID), ItemObject).StackCount))
 
         'DONE: Send result packet
         Dim MySQLQuery As New DataTable
-        Database.Query("SELECT auction_id FROM auctionhouse WHERE auction_itemGUID = " & iGUID - GUID_ITEM & ";", MySQLQuery)
+        'Database.Query("SELECT auction_id FROM auctionhouse WHERE auction_itemGUID = " & iGUID - GUID_ITEM & ";", MySQLQuery)
+        CharacterDatabase.Query("SELECT auction_id FROM auctionhouse WHERE auction_itemGUID = " & iGUID - GUID_ITEM & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Exit Sub
 
         SendAuctionCommandResult(Client, MySQLQuery.Rows(0).Item("auction_id"), AuctionAction.AUCTION_SELL_ITEM, AuctionError.AUCTION_OK, 0)
@@ -352,23 +357,29 @@ Module WS_Auction
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AUCTION_REMOVE_ITEM [GUID={2} AuctionID={3}]", Client.IP, Client.Port, GUID, AuctionID)
 
         Dim MySQLQuery As New DataTable
-        Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
+        'Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
+        CharacterDatabase.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Exit Sub
 
 
         'DONE: Return item to owner
-        Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", 0, 0, MailTime, 0))
+        'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", 0, 0, MailTime, 0))
+        CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", 0, 0, MailTime, 0))
 
         Dim MailQuery As New DataTable
-        Database.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & MySQLQuery.Rows(0).Item("auction_owner") & ";", MailQuery)
+        'Database.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & MySQLQuery.Rows(0).Item("auction_owner") & ";", MailQuery)
+        CharacterDatabase.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & MySQLQuery.Rows(0).Item("auction_owner") & ";", MailQuery)
         Dim MailID As Integer = MailQuery.Rows(0).Item("mail_id")
 
-        Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
+        'Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
+        CharacterDatabase.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
         'DONE: Return money to bidder
-        If MySQLQuery.Rows(0).Item("auction_bidder") <> 0 Then Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},62);", 0, MySQLQuery.Rows(0).Item("auction_bidder"), MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, 30, 0, 2))
+        'If MySQLQuery.Rows(0).Item("auction_bidder") <> 0 Then Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},62);", 0, MySQLQuery.Rows(0).Item("auction_bidder"), MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, 30, 0, 2))
+        If MySQLQuery.Rows(0).Item("auction_bidder") <> 0 Then CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},62);", 0, MySQLQuery.Rows(0).Item("auction_bidder"), MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, 30, 0, 2))
 
         'DONE: Remove from auction table
-        Database.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
+        'Database.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
+        CharacterDatabase.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
 
         SendAuctionCommandResult(Client, AuctionID, AuctionAction.AUCTION_CANCEL, AuctionError.AUCTION_OK, 0)
         'WS_Mail.SendNotify(Client) 'Notifies the client that they have mail
@@ -389,13 +400,15 @@ Module WS_Auction
 
 
         Dim MySQLQuery As New DataTable
-        Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
+        'Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
+        CharacterDatabase.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Exit Sub
         If Bid < MySQLQuery.Rows(0).Item("auction_bid") Then Exit Sub
 
         If MySQLQuery.Rows(0).Item("auction_bidder") <> 0 Then
             'DONE: Send outbid mail
-            Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_bidder"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:0", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
+            'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_bidder"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:0", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_bidder"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:0", "", MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
         End If
 
         If Bid = MySQLQuery.Rows(0).Item("auction_buyout") Then
@@ -407,29 +420,35 @@ Module WS_Auction
             buffer = BitConverter.GetBytes(CType(Client.Character.GUID, Long))
             Array.Reverse(buffer)
             bodyText = BitConverter.ToString(buffer).Replace("-", "") & ":" & Bid & ":" & MySQLQuery.Rows(0).Item("auction_buyout") & ":0:0"
-            Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:2", bodyText, MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
+            'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:2", bodyText, MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:2", bodyText, MySQLQuery.Rows(0).Item("auction_bid"), 0, MailTime, 0))
 
             'DONE: Send auction won to bidder with item (SoldBy:SalePrice:BuyoutPrice)
             buffer = BitConverter.GetBytes(CType(MySQLQuery.Rows(0).Item("auction_owner"), Long))
             Array.Reverse(buffer)
             bodyText = BitConverter.ToString(buffer).Replace("-", "") & ":" & Bid & ":" & MySQLQuery.Rows(0).Item("auction_buyout")
-            Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, Client.Character.GUID, 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:1", bodyText, 0, 0, MailTime, 0))
+            'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, Client.Character.GUID, 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:1", bodyText, 0, 0, MailTime, 0))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, Client.Character.GUID, 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:1", bodyText, 0, 0, MailTime, 0))
 
             Dim MailQuery As New DataTable
-            Database.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & Client.Character.GUID & ";", MailQuery)
+            'Database.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & Client.Character.GUID & ";", MailQuery)
+            CharacterDatabase.Query("SELECT mail_id FROM characters_mail WHERE mail_receiver = " & Client.Character.GUID & ";", MailQuery)
             Dim MailID As Integer = MailQuery.Rows(0).Item("mail_id")
 
-            Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
+            'Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
+            CharacterDatabase.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, MySQLQuery.Rows(0).Item("auction_itemGUID")))
 
             'DONE: Remove auction
-            Database.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
+            'Database.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
+            CharacterDatabase.Update("DELETE FROM auctionhouse WHERE auction_id = " & AuctionID & ";")
             'WS_Mail.SendNotify(Client) 'Notifies the Client that they have mail
         Else
             'Do bid
             'NOTE: Here is using external timer or web page script to count what time is left and to do the actual buy
 
             'DONE: Set bidder in auction table, update bid value
-            Database.Update(String.Format("UPDATE auctionhouse SET auction_bidder = {1}, auction_bid = {2} WHERE auction_id = {0};", AuctionID, Client.Character.GUID, Bid))
+            'Database.Update(String.Format("UPDATE auctionhouse SET auction_bidder = {1}, auction_bid = {2} WHERE auction_id = {0};", AuctionID, Client.Character.GUID, Bid))
+            CharacterDatabase.Update(String.Format("UPDATE auctionhouse SET auction_bidder = {1}, auction_bid = {2} WHERE auction_id = {0};", AuctionID, Client.Character.GUID, Bid))
         End If
 
         Client.Character.Copper -= Bid
@@ -476,7 +495,8 @@ Module WS_Auction
         If itemQuality <> -1 Then QueryString += " AND items.item_quality = " & itemQuality
 
         Dim MySQLQuery As New DataTable
-        Database.Query(QueryString & ";", MySQLQuery)
+        'Database.Query(QueryString & ";", MySQLQuery)
+        CharacterDatabase.Query(QueryString & ";", MySQLQuery)
         If MySQLQuery.Rows.Count > 32 Then
             response.AddInt32(32)                               'Count
         Else

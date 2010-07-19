@@ -118,7 +118,8 @@ Public Module Functions
 
 
     Public Sub Ban_Account(ByVal Name As String, ByVal Reason As String)
-        Database.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
+        'Database.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
+        AccountDatabase.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
 
         Log.WriteLine(LogType.INFORMATION, "Account [{0}] banned by server. Reason: [{1}].", Name, Reason)
     End Sub
@@ -279,16 +280,19 @@ Public Module Functions
     Public Sub SendAccountMD5(ByRef Client As ClientClass, ByRef Character As CharacterObject, Optional ByVal mask As UInteger = PER_CHARACTER_CACHE_MASK)
         Dim FoundData As Boolean = False
         Dim AccData As New DataTable
-        Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+        'Database.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
+        AccountDatabase.Query(String.Format("SELECT account_id FROM accounts WHERE account = ""{0}"";", Client.Account), AccData)
         If AccData.Rows.Count > 0 Then
             Dim AccID As Integer = CType(AccData.Rows(0).Item("account_id"), Integer)
 
             AccData.Clear()
-            Database.Query(String.Format("SELECT * FROM account_data WHERE account_id = {0}", AccID), AccData)
+            'Database.Query(String.Format("SELECT * FROM account_data WHERE account_id = {0}", AccID), AccData)
+            AccountDatabase.Query(String.Format("SELECT * FROM account_data WHERE account_id = {0}", AccID), AccData)
             If AccData.Rows.Count > 0 Then
                 FoundData = True
             Else
-                Database.Update(String.Format("INSERT INTO account_data VALUES({0}, 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '')", AccID))
+                'Database.Update(String.Format("INSERT INTO account_data VALUES({0}, 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '')", AccID))
+                AccountDatabase.Update(String.Format("INSERT INTO account_data VALUES({0}, '', '', '', '', '', '', '', '')", AccID))
             End If
         End If
 

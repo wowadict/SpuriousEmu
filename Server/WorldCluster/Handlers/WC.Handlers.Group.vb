@@ -35,7 +35,8 @@ Public Module WC_Handlers_Group
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_REQUEST_RAID_INFO", Client.IP, Client.Port)
 
         Dim q As New DataTable
-        Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Client.Character.GUID), q)
+        'Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Client.Character.GUID), q)
+        CharacterDatabase.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Client.Character.GUID), q)
 
         Dim response As New PacketClass(OPCODES.SMSG_RAID_INSTANCE_INFO)
         response.AddInt32(q.Rows.Count)                                 'Instances Counts

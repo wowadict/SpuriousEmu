@@ -50,7 +50,8 @@ Public Module WS_GuardGossip
         Dim GuardMenusSQLQuery As New DataTable
         'Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardGUID), GuardMenusSQLQuery)
         'Log.WriteLine(LogType.DEBUG, "Reading Guard Gossip Menus For [GUID={0}]", GuardGUID)
-        Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardID), GuardMenusSQLQuery)
+        'Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardID), GuardMenusSQLQuery)
+        WorldDatabase.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = 0;", GuardID), GuardMenusSQLQuery)
         Log.WriteLine(LogType.DEBUG, "Reading Guard Gossip Menus For [GUID={0}]", GuardID)
 
         If GuardMenusSQLQuery.Rows.Count > 0 Then
@@ -79,7 +80,8 @@ Public Module WS_GuardGossip
             'npcText.TextLine1(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_0"), String)
             'npcText.TextLine2(0) = CType(npcTextSQLQuery.Rows(0).Item("text0_1"), String)
             'SendNPCText(c.Client, npcText)
-            Database.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardID), npcTextIDSQLQuery)
+            'Database.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardID), npcTextIDSQLQuery)
+            WorldDatabase.Query(String.Format("SELECT * FROM npc_gossip_textid WHERE creatureid = {0};", GuardID), npcTextIDSQLQuery)
 
             Dim TextID As Integer = CType(npcTextIDSQLQuery.Rows(0).Item("textid"), Integer)
             c.SendTalking(TextID)
@@ -88,7 +90,8 @@ Public Module WS_GuardGossip
             Dim npcMenu As New GossipMenu
             For i = 0 To MenuData.Count - 1
                 Dim MenuItemsSQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
+                'Database.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
+                WorldDatabase.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
                 npcMenu.AddMenu(CType(MenuItemsSQLQuery.Rows(0).Item("MenuItem_Text"), String), CType(MenuData(i).Icon, Integer))
                 c.TalkMenuTypes.Add(Gossip_Option.GOSSIP_OPTION_GUARD)
             Next
@@ -117,7 +120,8 @@ Public Module WS_GuardGossip
         If CType(MenuData(Selected).SubMenuNumber, Integer) <> 0 Then
 
             Dim GuardMenusSQLQuery As New DataTable
-            Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = {1};", GuardGUID, MenuData(Selected).SubMenuNumber), GuardMenusSQLQuery)
+            'Database.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = {1};", GuardGUID, MenuData(Selected).SubMenuNumber), GuardMenusSQLQuery)
+            WorldDatabase.Query(String.Format("SELECT * FROM guard_gossip_menus WHERE entry = {0} AND Menu_Number = {1};", GuardGUID, MenuData(Selected).SubMenuNumber), GuardMenusSQLQuery)
             If GuardMenusSQLQuery.Rows.Count > 0 Then
                 MenuData.Clear()
                 Dim tmp() As String
@@ -150,7 +154,8 @@ Public Module WS_GuardGossip
             Dim npcMenu As New GossipMenu
             For i = 0 To MenuData.Count - 1
                 Dim MenuItemsSQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
+                'Database.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
+                WorldDatabase.Query(String.Format("SELECT * FROM guard_gossip_menuitems WHERE MenuItem_ID = {0} LIMIT 1;", CType(MenuData(i).MenuItem_ID, Integer)), MenuItemsSQLQuery)
                 npcMenu.AddMenu(CType(MenuItemsSQLQuery.Rows(0).Item("MenuItem_Text"), String), CType(MenuData(i).Icon, Integer))
                 c.TalkMenuTypes.Add(Gossip_Option.GOSSIP_OPTION_GUARD)
             Next
@@ -170,7 +175,8 @@ Public Module WS_GuardGossip
                 Dim PoI_Name As String = ""
 
                 Dim POISQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM guard_gossip_poi WHERE PoI_ID = {0} LIMIT 1;", MenuData(Selected).POI_ID), POISQLQuery)
+                'Database.Query(String.Format("SELECT * FROM guard_gossip_poi WHERE PoI_ID = {0} LIMIT 1;", MenuData(Selected).POI_ID), POISQLQuery)
+                WorldDatabase.Query(String.Format("SELECT * FROM guard_gossip_poi WHERE PoI_ID = {0} LIMIT 1;", MenuData(Selected).POI_ID), POISQLQuery)
                 PoI_X = CType(POISQLQuery.Rows(0).Item("PoI_X"), Single)
                 PoI_Y = CType(POISQLQuery.Rows(0).Item("PoI_Y"), Single)
                 PoI_Icon = CType(POISQLQuery.Rows(0).Item("PoI_Icon"), Integer)

@@ -54,11 +54,13 @@ Public Module WC_Network
             Try
 
                 m_Socket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-                m_Socket.Bind(New IPEndPoint(Net.IPAddress.Parse(Config.WSHost), Config.WSPort))
+                'm_Socket.Bind(New IPEndPoint(Net.IPAddress.Parse(Config.WSHost), Config.WSPort))
+                m_Socket.Bind(New IPEndPoint(Net.IPAddress.Parse(Config.WCHost), Config.WCPort))
                 m_Socket.Listen(5)
                 m_Socket.BeginAccept(AddressOf AcceptConnection, Nothing)
 
-                Log.WriteLine(LogType.SUCCESS, "Listening on {0} on port {1}", Net.IPAddress.Parse(Config.WSHost), Config.WSPort)
+                'Log.WriteLine(LogType.SUCCESS, "Listening on {0} on port {1}", Net.IPAddress.Parse(Config.WSHost), Config.WSPort)
+                Log.WriteLine(LogType.SUCCESS, "Listening on {0} on port {1}", Net.IPAddress.Parse(Config.WCHost), Config.WCPort)
 
 
                 'Create Remoting Channel

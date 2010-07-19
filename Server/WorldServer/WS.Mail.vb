@@ -78,7 +78,8 @@ Public Module WS_Mail
         'A = A - B '3-1=2
 
         Dim MailTime As Integer = GetTimestamp(Now) + (86400 * 30) 'Set expiredate to today + 30 days
-        Database.Update(String.Format("UPDATE characters_mail SET mail_time = {1}, mail_read = 0, mail_receiver = (mail_receiver + mail_sender), mail_sender = (mail_receiver - mail_sender), mail_receiver = (mail_receiver - mail_sender) WHERE mail_id = {0};", MailID, MailTime))
+        'Database.Update(String.Format("UPDATE characters_mail SET mail_time = {1}, mail_read = 0, mail_receiver = (mail_receiver + mail_sender), mail_sender = (mail_receiver - mail_sender), mail_receiver = (mail_receiver - mail_sender) WHERE mail_id = {0};", MailID, MailTime))
+        CharacterDatabase.Update(String.Format("UPDATE characters_mail SET mail_time = {1}, mail_read = 0, mail_receiver = (mail_receiver + mail_sender), mail_sender = (mail_receiver - mail_sender), mail_receiver = (mail_receiver - mail_sender) WHERE mail_id = {0};", MailID, MailTime))
 
         Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
         response.AddInt32(MailID)
@@ -97,15 +98,18 @@ Public Module WS_Mail
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MAIL_DELETE [MailID={2}]", Client.IP, Client.Port, MailID)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MailID), MySQLQuery)
+        'Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MailID), MySQLQuery)
+        CharacterDatabase.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MailID), MySQLQuery)
 
         If MySQLQuery.Rows.Count > 0 Then
             For i = 0 To MySQLQuery.Rows.Count - 1
-                Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0};", MySQLQuery.Rows(i).Item("item_guid")))
+                'Database.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0};", MySQLQuery.Rows(i).Item("item_guid")))
+                CharacterDatabase.Update(String.Format("DELETE FROM characters_inventory WHERE item_guid = {0};", MySQLQuery.Rows(i).Item("item_guid")))
             Next
         End If
 
-        Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MailID))
+        'Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MailID))
+        CharacterDatabase.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MailID))
 
         Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
         response.AddInt32(MailID)
@@ -122,13 +126,15 @@ Public Module WS_Mail
 
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MAIL_MARK_AS_READ [MailID={2}]", Client.IP, Client.Port, MailID)
         Dim MailTime As Integer = GetTimestamp(Now) + (86400 * 3) 'Set expiredate to today + 3 days
-        Database.Update(String.Format("UPDATE characters_mail SET mail_read = 1, mail_time = {1} WHERE mail_id = {0} AND mail_read < 2;", MailID, MailTime))
+        'Database.Update(String.Format("UPDATE characters_mail SET mail_read = 1, mail_time = {1} WHERE mail_id = {0} AND mail_read < 2;", MailID, MailTime))
+        CharacterDatabase.Update(String.Format("UPDATE characters_mail SET mail_read = 1, mail_time = {1} WHERE mail_id = {0} AND mail_read < 2;", MailID, MailTime))
     End Sub
     Public Sub On_MSG_QUERY_NEXT_MAIL_TIME(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_QUERY_NEXT_MAIL_TIME", Client.IP, Client.Port)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT COUNT(*) FROM characters_mail WHERE mail_read = 0 AND mail_receiver = {0} AND mail_time > {1};", Client.Character.GUID, GetTimestamp(Now)), MySQLQuery)
+        'Database.Query(String.Format("SELECT COUNT(*) FROM characters_mail WHERE mail_read = 0 AND mail_receiver = {0} AND mail_time > {1};", Client.Character.GUID, GetTimestamp(Now)), MySQLQuery)
+        CharacterDatabase.Query(String.Format("SELECT COUNT(*) FROM characters_mail WHERE mail_read = 0 AND mail_receiver = {0} AND mail_time > {1};", Client.Character.GUID, GetTimestamp(Now)), MySQLQuery)
         If MySQLQuery.Rows(0).Item(0) > 0 Then
             Dim response As New PacketClass(OPCODES.MSG_QUERY_NEXT_MAIL_TIME)
             response.AddInt32(0)
@@ -155,14 +161,17 @@ Public Module WS_Mail
             'Done: Check for old mails, and delete those that have expired
             Dim MySQLQuery As New DataTable
             Dim i As Byte = 0
-            Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_time < {0};", GetTimestamp(Now)), MySQLQuery)
+            'Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_time < {0};", GetTimestamp(Now)), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_time < {0};", GetTimestamp(Now)), MySQLQuery)
             If MySQLQuery.Rows.Count > 0 Then
                 For i = 0 To MySQLQuery.Rows.Count - 1
-                    Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")))
+                    'Database.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")))
+                    CharacterDatabase.Update(String.Format("DELETE FROM characters_mail WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")))
                 Next
             End If
 
-            Database.Query(String.Format("SELECT * FROM characters_mail WHERE mail_receiver = {0};", Client.Character.GUID), MySQLQuery)
+            'Database.Query(String.Format("SELECT * FROM characters_mail WHERE mail_receiver = {0};", Client.Character.GUID), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT * FROM characters_mail WHERE mail_receiver = {0};", Client.Character.GUID), MySQLQuery)
 
             Dim response As New PacketClass(OPCODES.SMSG_MAIL_LIST_RESULT)
             response.AddInt8(MySQLQuery.Rows.Count)
@@ -201,7 +210,8 @@ Public Module WS_Mail
                     response.AddInt32(0) 'Mail template ID
                     response.AddString(MySQLQuery.Rows(i).Item("mail_subject"))
 
-                    Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")), MySQLQuery)
+                    'Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")), MySQLQuery)
+                    CharacterDatabase.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0};", MySQLQuery.Rows(i).Item("mail_id")), MySQLQuery)
                     response.AddInt8(CType(MySQLQuery.Rows.Count, Byte))
                     If MySQLQuery.Rows.Count > 0 Then
                         Dim j As Byte, k As Byte
@@ -248,7 +258,8 @@ Public Module WS_Mail
         Try
             'DONE: Check if it's the receiver that is trying to get the item
             Dim MySQLQuery As New DataTable
-            Database.Query(String.Format("SELECT mail_cod, mail_sender FROM characters_mail WHERE mail_id = {0} AND mail_receiver = {1};", MailID, Client.Character.GUID), MySQLQuery)
+            'Database.Query(String.Format("SELECT mail_cod, mail_sender FROM characters_mail WHERE mail_id = {0} AND mail_receiver = {1};", MailID, Client.Character.GUID), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT mail_cod, mail_sender FROM characters_mail WHERE mail_id = {0} AND mail_receiver = {1};", MailID, Client.Character.GUID), MySQLQuery)
             If MySQLQuery.Rows.Count = 0 Then 'The mail didn't exit, wrong owner trying to get someone elses item?
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
                 response.AddInt32(MailID)
@@ -272,17 +283,20 @@ Public Module WS_Mail
                 Else
                     'DONE: Pay COD and save
                     Client.Character.Copper -= MySQLQuery.Rows(0).Item("mail_cod")
-                    Database.Update(String.Format("UPDATE characters_mail SET mail_cod = 0 WHERE mail_id = {0};", MailID))
+                    'Database.Update(String.Format("UPDATE characters_mail SET mail_cod = 0 WHERE mail_id = {0};", MailID))
+                    CharacterDatabase.Update(String.Format("UPDATE characters_mail SET mail_cod = 0 WHERE mail_id = {0};", MailID))
 
                     'DONE: Send COD to sender
                     'TODO: Edit text to be more blizzlike
                     Dim MailTime As Integer = GetTimestamp(Now) + (86400 * 30) 'Set expiredate to today + 30 days
-                    Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body,  mail_item_guid, mail_money, mail_COD, mail_time, mail_read, mail_type) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},{9});", Client.Character.GUID, MySQLQuery.Rows(0).Item("mail_sender"), "", "", 0, MySQLQuery.Rows(0).Item("mail_cod"), 0, MailTime, MailReadInfo.COD, 0))
+                    'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body,  mail_item_guid, mail_money, mail_COD, mail_time, mail_read, mail_type) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},{9});", Client.Character.GUID, MySQLQuery.Rows(0).Item("mail_sender"), "", "", 0, MySQLQuery.Rows(0).Item("mail_cod"), 0, MailTime, MailReadInfo.COD, 0))
+                    CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body,  mail_item_guid, mail_money, mail_COD, mail_time, mail_read, mail_type) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},{9});", Client.Character.GUID, MySQLQuery.Rows(0).Item("mail_sender"), "", "", 0, MySQLQuery.Rows(0).Item("mail_cod"), 0, MailTime, MailReadInfo.COD, 0))
                 End If
             End If
 
             'DONE: Get Item
-            Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, ItemGUID + GUID_ITEM), MySQLQuery)
+            'Database.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, ItemGUID + GUID_ITEM), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT item_guid FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, ItemGUID + GUID_ITEM), MySQLQuery)
             If MySQLQuery.Rows.Count = 0 Then 'The item doesn't exist?
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
                 response.AddInt32(MailID)
@@ -299,7 +313,8 @@ Public Module WS_Mail
 
             'DONE: Send error message if no slots
             If Client.Character.ItemADD(tmpItem) Then
-                Database.Update(String.Format("DELETE FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, MySQLQuery.Rows(0).Item("item_guid")))
+                'Database.Update(String.Format("DELETE FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, MySQLQuery.Rows(0).Item("item_guid")))
+                CharacterDatabase.Update(String.Format("DELETE FROM mail_items WHERE mail_id = {0} AND item_guid = {1};", MailID, MySQLQuery.Rows(0).Item("item_guid")))
 
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
                 response.AddInt32(MailID)
@@ -334,7 +349,8 @@ Public Module WS_Mail
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MAIL_TAKE_MONEY [MailID={2}]", Client.IP, Client.Port, MailID)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT mail_money FROM characters_mail WHERE mail_id = {0}; UPDATE characters_mail SET mail_money = 0 WHERE mail_id = {0};", MailID), MySQLQuery)
+        'Database.Query(String.Format("SELECT mail_money FROM characters_mail WHERE mail_id = {0}; UPDATE characters_mail SET mail_money = 0 WHERE mail_id = {0};", MailID), MySQLQuery)
+        CharacterDatabase.Query(String.Format("SELECT mail_money FROM characters_mail WHERE mail_id = {0}; UPDATE characters_mail SET mail_money = 0 WHERE mail_id = {0};", MailID), MySQLQuery)
         Client.Character.Copper += MySQLQuery.Rows(0).Item("mail_money")
         Client.Character.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_COINAGE, Client.Character.Copper)
 
@@ -356,7 +372,8 @@ Public Module WS_Mail
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_ITEM_TEXT_QUERY [MailID={2}]", Client.IP, Client.Port, MailID)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT mail_body FROM characters_mail WHERE mail_id = {0};", MailID), MySQLQuery)
+        'Database.Query(String.Format("SELECT mail_body FROM characters_mail WHERE mail_id = {0};", MailID), MySQLQuery)
+        CharacterDatabase.Query(String.Format("SELECT mail_body FROM characters_mail WHERE mail_id = {0};", MailID), MySQLQuery)
 
         Dim response As New PacketClass(OPCODES.SMSG_ITEM_TEXT_QUERY_RESPONSE)
         response.AddInt32(MailID)
@@ -426,7 +443,8 @@ Public Module WS_Mail
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SEND_MAIL [Receiver={2} Subject={3}]", Client.IP, Client.Port, Receiver, Subject)
 
             Dim MySQLQuery As New DataTable
-            Database.Query("SELECT char_guid, char_race FROM characters WHERE char_name LIKE '" & Receiver & "';", MySQLQuery)
+            'Database.Query("SELECT char_guid, char_race FROM characters WHERE char_name LIKE '" & Receiver & "';", MySQLQuery)
+            CharacterDatabase.Query("SELECT char_guid, char_race FROM characters WHERE char_name LIKE '" & Receiver & "';", MySQLQuery)
 
             If MySQLQuery.Rows.Count = 0 Then
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
@@ -461,7 +479,8 @@ Public Module WS_Mail
             End If
 
             'Lets check so that the receiver doesn't have a full inbox
-            Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = {0}", ReceiverGUID), MySQLQuery)
+            'Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = {0}", ReceiverGUID), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_receiver = {0}", ReceiverGUID), MySQLQuery)
             If MySQLQuery.Rows.Count >= 100 Then
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
                 response.AddInt32(0)
@@ -487,10 +506,12 @@ Public Module WS_Mail
             Client.Character.SetUpdateFlag(EPlayerFields.PLAYER_FIELD_COINAGE, Client.Character.Copper)
 
             Dim MailTime As Integer = GetTimestamp(Now) + (86400 * 30) 'Add 30 days to the current date/time
-            Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},41);", Client.Character.GUID, ReceiverGUID, Subject.Replace("'", "`"), Body.Replace("'", "`"), money, COD, MailTime, CType(MailReadInfo.Unread, Byte), 0))
+            'Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},41);", Client.Character.GUID, ReceiverGUID, Subject.Replace("'", "`"), Body.Replace("'", "`"), money, COD, MailTime, CType(MailReadInfo.Unread, Byte), 0))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read, mail_type, mail_stationary) VALUES ({0},{1},'{2}','{3}',{4},{5},{6},{7},{8},41);", Client.Character.GUID, ReceiverGUID, Subject.Replace("'", "`"), Body.Replace("'", "`"), money, COD, MailTime, CType(MailReadInfo.Unread, Byte), 0))
 
             'Now get the mail we just inserted into the database
-            Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_sender = {0} AND mail_time = {1}", Client.Character.GUID, MailTime), MySQLQuery)
+            'Database.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_sender = {0} AND mail_time = {1}", Client.Character.GUID, MailTime), MySQLQuery)
+            CharacterDatabase.Query(String.Format("SELECT mail_id FROM characters_mail WHERE mail_sender = {0} AND mail_time = {1}", Client.Character.GUID, MailTime), MySQLQuery)
             If MySQLQuery.Rows.Count = 0 Then 'Somehow the mail wasn't even saved in the DB
                 Dim response As New PacketClass(OPCODES.SMSG_SEND_MAIL_RESULT)
                 response.AddInt32(0)
@@ -506,7 +527,8 @@ Public Module WS_Mail
             If ItemCount > 0 Then
                 For i = 1 To ItemCount
                     Client.Character.ItemREMOVE(CType(Items(i), Long), False, True)
-                    Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, CType(Items(i), Long)))
+                    'Database.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, CType(Items(i), Long)))
+                    CharacterDatabase.Update(String.Format("INSERT INTO mail_items (mail_id, item_guid) VALUES ({0},{1});", MailID, CType(Items(i), Long)))
                 Next
             End If
 

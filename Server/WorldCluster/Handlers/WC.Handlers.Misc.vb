@@ -94,7 +94,13 @@ Public Module WC_Handlers_Misc
 
 
     Public Sub On_MSG_MOVE_HEARTBEAT(ByRef packet As PacketClass, ByRef Client As ClientClass)
-        Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+        'Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+        Try
+            Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+        Catch
+            WS.Disconnect("NULL", New Integer() {Client.Character.Map})
+            Exit Sub
+        End Try
 
         'DONE: Save location on cluster
         Client.Character.PositionX = packet.GetFloat(15)
@@ -111,7 +117,12 @@ Public Module WC_Handlers_Misc
     End Sub
     Public Sub On_CMSG_CANCEL_TRADE(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If Client.Character IsNot Nothing AndAlso Client.Character.IsInWorld Then
-            Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+            'Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+            Try
+                Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
+            Catch
+                WS.Disconnect("NULL", New Integer() {Client.Character.Map})
+            End Try
         Else
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_CANCEL_TRADE", Client.IP, Client.Port)
         End If

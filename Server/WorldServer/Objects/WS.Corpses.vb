@@ -64,7 +64,8 @@ Public Module WS_Corpses
 
         Public Sub ConvertToBones()
             'DONE: Delete from database
-            Database.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", Owner))
+            'Database.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", Owner))
+            CharacterDatabase.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", Owner))
 
             Flags = 5
             Owner = 0
@@ -128,7 +129,8 @@ Public Module WS_Corpses
 
 
             tmpCMD = tmpCMD & ") " & tmpValues & ");"
-            Database.Update(tmpCMD)
+            'Database.Update(tmpCMD)
+            CharacterDatabase.Update(tmpCMD)
         End Sub
         Public Sub Destroy()
             Dim packet As New PacketClass(OPCODES.SMSG_DESTROY_OBJECT)
@@ -178,7 +180,8 @@ Public Module WS_Corpses
             'WARNING: Use only for loading from DB
             If Info Is Nothing Then
                 Dim MySQLQuery As New DataTable
-                Database.Query(String.Format("SELECT * FROM tmpspawnedcorpses WHERE corpse_guid = {0};", cGUID), MySQLQuery)
+                'Database.Query(String.Format("SELECT * FROM tmpspawnedcorpses WHERE corpse_guid = {0};", cGUID), MySQLQuery)
+                CharacterDatabase.Query(String.Format("SELECT * FROM tmpspawnedcorpses WHERE corpse_guid = {0};", cGUID), MySQLQuery)
                 If MySQLQuery.Rows.Count > 0 Then
                     Info = MySQLQuery.Rows(0)
                 Else

@@ -27,7 +27,8 @@ Public Module WS_Handlers_Instance
     Public Sub InstanceMapUpdate()
         Dim q As New DataTable
         Dim t As Integer = GetTimestamp(Now)
-        Database.Query(String.Format("SELECT * FROM characters_instances WHERE expire < {0};", t), q)
+        'Database.Query(String.Format("SELECT * FROM characters_instances WHERE expire < {0};", t), q)
+        CharacterDatabase.Query(String.Format("SELECT * FROM characters_instances WHERE expire < {0};", t), q)
 
         For Each r As DataRow In q.Rows
             If Maps.ContainsKey(r.Item("map")) Then InstanceMapExpire(r.Item("map"), r.Item("instance"))
@@ -37,7 +38,8 @@ Public Module WS_Handlers_Instance
         Dim q As New DataTable
 
         'TODO: Save instance IDs in MAP class, using current way it may happen 2 groups to be in same instance
-        Database.Query(String.Format("SELECT MAX(instance) FROM characters_instances WHERE map = {0};", Map), q)
+        'Database.Query(String.Format("SELECT MAX(instance) FROM characters_instances WHERE map = {0};", Map), q)
+        CharacterDatabase.Query(String.Format("SELECT MAX(instance) FROM characters_instances WHERE map = {0};", Map), q)
         If q.Rows(0).Item(0) IsNot DBNull.Value Then
             Return CInt(q.Rows(0).Item(0)) + 1
         Else
@@ -82,8 +84,10 @@ Public Module WS_Handlers_Instance
 
         If empty Then
             'DONE: Delete the instance if there are no players
-            Database.Update(String.Format("DELETE FROM characters_instances WHERE instance = {0} AND map = {1};", Instance, Map))
-            Database.Update(String.Format("DELETE FROM characters_instances_group WHERE instance = {0} AND map = {1};", Instance, Map))
+            'Database.Update(String.Format("DELETE FROM characters_instances WHERE instance = {0} AND map = {1};", Instance, Map))
+            'Database.Update(String.Format("DELETE FROM characters_instances_group WHERE instance = {0} AND map = {1};", Instance, Map))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_instances WHERE instance = {0} AND map = {1};", Instance, Map))
+            CharacterDatabase.Update(String.Format("DELETE FROM characters_instances_group WHERE instance = {0} AND map = {1};", Instance, Map))
 
             'DONE: Delete spawned things
             For x As Short = 0 To 63
@@ -107,8 +111,10 @@ Public Module WS_Handlers_Instance
             Next
         Else
             'DONE: Extend the expire time
-            Database.Update(String.Format("UPDATE characters_instances SET expire = {3} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
-            Database.Update(String.Format("UPDATE characters_instances_group SET expire = {3} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
+            'Database.Update(String.Format("UPDATE characters_instances SET expire = {3} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
+            'Database.Update(String.Format("UPDATE characters_instances_group SET expire = {3} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
+            CharacterDatabase.Update(String.Format("UPDATE characters_instances SET expire = {2} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
+            CharacterDatabase.Update(String.Format("UPDATE characters_instances_group SET expire = {2} WHERE instance = {0} AND map = {1};", Instance, Map, GetTimestamp(Now) + Maps(Map).ResetTime(False)))
 
             'DONE: Respawn the instance if there are players
             For x As Short = 0 To 63
@@ -142,7 +148,8 @@ Public Module WS_Handlers_Instance
             Dim q As New DataTable
 
             'DONE: Check if player is already in instance
-            Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0} AND map = {1};", c.GUID, c.MapID), q)
+            'Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0} AND map = {1};", c.GUID, c.MapID), q)
+            CharacterDatabase.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0} AND map = {1};", c.GUID, c.MapID), q)
             If q.Rows.Count > 0 Then
                 'Character is saved to instance
                 c.instance = q.Rows(0).Item("instance")
@@ -157,7 +164,8 @@ Public Module WS_Handlers_Instance
 
             'DONE: Check if group is already in instance
             If c.IsInGroup Then
-                Database.Query(String.Format("SELECT * FROM characters_instances_group WHERE group_id = {0} AND map = {1};", c.Group.ID, c.MapID), q)
+                'Database.Query(String.Format("SELECT * FROM characters_instances_group WHERE group_id = {0} AND map = {1};", c.Group.ID, c.MapID), q)
+                CharacterDatabase.Query(String.Format("SELECT * FROM characters_instances_group WHERE group_id = {0} AND map = {1};", c.Group.ID, c.MapID), q)
 
                 If q.Rows.Count > 0 Then
                     'Group is saved to instance
@@ -180,11 +188,13 @@ Public Module WS_Handlers_Instance
             c.instance = instanceNewID
 
             'Set instance in database
-            Database.Update(String.Format("INSERT INTO characters_instances (char_guid, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.GUID, c.MapID, instanceNewID, instanceNewResetTime))
+            'Database.Update(String.Format("INSERT INTO characters_instances (char_guid, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.GUID, c.MapID, instanceNewID, instanceNewResetTime))
+            CharacterDatabase.Update(String.Format("INSERT INTO characters_instances (char_guid, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.GUID, c.MapID, instanceNewID, instanceNewResetTime))
 
             If c.IsInGroup Then
                 'Set group in the same instance
-                Database.Update(String.Format("INSERT INTO characters_instances_group (group_id, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.Group.ID, c.MapID, instanceNewID, instanceNewResetTime))
+                'Database.Update(String.Format("INSERT INTO characters_instances_group (group_id, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.Group.ID, c.MapID, instanceNewID, instanceNewResetTime))
+                CharacterDatabase.Update(String.Format("INSERT INTO characters_instances_group (group_id, map, instance, expire) VALUES ({0}, {1}, {2}, {3});", c.Group.ID, c.MapID, instanceNewID, instanceNewResetTime))
             End If
 
             InstanceMapSpawn(c.MapID, instanceNewID)
@@ -247,7 +257,8 @@ Public Module WS_Handlers_Instance
     End Sub
     Public Sub SendInstanceSaved(ByVal Character As CharacterObject)
         Dim q As New DataTable
-        Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Character.GUID), q)
+        'Database.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Character.GUID), q)
+        CharacterDatabase.Query(String.Format("SELECT * FROM characters_instances WHERE char_guid = {0};", Character.GUID), q)
 
         SendUpdateInstanceOwnership(Character.Client, q.Rows.Count > 0)
 

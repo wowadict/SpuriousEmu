@@ -148,7 +148,8 @@ Public Module WS_Handlers_Misc
                     Exit Sub
                 Else
                     Dim MySQLQuery As New DataTable
-                    Database.Query(String.Format("SELECT char_name, char_race, char_class, char_gender FROM characters WHERE char_guid = ""{0}"";", GUID), MySQLQuery)
+                    'Database.Query(String.Format("SELECT char_name, char_race, char_class, char_gender FROM characters WHERE char_guid = ""{0}"";", GUID), MySQLQuery)
+                    CharacterDatabase.Query(String.Format("SELECT char_name, char_race, char_class, char_gender FROM characters WHERE char_guid = ""{0}"";", GUID), MySQLQuery)
 
                     If MySQLQuery.Rows.Count > 0 Then
                         SMSG_NAME_QUERY_RESPONSE.AddUInt64(GUID)
@@ -438,8 +439,26 @@ Public Module WS_Handlers_Misc
         Character.SendCharacterUpdate()
 
         'DONE: Spawn Bones, Delete Corpse
+        'If Character.corpseGUID <> 0 Then
+        '    CType(WORLD_CORPSEOBJECTs(Character.corpseGUID), CorpseObject).ConvertToBones()
+        '    Character.corpseGUID = 0
+        '    Character.corpseMapID = 0
+        '    Character.corpsePositionX = 0
+        '    Character.corpsePositionY = 0
+        '    Character.corpsePositionZ = 0
+        'End If
+        'DONE: Spawn Bones, Delete Corpse
         If Character.corpseGUID <> 0 Then
-            CType(WORLD_CORPSEOBJECTs(Character.corpseGUID), CorpseObject).ConvertToBones()
+            If WORLD_CORPSEOBJECTs.ContainsKey(Character.corpseGUID) Then
+                WORLD_CORPSEOBJECTs(Character.corpseGUID).ConvertToBones()
+            Else
+                Log.WriteLine(LogType.DEBUG, "Corpse wasn't found [{0}]!", Character.corpseGUID - GUID_CORPSE)
+
+                'DONE: Delete from database
+                CharacterDatabase.Update(String.Format("DELETE FROM tmpspawnedcorpses WHERE corpse_owner = ""{0}"";", Character.GUID))
+
+                'TODO: Turn the corpse into bones on the server it is located at!
+            End If
             Character.corpseGUID = 0
             Character.corpseMapID = 0
             Character.corpsePositionX = 0

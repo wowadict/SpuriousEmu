@@ -553,14 +553,16 @@ Public Module WS_Loot
             '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             If Not WORLD_ITEMs.ContainsKey(GUID) Then Return False
             Dim q As New DataTable
-            Database.Query(String.Format("SELECT item_loot FROM items WHERE entry = {0} LIMIT 1;", CType(WORLD_ITEMs(GUID), ItemObject).ItemEntry), q)
+            'Database.Query(String.Format("SELECT item_loot FROM items WHERE entry = {0} LIMIT 1;", CType(WORLD_ITEMs(GUID), ItemObject).ItemEntry), q)
+            WorldDatabase.Query(String.Format("SELECT item_loot FROM items WHERE entry = {0} LIMIT 1;", CType(WORLD_ITEMs(GUID), ItemObject).ItemEntry), q)
             If q.Rows.Count = 0 Then Return False
             If q.Rows(0).Item("item_loot") = 0 Then Return False
 
             'DONE: Loot generation
             Dim loot_group As Integer = q.Rows(0).Item("item_loot")
             q.Clear()
-            Database.Query(String.Format("SELECT * FROM loots WHERE loot_group = {0};", loot_group), q)
+            'Database.Query(String.Format("SELECT * FROM loots WHERE loot_group = {0};", loot_group), q)
+            WorldDatabase.Query(String.Format("SELECT * FROM loots WHERE loot_group = {0};", loot_group), q)
             If q.Rows.Count = 0 Then Return False
             Dim Loot As New LootObject(GUID, LootType)
             For Each LootRow As DataRow In q.Rows

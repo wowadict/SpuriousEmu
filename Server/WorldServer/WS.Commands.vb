@@ -317,7 +317,8 @@ Public Module WS_Commands
         Dim GuildName As String = tmp(0)
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("INSERT INTO guilds (guild_name, guild_leader, guild_cYear, guild_cMonth, guild_cDay) VALUES (""{0}"", {1}, {2}, {3}, {4}); SELECT guild_id FROM guilds WHERE guild_name = ""{0}"";", GuildName, c.GUID, Now.Year - 2006, Now.Month, Now.Day), MySQLQuery)
+        'Database.Query(String.Format("INSERT INTO guilds (guild_name, guild_leader, guild_cYear, guild_cMonth, guild_cDay) VALUES (""{0}"", {1}, {2}, {3}, {4}); SELECT guild_id FROM guilds WHERE guild_name = ""{0}"";", GuildName, c.GUID, Now.Year - 2006, Now.Month, Now.Day), MySQLQuery)
+        CharacterDatabase.Query(String.Format("INSERT INTO guilds (guild_name, guild_leader, guild_cYear, guild_cMonth, guild_cDay) VALUES (""{0}"", {1}, {2}, {3}, {4}); SELECT guild_id FROM guilds WHERE guild_name = ""{0}"";", GuildName, c.GUID, Now.Year - 2006, Now.Month, Now.Day), MySQLQuery)
 
         AddCharacterToGuild(c, MySQLQuery.Rows(0).Item("guild_id"), 0)
         Return True
@@ -591,10 +592,12 @@ Public Module WS_Commands
 
         'DONE: Get all spells
         Dim q As New DataTable
-        Database.Query(String.Format("SELECT entry FROM trainer_defs WHERE req_class = {0} AND trainer_type = 0 ORDER BY entry", CByte(c.Classe)), q)
+        'Database.Query(String.Format("SELECT entry FROM trainer_defs WHERE req_class = {0} AND trainer_type = 0 ORDER BY entry", CByte(c.Classe)), q)
+        WorldDatabase.Query(String.Format("SELECT entry FROM trainer_defs WHERE req_class = {0} AND trainer_type = 0 ORDER BY entry", CByte(c.Classe)), q)
         For Each row As DataRow In q.Rows
             Dim q2 As New DataTable
-            Database.Query(String.Format("SELECT spellid FROM trainer_spells WHERE entry = {0}", row.Item("entry")), q2)
+            'Database.Query(String.Format("SELECT spellid FROM trainer_spells WHERE entry = {0}", row.Item("entry")), q2)
+            WorldDatabase.Query(String.Format("SELECT spellid FROM trainer_spells WHERE entry = {0}", row.Item("entry")), q2)
             For Each row2 As DataRow In q2.Rows
                 If c.HaveSpell(CInt(row2.Item("spellid"))) = False Then c.LearnSpell(CInt(row2.Item("spellid")))
             Next
@@ -1039,7 +1042,8 @@ Public Module WS_Commands
                     Return True
             End Select
 
-            Database.Query(String.Format("SELECT * FROM playercreateinfo WHERE race = {0};", CType(Race, Integer)), Info)
+            'Database.Query(String.Format("SELECT * FROM playercreateinfo WHERE race = {0};", CType(Race, Integer)), Info)
+            WorldDatabase.Query(String.Format("SELECT * FROM playercreateinfo WHERE race = {0};", CType(Race, Integer)), Info)
             Character.Teleport(Info.Rows(0).Item("positionX"), Info.Rows(0).Item("positionY"), Info.Rows(0).Item("positionZ"), 0, Info.Rows(0).Item("mapID"))
             Return True
         End If
@@ -1113,7 +1117,8 @@ Public Module WS_Commands
             Dim cmdList As String = "Listing of available locations:" & vbNewLine
 
             Dim ListSQLQuery As New DataTable
-            Database.Query("SELECT * FROM world_cmdteleports", ListSQLQuery)
+            'Database.Query("SELECT * FROM world_cmdteleports", ListSQLQuery)
+            WorldDatabase.Query("SELECT * FROM world_cmdteleports", ListSQLQuery)
 
             For Each LocationRow As DataRow In ListSQLQuery.Rows
                 cmdList += LocationRow.Item("name") & ", "
@@ -1123,7 +1128,8 @@ Public Module WS_Commands
         End If
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM world_cmdteleports WHERE name = '{0}' LIMIT 1;", location), MySQLQuery)
+        'Database.Query(String.Format("SELECT * FROM world_cmdteleports WHERE name = '{0}' LIMIT 1;", location), MySQLQuery)
+        WorldDatabase.Query(String.Format("SELECT * FROM world_cmdteleports WHERE name = '{0}' LIMIT 1;", location), MySQLQuery)
 
         If MySQLQuery.Rows.Count > 0 Then
             posX = CType(MySQLQuery.Rows(0).Item("positionX"), Single)
@@ -1244,7 +1250,8 @@ Public Module WS_Commands
         If c.TargetGUID = 0 Then
             c.CommandResponse("No target selected.")
         ElseIf CHARACTERs.ContainsKey(c.TargetGUID) Then
-            Database.Update(String.Format("UPDATE characters SET force_restrictions = 1 WHERE char_guid = {0};", c.TargetGUID))
+            'Database.Update(String.Format("UPDATE characters SET force_restrictions = 1 WHERE char_guid = {0};", c.TargetGUID))
+            CharacterDatabase.Update(String.Format("UPDATE characters SET force_restrictions = 1 WHERE char_guid = {0};", c.TargetGUID))
             c.CommandResponse("Player will be asked to change his name on next logon.")
         Else
             c.CommandResponse(String.Format("Character GUID=[{0:X}] not found.", c.TargetGUID))
@@ -1257,7 +1264,8 @@ Public Module WS_Commands
         If c.TargetGUID = 0 Then
             c.CommandResponse("No target selected.")
         ElseIf CHARACTERs.ContainsKey(c.TargetGUID) Then
-            Database.Update(String.Format("UPDATE characters SET force_restrictions = 2 WHERE char_guid = {0};", c.TargetGUID))
+            'Database.Update(String.Format("UPDATE characters SET force_restrictions = 2 WHERE char_guid = {0};", c.TargetGUID))
+            CharacterDatabase.Update(String.Format("UPDATE characters SET force_restrictions = 2 WHERE char_guid = {0};", c.TargetGUID))
             c.CommandResponse("Character disabled.")
         Else
             c.CommandResponse(String.Format("Character GUID=[{0:X}] not found.", c.TargetGUID))
@@ -1272,12 +1280,14 @@ Public Module WS_Commands
         If Name = "" Then Return False
 
         Dim result As New DataTable
-        Database.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
+        'Database.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
+        AccountDatabase.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
         If result.Rows.Count > 0 Then
             If result.Rows(0).Item("banned") = 1 Then
                 c.CommandResponse(String.Format("Account [{0}] already banned.", Name))
             Else
-                Database.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
+                'Database.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
+                AccountDatabase.Update("UPDATE accounts SET banned = 1 WHERE account = """ & Name & """;")
                 c.CommandResponse(String.Format("Account [{0}] banned.", Name))
                 Log.WriteLine(LogType.INFORMATION, "[{0}:{1}] Account [{3}] banned by [{2}].", c.Client.IP.ToString, c.Client.Port, c.Name, Name)
             End If
@@ -1292,12 +1302,14 @@ Public Module WS_Commands
         If Name = "" Then Return False
 
         Dim result As New DataTable
-        Database.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
+        'Database.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
+        AccountDatabase.Query("SELECT banned FROM accounts WHERE account = """ & Name & """;", result)
         If result.Rows.Count > 0 Then
             If result.Rows(0).Item("banned") = 0 Then
                 c.CommandResponse(String.Format("Account [{0}] is not banned.", Name))
             Else
-                Database.Update("UPDATE accounts SET banned = 0 WHERE account = """ & Name & """;")
+                'Database.Update("UPDATE accounts SET banned = 0 WHERE account = """ & Name & """;")
+                AccountDatabase.Update("UPDATE accounts SET banned = 0 WHERE account = """ & Name & """;")
                 c.CommandResponse(String.Format("Account [{0}] unbanned.", Name))
                 Log.WriteLine(LogType.INFORMATION, "[{0}:{1}] Account [{3}] unbanned by [{2}].", c.Client.IP.ToString, c.Client.Port, c.Name, Name)
             End If
@@ -1422,11 +1434,14 @@ Public Module WS_Commands
 
 
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT * FROM weather WHERE weather_zone = {0};", c.ZoneID), MySQLQuery)
+        'Database.Query(String.Format("SELECT * FROM weather WHERE weather_zone = {0};", c.ZoneID), MySQLQuery)
+        WorldDatabase.Query(String.Format("SELECT * FROM weather WHERE weather_zone = {0};", c.ZoneID), MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then
-            Database.Update(String.Format("INSERT INTO weather (weather_zone, weather_type, weather_intensity) VALUES ({0}, {1}, {2});", c.ZoneID, Type, Trim(Str(Intensity))))
+            'Database.Update(String.Format("INSERT INTO weather (weather_zone, weather_type, weather_intensity) VALUES ({0}, {1}, {2});", c.ZoneID, Type, Trim(Str(Intensity))))
+            WorldDatabase.Update(String.Format("INSERT INTO weather (weather_zone, weather_type, weather_intensity) VALUES ({0}, {1}, {2});", c.ZoneID, Type, Trim(Str(Intensity))))
         Else
-            Database.Update(String.Format("UPDATE weather SET weather_zone = {0}, weather_type = {1}, weather_intensity = {2};", c.ZoneID, Type, Trim(Str(Intensity))))
+            'Database.Update(String.Format("UPDATE weather SET weather_zone = {0}, weather_type = {1}, weather_intensity = {2};", c.ZoneID, Type, Trim(Str(Intensity))))
+            WorldDatabase.Update(String.Format("UPDATE weather SET weather_zone = {0}, weather_type = {1}, weather_intensity = {2};", c.ZoneID, Type, Trim(Str(Intensity))))
         End If
         SendWeather(Type, Intensity, c.Client)
 
@@ -1607,13 +1622,15 @@ Public Module WS_Commands
         Dim aName As String = acct(0)
         Dim aPassword As String = acct(1)
         Dim aEmail As String = acct(2)
-        Database.Query("SELECT account FROM accounts WHERE account = """ & aName & """;", result)
+        'Database.Query("SELECT account FROM accounts WHERE account = """ & aName & """;", result)
+        AccountDatabase.Query("SELECT account FROM accounts WHERE account = """ & aName & """;", result)
         If result.Rows.Count > 0 Then
         ElseIf result.Rows(0).Item("account") = aName Then
             c.CommandResponse(String.Format("Account [{0}] already exists.", aName))
         Else
 
-            Database.Insert(String.Format("INSERT INTO accounts (account, password, email, joindate, last_ip) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", aName, aPassword, aEmail, Format(Now, "yyyy-MM-dd"), "0.0.0.0"))
+            'Database.Insert(String.Format("INSERT INTO accounts (account, password, email, joindate, last_ip) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", aName, aPassword, aEmail, Format(Now, "yyyy-MM-dd"), "0.0.0.0"))
+            AccountDatabase.Insert(String.Format("INSERT INTO accounts (account, password, email, joindate, last_ip) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", aName, aPassword, aEmail, Format(Now, "yyyy-MM-dd"), "0.0.0.0"))
             c.CommandResponse(String.Format("Account [{0}] has been created.", aName))
         End If
         Return True
@@ -1628,7 +1645,8 @@ Public Module WS_Commands
 
     Public Function GetGUID(ByVal Name As String) As ULong
         Dim MySQLQuery As New DataTable
-        Database.Query(String.Format("SELECT char_guid FROM characters WHERE char_name = ""{0}"";", Name), MySQLQuery)
+        'Database.Query(String.Format("SELECT char_guid FROM characters WHERE char_name = ""{0}"";", Name), MySQLQuery)
+        CharacterDatabase.Query(String.Format("SELECT char_guid FROM characters WHERE char_name = ""{0}"";", Name), MySQLQuery)
 
         If MySQLQuery.Rows.Count > 0 Then
             Return CType(MySQLQuery.Rows(0).Item("char_guid"), ULong)
