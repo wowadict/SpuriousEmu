@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -29,7 +30,7 @@
     <MyType>Console</MyType>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>2.0</OldToolsVersion>
+    <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -64,7 +65,7 @@
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>1</WarningLevel>
-    <NoWarn>41999,42016</NoWarn>
+    <NoWarn>41999,42016,42353,42354,42355</NoWarn>
     <DebugType>full</DebugType>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>42020,42021,42022,42105,42106,42107</WarningsAsErrors>
@@ -87,7 +88,7 @@
     <RemoveIntegerChecks>true</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>1</WarningLevel>
-    <NoWarn>41999,42016</NoWarn>
+    <NoWarn>41999,42016,42353,42354,42355</NoWarn>
     <DebugType>none</DebugType>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>42020,42021,42022,42105,42106,42107</WarningsAsErrors>
@@ -102,7 +103,7 @@
     <BaseAddress>285212672</BaseAddress>
     <Optimize>true</Optimize>
     <WarningLevel>1</WarningLevel>
-    <NoWarn>41999,42016</NoWarn>
+    <NoWarn>41999,42016,42353,42354,42355</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <WarningsAsErrors>42020,42021,42022,42105,42106,42107</WarningsAsErrors>
@@ -116,7 +117,7 @@
     <RemoveIntegerChecks>true</RemoveIntegerChecks>
     <BaseAddress>285212672</BaseAddress>
     <WarningLevel>1</WarningLevel>
-    <NoWarn>41999,42016</NoWarn>
+    <NoWarn>41999,42016,42353,42354,42355</NoWarn>
     <PlatformTarget>x86</PlatformTarget>
     <WarningsAsErrors>42020,42021,42022,42105,42106,42107</WarningsAsErrors>
     <UseVSHostingProcess>false</UseVSHostingProcess>
