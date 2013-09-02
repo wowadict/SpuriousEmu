@@ -1,4 +1,4 @@
-On September 02 2013 the Spurious project officially merged with the MangosVB project.
+On September 01 2013 the Spurious project officially merged with the MangosVB project.
 
 Further development of this emulator will continue at https://github.com/mangosvb
 
