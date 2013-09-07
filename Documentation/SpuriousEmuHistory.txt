@@ -1,0 +1,104 @@
+History of the SpuriousEmu Project by a Project Insider.
+
+I am WoW Adict the Founder of the SpuriousEmu Project.
+
+I recently saw a request for some history on SpuriousEmu, I am a bit sketchy on the beginings of the emulator
+that the SpuriousEmu was based on, and my memory not being what it used to be, I can not really remember the
+years these events happened in.  Saying that, I will attempt to give a detailed history of the SpuriousEmu Project.
+
+I had been playing with emulators for a number of years, starting back in the days when you HAD to run a hacked
+client in order to connect to the private server software.  Even before there were MySql databases, when you had
+scp script files you could modify to add creatures, NPC's, Items and so on.  I really enjoyed being able to run
+a server on my own computers, and have control over things.  It was a very fun hobby even though it took some
+work to get things to run some times.
+
+I work for a software development company, and we were going to make the jump at work from using Visual Basic 6,
+to using VB.NET, so I had to start learning to program using VB.NET.  It occured to me, that I could combine my
+favorite hobby of playing with WoW Emulators and learning VB.NET by working on an emulator using VB.NET.  So,
+I began searching around to see what I could find, not really knowing anything about the coding side of emulation,
+In searching for emulators and VB.NET code I came across an emulator written using VB.NET, that had been abandoned.
+This emulator was called VBWoWEmu.
+
+It is my understanding that a community member named Gaddas had started an emulator named AWoWe, in Visual Basic 6.
+Another community member named Spirit loaded that code into VB.NET and let the Visual Basic IDE convert it.  He then
+did some work on fixing it up to run.
+
+When I downloaded the public code that I could find that Spirit had out there, it would run and you could login, I
+can not remember for sure, but I believe it was at client version 2.0.12 or some where in that area.  There was a
+lot of things that worked, but still there were many things missing from the core.  But, since it was the only VB.NET
+emulation code I could find at the time, I decided to base my emulator off of it.
+
+I had to come up with a name for my emulator, since an emulator is basically a mock of some thing else, I though of
+the word Spurious which is a mock, or conterfiet, I thought it would fit nicely for emulator, so the name SpuriousEmu
+was born.
+
+At the start SpuriousEmu could only handle one map at a time, and you had to set the map number as a compiler
+variable and recompile every time you wanted to play with a new map.  So, I set out to find out what I could
+about implementing multiple maps in the emulator, in asking on different forums, I started getting some answers
+from a community member that goes by the name of Unix.  I started chatting with Unix on instant messaging, and it
+turns out that he had not done a lot of stuff with VB.NET at that time, but was developing on a Visual Basic 6
+emulator called vbWoW, he wanted to show that an emulator COULD be developed using Visual Basic.  During one of our
+chats I told Unix, that since I had been using Visual Basic 6 for quite a while at work, I would help him with his
+project if he could help me with implementing the muliple map handling in Spurious, he agreed.  If I remember correctly
+Unix said he was looking at how some of the other emulators, such as Mangos was handling maps, and he started to work
+on the map handling for Spurious, in just a few days he had implemented the map handling for the project.
+
+So, for a little while the SpuriousEmu team consisted of Unix and me.  I had mentioned to Unix that the project was
+based on an emulator that was actually started by some one name Gadas, and Unix told me he knew Gadas, and had contact
+information so I could ask Gadas some questions about the emulator, Unix got permission from Gadas to give me the contact
+information, and Gadas agreed.  While talking with Gadas, the networking code in Spurious was brought up, Gadas told
+me that he had been thinking about how Clustering needed to be added to the project, that would allow for more people
+to be connected since you could distribute the network processing across multiple servers for the world maps.  Gadas
+agreed to give the clustering a shot, and he started implementing that into the SpuriousEmu code.  Now the team consisted
+of three of us.  We started working on some of the packets and getting the emulator to work with the latest expansion
+at that time, which was the Burning Crusage 2.4.3 client version.
+
+In order to learn a little more about emulation I was doing some patches and and coding on some of the other emulators
+around at that time.  I had done a small patch for Ascent and submitted that, and while looking to help with some of
+the other emulators I met a community member named CoolManBob that was working on an emulator called Core of Time, I
+started to help CoolManBob with his emulator, and he in turn started doing a little work on Spurious.
+
+For a while the four of us was kicking out features and fixes on the core, and Things where going pretty smoothly,
+other members started joining the team and some of them where doing some work, and some where just hanging around
+but not really doing much.  I was pretty proud of my little SpuriousEmu team the the work they were doing.  We started
+working on the 3.0.9 branch, and placed that out there on the public repository, we had a domain and forums up, and
+I really thought things were going to start to blossom for the project.
+
+Soon, the Wrath of The Litch King expansion came out, and we started to work on getting the emulator to work with the
+3.3.5 clients.  Around this time things started to get a little rough among the Spurious Team, I started getting emails
+and instant messages from some of the members, saying you need to get rid of this person or that person, as long as
+they are on the team I will not being doing any work for you.
+
+Soon, the discontent among the Spurious Team led to the Team members quiting.  One by one, my Team started to remove
+themselves from the repository and forums and just leaving.  Soon, the team was back down to me, Unix and CoolManBob.
+
+Unix announced that he was getting bored with WoW Emulation and was going to start working on other things.  So, now
+pretty much the team was dead.  I was a little dismayed, I had growing to think of the project as kind of one of my
+children. (Only a project leader would probably understand what I mean by that.)
+
+I noticed that there were a lot of people still wanting to play the older versions of WoW, so I took it upon myself
+to break up the source code in to different versions, like Mangos had done with thier emulator.  So, I ended up with
+the source for the 2.4.3 version, the 3.0.9 (the last mostly full implementation we had) and the 3.3.5 version.
+
+During in this time Unix had returned to the emulator scene and he took a copy of Spurious, and back ported it to work
+with Vanilla WoW, as a matter of fact he called his project VanillaWoW, he implemented VMaps into his project, and
+started to rework some of the systems such as the looting system, the combat system, the spell system and so on.
+
+Unix, finally abandonded his project, but since it had VMaps and things like Multiple Databases in it, I checked his
+project out of his repository when he made it public, and create a SpuriousZero version based on his work.  Kind of
+funny really that he took Spurious and started his project based off of it, then I turned around and took his project
+and ported it back to Spurious.  A couple of people helped me fix a few things with the re-ported SpuriousZero project.
+
+Soon, no one was helping me any more, and my free time was getting valuable due to projects in the Real World (at work).
+I asked around a few places, but could not get any one interested in helping me with the project any more, and thus
+some time around the middle to end of 2010, the SpuriousEmu Project, pretty much died. (Rest in Peace my child.) :(
+
+NOTE: After discussions with Antz from the Mangos Project, On September 01 2013 the SpuriousEmu Project officially
+merged with the MangosVB Team (SpuriousEmu will be reborn as MangosVB).
+
+So, there you have a pretty detailed explanation of the History of the SpuriousEmu Project.
+
+Later.
+
+W@WAdict.
+ 
