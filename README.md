@@ -1,8 +1,8 @@
 ServerOne 
 =========
-*MaNGOSVB ServerOne* is a full featured server for [World of Warcraft][2], in its vanilla
-version supporting clients from the [patch 2.4.3][50] branch, specifically patch
-2.4.3.
+*MaNGOSVB ServerTwo* is a full featured server for [World of Warcraft][2], in its vanilla
+version supporting clients from the [patch 3.3.5][50] branch, specifically patch
+3.3.5a.
 
 World of Warcraft, and all World of Warcraft or Warcraft art, images, and lore are
 copyrighted by [Blizzard Entertainment, Inc.][1].
