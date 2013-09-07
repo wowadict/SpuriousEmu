@@ -57,7 +57,7 @@ License
 
 [20]: https://github.com/mangoswiki/Wiki/wiki/MaNGOS%20Installation/ "Wiki"
 
-[50]: http://www.wowpedia.org/Patch_2.4.2 "WoW TBC · Patch 2.4.3 release notes"
+[50]: http://wowpedia.org/Patch_3.3.5a "WoW TBC · Patch 3.3.5a release notes"
 
 [100]: http://getmangos.co.uk/ "MaNGOS Community Project Website"
 [101]: http://community.getmangos.co.uk/ "MaNGOS Community Discussion Forums"
