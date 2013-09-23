@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WorldCluster
-
 
 #Region "Global.Variables"
     'Players' containers
@@ -98,9 +95,7 @@ Public Module WorldCluster
             Config = oXS.Deserialize(oStmR)
             oStmR.Close()
 
-
             Console.WriteLine(".[done]")
-
 
             'DONE: Setting SQL Connection
             Database.SQLDBName = Config.SQLDBName
@@ -132,10 +127,6 @@ Public Module WorldCluster
     End Sub
 #End Region
 
-
-
-
-
     <System.MTAThreadAttribute()> _
     Sub Main()
         timeBeginPeriod(1)  'Set timeGetTime to a accuracy of 1ms
@@ -157,7 +148,6 @@ Public Module WorldCluster
         Console.Write("version {0}", [Assembly].GetExecutingAssembly().GetName().Version)
         Console.WriteLine(" revision {0}", GetBuildRevision())
         Console.ForegroundColor = System.ConsoleColor.White
-
 
         Console.WriteLine("")
         Console.ForegroundColor = System.ConsoleColor.Gray
@@ -191,7 +181,6 @@ Public Module WorldCluster
 
         WaitConsoleCommand()
     End Sub
-
 
     Public Sub WaitConsoleCommand()
         Dim tmp As String = "", CommandList() As String, cmds() As String
@@ -342,6 +331,5 @@ Public Module WorldCluster
         tw.Write(EX.ToString)
         tw.Close()
     End Sub
-
 
 End Module

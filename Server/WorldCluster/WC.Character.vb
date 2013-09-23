@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,10 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Reflection
 Imports Spurious.Common
 Imports Spurious.Common.BaseWriter
-
 
 Public Module WC_Character
 
@@ -160,8 +158,6 @@ Public Module WC_Character
             WS.ClientTransfer(Client.Index, posX, posY, posZ, ori, map)
         End Sub
 
-
-
         'Login
         Public Sub OnLogin()
             'DONE: Update character status in database
@@ -229,7 +225,6 @@ Public Module WC_Character
             End While
         End Sub
 
-
         'Chat
         Public ChatFlag As ChatFlag = ChatFlag.FLAG_NONE
         Public Sub SendChatMessage(ByRef GUID As ULong, ByVal Message As String, ByVal msgType As ChatMsg, ByVal msgLanguage As Integer, Optional ByVal ChannelName As String = "Global")
@@ -240,7 +235,6 @@ Public Module WC_Character
             packet.Dispose()
         End Sub
     End Class
-
 
     Public Function GetCharacterGUIDByName(ByVal Name As String) As ULong
         Dim GUID As ULong = 0
@@ -281,6 +275,5 @@ Public Module WC_Character
             End If
         End If
     End Function
-
 
 End Module

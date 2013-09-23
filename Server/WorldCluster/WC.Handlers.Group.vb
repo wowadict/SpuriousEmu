@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers_Group
-
 
     Public Sub On_CMSG_REQUEST_RAID_INFO(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_REQUEST_RAID_INFO", Client.IP, Client.Port)
@@ -51,7 +48,6 @@ Public Module WC_Handlers_Group
         response.Dispose()
 
     End Sub
-
 
     Public Enum PartyCommandResult As Byte
         INVITE_OK = 0                   'You have invited [name] to join your group.
@@ -91,7 +87,6 @@ Public Module WC_Handlers_Group
             End If
         Next
         CHARACTERs_Lock.ReleaseReaderLock()
-
 
         Dim errCode As PartyCommandResult = PartyCommandResult.INVITE_OK
         'TODO: InBattlegrounds: INVITE_RESTRICTED
@@ -193,7 +188,6 @@ Public Module WC_Handlers_Group
             End If
         Next
         CHARACTERs_Lock.ReleaseReaderLock()
-
 
         'TODO: InBattlegrounds: INVITE_RESTRICTED
         If GUID = 0 Then
@@ -487,7 +481,6 @@ Public Module WC_Handlers_Group
         End If
     End Sub
 
-
     Public Sub On_CMSG_REQUEST_PARTY_MEMBER_STATS(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 13 Then Exit Sub
         packet.GetInt16()
@@ -519,6 +512,5 @@ Public Module WC_Handlers_Group
             Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_OPT_OUT_OF_LOOT", Client.IP, Client.Port)
         End If
     End Sub
-
 
 End Module

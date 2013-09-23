@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WorldCluster
-
 
 #Region "Global.Variables"
 
@@ -55,7 +52,6 @@ Public Module WorldCluster
         <XmlElement(ElementName:="ClusterConnectPort")> Public ClusterPort As Integer = 50001
         <XmlElement(ElementName:="LocalConnectHost")> Public LocalHost As String = "127.0.0.1"
         <XmlElement(ElementName:="LocalConnectPort")> Public LocalPort As Integer = 50009
-
 
         Public Function GetVSHost() As UInteger
             Dim b As Byte() = IPAddress.Parse(VSHost).GetAddressBytes()
@@ -91,9 +87,7 @@ Public Module WorldCluster
             Config = oXS.Deserialize(oStmR)
             oStmR.Close()
 
-
             Console.WriteLine(".[done]")
-
 
             'DONE: Creating logger
             Common.BaseWriter.CreateLog(Config.LogType, Config.LogConfig, Log)
@@ -104,12 +98,6 @@ Public Module WorldCluster
         End Try
     End Sub
 #End Region
-
-
-
-
-
-
 
     <System.MTAThreadAttribute()> _
     Sub Main()
@@ -130,7 +118,6 @@ Public Module WorldCluster
         Console.Write("version {0}", [Assembly].GetExecutingAssembly().GetName().Version)
         Console.WriteLine("revision {0}", Common.RevisionReader.GetBuildRevision())
         Console.ForegroundColor = System.ConsoleColor.White
-
 
         Console.WriteLine("")
         Console.ForegroundColor = System.ConsoleColor.Gray
@@ -153,7 +140,6 @@ Public Module WorldCluster
 
         WaitConsoleCommand()
     End Sub
-
 
     Public Sub WaitConsoleCommand()
         Dim tmp As String = "", CommandList() As String, cmds() As String
@@ -202,11 +188,5 @@ Public Module WorldCluster
         tw.Write(EX.ToString)
         tw.Close()
     End Sub
-
-
-
-
-
-
 
 End Module

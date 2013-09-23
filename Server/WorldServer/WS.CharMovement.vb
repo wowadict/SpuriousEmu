@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,6 @@ Imports Spurious.Common.BaseWriter
 Module WS_CharMovement
 
 #Region "WS.CharacterMovement.MovementHandlers"
-
 
     Public Enum MovementFlags As Integer
         MOVEMENTFLAG_NONE = &H0
@@ -76,7 +75,6 @@ Module WS_CharMovement
             SetZCoord_PP(Client.Character.positionX, Client.Character.positionY, Client.Character.MapID, Client.Character.positionZ)
         End If
 #End If
-
 
         If (Client.Character.movementFlags And MovementFlags.MOVEMENTFLAG_ONTRANSPORT) Then
             Dim transportGUID As ULong = packet.GetUInt64
@@ -333,7 +331,6 @@ Module WS_CharMovement
                 Exit Sub
             End If
 
-
             'DONE: Handling all other scripted triggers
             If AreaTriggers.ContainsMethod("AreaTriggers", String.Format("HandleAreaTrigger_{0}", triggerID)) Then
                 AreaTriggers.Invoke("AreaTriggers", String.Format("HandleAreaTrigger_{0}", triggerID), New Object() {Client.Character.GUID})
@@ -505,10 +502,8 @@ Module WS_CharMovement
         Next
     End Sub
 
-
 #End Region
 #Region "WS.CharacterMovement.CellFramework"
-
 
     Public Sub MAP_Load(ByVal x As Byte, ByVal y As Byte, ByVal Map As UInteger)
         For i As Short = -1 To 1
@@ -575,7 +570,6 @@ Module WS_CharMovement
         Next
         Character.playersNear.Clear()
         Character.SeenBy.Clear()
-
 
         'DONE: Removing from creatures wich can see it
         list = Character.creaturesNear.ToArray
@@ -723,7 +717,6 @@ Module WS_CharMovement
             UpdateCorpseObjectsInCell(Maps(Character.MapID).Tiles(Character.CellX, Character.CellY), Character)
         End If
 
-
         If CellXAdd <> 0 Then
             'DONE: Load cell if needed
             If Maps(Character.MapID).Tiles(Character.CellX + CellXAdd, Character.CellY) Is Nothing Then
@@ -743,7 +736,6 @@ Module WS_CharMovement
             End If
         End If
 
-
         If CellYAdd <> 0 Then
             'DONE: Load cell if needed
             If Maps(Character.MapID).Tiles(Character.CellX, Character.CellY + CellYAdd) Is Nothing Then
@@ -762,7 +754,6 @@ Module WS_CharMovement
                 UpdateCorpseObjectsInCell(Maps(Character.MapID).Tiles(Character.CellX, Character.CellY + CellYAdd), Character)
             End If
         End If
-
 
         If CellYAdd <> 0 AndAlso CellXAdd <> 0 Then
             'DONE: Load cell if needed
@@ -975,7 +966,6 @@ Module WS_CharMovement
 
         End With
     End Sub
-
 
 #End Region
 

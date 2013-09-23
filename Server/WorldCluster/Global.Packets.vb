@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@ Imports System.IO
 Imports Spurious.Common.BaseWriter
 
 Public Module Packets
-
 
     Public Sub DumpPacket(ByVal data() As Byte, Optional ByRef Client As ClientClass = Nothing)
         '#If DEBUG Then
@@ -433,10 +432,8 @@ Public Module Packets
             Return CType(BitConverter.ToUInt64(GUID, 0), ULong)
         End Function
 
-
         Public Sub Dispose() Implements System.IDisposable.Dispose
         End Sub
     End Class
-
 
 End Module

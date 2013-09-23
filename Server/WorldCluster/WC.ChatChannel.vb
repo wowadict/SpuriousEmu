@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,13 +16,10 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports Spurious.Common
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Channels
-
 
     Public CHAT_CHANNELs As New Dictionary(Of String, ChatChannelClass)
     Private CHAT_CHANNELs_Counter As Long = 1
@@ -30,12 +27,10 @@ Public Module WS_Channels
         Return Threading.Interlocked.Increment(CHAT_CHANNELs_Counter)
     End Function
 
-
     Public VOICE_SERVER As IVoice = Nothing
     Public VOICE_SERVER_Host As UInteger = &H7F000001UI
     Public VOICE_SERVER_Port As UShort = 3724
     Public VOICE_SERVER_EncryptionKey As Byte() = New Byte() {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-
 
     Public Class ChatChannelClass
         Implements IDisposable
@@ -433,7 +428,6 @@ Public Module WS_Channels
             p.Dispose()
         End Sub
 
-
         Public Sub SetAnnouncements(ByRef Character As CharacterObject)
             If Not Joined.Contains(Character.GUID) Then
                 Dim packet As PacketClass = BuildChannelNotify(CHANNEL_NOTIFY_FLAGS.CHANNEL_NOT_ON, Character.GUID, Nothing, Nothing)
@@ -615,8 +609,6 @@ Public Module WS_Channels
             End If
         End Sub
 
-
-
         Public Sub Broadcast(ByRef p As PacketClass)
             For Each GUID As ULong In Joined.ToArray
                 CHARACTERs(GUID).Client.SendMultiplyPackets(p)
@@ -670,7 +662,7 @@ Public Module WS_Channels
             CHANNEL_NOT_ON_FOR_NAME = 9             ' [%s] Player %s was not found.
             CHANNEL_NOT_OWNER = &HA                 ' [%s] You are not the channel owner.
             CHANNEL_WHO_OWNER = &HB                 ' [%s] Channel owner is %s.
-            CHANNEL_MODE_CHANGE = &HC               ' 
+            CHANNEL_MODE_CHANGE = &HC               '
             CHANNEL_ENABLE_ANNOUNCE = &HD           ' [%s] Channel announcements enabled by %s.
             CHANNEL_DISABLE_ANNOUNCE = &HE          ' [%s] Channel announcements disabled by %s.
             CHANNEL_MODERATED = &HF                 ' [%s] Channel moderation enabled by %s.
@@ -743,9 +735,6 @@ Public Module WS_Channels
 
     End Class
 
-
-
-
     Public Enum VoiceChannelType As Byte
         CHANNEL = 0
         PARTY = 2
@@ -810,7 +799,6 @@ Public Module WS_Channels
         Public Sub SetUnSilence(ByRef Character As CharacterObject, ByVal Name As String)
 
         End Sub
-
 
         Public Sub VoiceEnable(ByRef Character As CharacterObject)
             If Not Joined.Contains(Character.GUID) Then
@@ -905,7 +893,4 @@ Public Module WS_Channels
         End Sub
     End Class
 
-
 End Module
-
-

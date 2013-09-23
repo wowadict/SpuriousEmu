@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,14 +16,11 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Collections.Generic
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Handlers_Gamemaster
-
 
     Public Sub On_CMSG_WORLD_TELEPORT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_WORLD_TELEPORT", Client.IP, Client.Port)
@@ -42,6 +39,5 @@ Public Module WS_Handlers_Gamemaster
             'Do we need to notify client that he is using GM command... i think no :)
         End If
     End Sub
-
 
 End Module

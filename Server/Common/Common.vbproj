@@ -34,7 +34,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\Required\</OutputPath>
+    <OutputPath>..\..\ServerFiles\</OutputPath>
     <DocumentationFile>
     </DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
@@ -123,17 +123,17 @@
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <Name>ICSharpCode.SharpZipLib</Name>
-      <HintPath>..\..\Required\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\ServerFiles\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Meebey.SmartIrc4net, Version=0.4.0.34161, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Required\Meebey.SmartIrc4net.dll</HintPath>
+      <HintPath>..\..\ServerFiles\Meebey.SmartIrc4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=5.2.2.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Required\MySql.Data.dll</HintPath>
+      <HintPath>..\..\ServerFiles\MySql.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">

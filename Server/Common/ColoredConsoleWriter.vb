@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 '
 Imports System.Runtime.InteropServices
 Imports System.Runtime.CompilerServices
-
 
 'Using this logging type, all logs are displayed in console.
 'Writting commands is done trought console.
@@ -77,7 +76,6 @@ Public Class ColoredConsoleWriter
                 Console.ForegroundColor = ConsoleColor.DarkRed
         End Select
 
-
         If arg Is Nothing Then
             Console.WriteLine("[" & Format(TimeOfDay, "hh:mm:ss") & "] " & formatStr)
         Else
@@ -85,7 +83,5 @@ Public Class ColoredConsoleWriter
         End If
         Console.ForegroundColor = ConsoleColor.Gray
     End Sub
-
-
 
 End Class

@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -18,14 +18,13 @@
 Imports System.Threading
 Imports System.Net.Sockets
 
-
 'Using this logging type, you can watch logs with ordinary telnet client.
 'Writting commands requires client, which don't send every key typed.
 Public Class TelnetWriter
     Inherits BaseWriter
 
     Protected conn As TcpListener
-    Protected socket As socket = Nothing
+    Protected socket As Socket = Nothing
     Protected Const SLEEP_TIME As Integer = 1000
 
     Public Sub New(ByVal host As System.Net.IPAddress, ByVal port As Integer)
@@ -38,7 +37,6 @@ Public Class TelnetWriter
         conn = Nothing
         socket.Close()
     End Sub
-
 
     Public Overrides Sub Write(ByVal type As LogType, ByVal formatStr As String, ByVal ParamArray arg() As Object)
         If LogLevel > type Then Return
@@ -70,7 +68,6 @@ Public Class TelnetWriter
         Return System.Text.Encoding.UTF8.GetString(buffer, 0, buffer.Length)
     End Function
 
-
     Protected Sub ConnWaitListen(ByVal state As Object)
         Do While (Not conn Is Nothing)
             Thread.Sleep(SLEEP_TIME)
@@ -79,7 +76,5 @@ Public Class TelnetWriter
             End If
         Loop
     End Sub
-
-
 
 End Class

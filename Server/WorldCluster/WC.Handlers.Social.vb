@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,12 +26,9 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers_Social
 
-
 #Region "Framework"
-
 
     Public Sub LoadIgnoreList(ByRef c As CharacterObject)
         'DONE: Query DB
@@ -80,7 +76,6 @@ Public Module WC_Handlers_Social
         'DONE: Query DB
         Dim q As New DataTable
         Database.Query(String.Format("SELECT * FROM characters_social WHERE char_guid = {0};", Character.GUID), q)
-
 
         'DONE: Make the packet
         Dim SMSG_FRIEND_LIST As New PacketClass(OPCODES.SMSG_CONTACT_LIST)
@@ -136,10 +131,8 @@ Public Module WC_Handlers_Social
         friendpacket.Dispose()
     End Sub
 
-
 #End Region
 #Region "Handlers"
-
 
     Public Sub On_CMSG_WHO(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_WHO", Client.IP, Client.Port)
@@ -161,7 +154,6 @@ Public Module WC_Handlers_Social
         For i As Integer = 1 To StringsCount
             Strings.Add(UCase(EscapeString(packet.GetString())))
         Next
-
 
         Dim results As New List(Of ULong)
         CHARACTERs_Lock.AcquireReaderLock(DEFAULT_LOCK_TIMEOUT)
@@ -192,13 +184,12 @@ Public Module WC_Handlers_Social
         Next
         CHARACTERs_Lock.ReleaseReaderLock()
 
-
         Dim response As New PacketClass(OPCODES.SMSG_WHO)
         response.AddInt32(results.Count)
         response.AddInt32(results.Count)
         For Each GUID As ULong In results
             response.AddString(CHARACTERs(GUID).Name)   'Name
-            response.AddString("")   'Guild Name
+            response.AddString("")                      'Guild Name
             response.AddInt32(CHARACTERs(GUID).Level)   'Level
             response.AddInt32(CHARACTERs(GUID).Classe)  'Class
             response.AddInt32(CHARACTERs(GUID).Race)    'Race
@@ -210,7 +201,6 @@ Public Module WC_Handlers_Social
 
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] SMSG_WHO [P:'{2}' G:'{3}' L:{4}-{5} C:{6:X} R:{7:X}]", Client.IP, Client.Port, NamePlayer, NameGuild, LevelMinimum, LevelMaximum, MaskClass, MaskRace)
     End Sub
-
 
     Public Sub On_CMSG_ADD_FRIEND(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 6 Then Exit Sub
@@ -381,13 +371,6 @@ Public Module WC_Handlers_Social
         SendContactList(Client, Client.Character)
     End Sub
 
-
 #End Region
-
-    
-
-
-
-
 
 End Module

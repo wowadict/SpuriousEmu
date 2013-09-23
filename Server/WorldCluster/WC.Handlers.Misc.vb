@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers_Misc
-
 
     Public Sub On_CMSG_QUERY_TIME(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_QUERY_TIME", Client.IP, Client.Port)
@@ -53,7 +50,6 @@ Public Module WC_Handlers_Misc
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TIME_SYNC_RESP [{2}, {3}, {4}ms]", Client.IP, Client.Port, c, t, timeGetTime - t)
     End Sub
 
-
     Public Sub On_CMSG_NEXT_CINEMATIC_CAMERA(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NEXT_CINEMATIC_CAMERA", Client.IP, Client.Port)
     End Sub
@@ -65,7 +61,6 @@ Public Module WC_Handlers_Misc
         Dim Mode As Byte = packet.GetInt8
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_TAXI_BENCHMARK_MODE [{2}]", Client.IP, Client.Port, Mode)
     End Sub
-
 
     Public Sub On_CMSG_PLAYED_TIME(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_PLAYED_TIME", Client.IP, Client.Port)
@@ -81,7 +76,6 @@ Public Module WC_Handlers_Misc
         Dim GUID As ULong = packet.GetUInt64
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_INSPECT [{GUID={2:X}}]", Client.IP, Client.Port, GUID)
     End Sub
-
 
     Public Sub On_MSG_MOVE_HEARTBEAT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)

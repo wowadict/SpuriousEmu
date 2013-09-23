@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@ Imports System.Collections.Generic
 Imports Spurious.Common.BaseWriter
 
 Public Module WS_Handlers_Chat
-
 
     Public Function GetChatFlag(ByVal c As CharacterObject) As Byte
         If c.GM Then
@@ -65,7 +64,6 @@ Public Module WS_Handlers_Chat
                 BroadcastChatMessageOfficer(Client.Character, Message, msgLanguage, Client.Character.GuildID)
                 Exit Select
 
-
             Case ChatMsg.CHAT_MSG_AFK
                 Dim Message As String = packet.GetString()
                 If (Message = "" OrElse Client.Character.AFK = False) AndAlso Client.Character.IsInCombat = False Then
@@ -89,7 +87,6 @@ Public Module WS_Handlers_Chat
                     Client.Character.SendCharacterUpdate()
                 End If
                 Exit Select
-
 
             Case ChatMsg.CHAT_MSG_WHISPER
                 Dim ToUser As String = CapitalizeName(packet.GetString())
@@ -119,6 +116,5 @@ Public Module WS_Handlers_Chat
         End Select
 
     End Sub
-
 
 End Module

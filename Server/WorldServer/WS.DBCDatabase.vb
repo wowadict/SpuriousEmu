@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -1662,7 +1662,6 @@ Public Module WS_DBCDatabase
 #End Region
 #Region "Battlemasters"
 
-
     Public Battlemasters As New Dictionary(Of Integer, Byte)
     Public Sub InitializeBattlemasters()
         Dim MySQLQuery As New DataTable
@@ -1675,10 +1674,8 @@ Public Module WS_DBCDatabase
         Log.WriteLine(LogType.INFORMATION, "World: {0} Battlemasters Loaded.", MySQLQuery.Rows.Count)
     End Sub
 
-
 #End Region
 #Region "Battlegrounds"
-
 
     Public Battlegrounds As New Dictionary(Of Byte, TBattleground)
     Public Sub InitializeBattlegrounds()
@@ -1728,8 +1725,6 @@ Public Module WS_DBCDatabase
         Public HordeStartO As Single
         Public IsActive As Byte
     End Class
-
-
 #End Region
 #Region "TeleportCoords"
     Public TeleportCoords As New Dictionary(Of Integer, TTeleportCoords)
@@ -1869,7 +1864,6 @@ Public Module WS_DBCDatabase
     End Class
 #End Region
 #Region "Other"
-
     Public Sub InitializeInternalDatabase()
 
         InitializeLoadDBCs()

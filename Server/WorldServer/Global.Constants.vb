@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -226,7 +226,6 @@ Public Module Constants
     Public Const KEYRING_SLOT_END As Byte = 118
 End Module
 
-
 Enum AuthLoginCodes
     CHAR_LOGIN_FAILED = 0                       'Login failed
     CHAR_LOGIN_NO_WORLD = 1                     'World server is down
@@ -273,7 +272,7 @@ Enum AuthResponseCodes
     AUTH_NO_TIME = &H1E                         'Your WoW subscription has expired
     AUTH_DB_BUSY = &H1F                         'This session has timed out
     AUTH_SUSPENDED = &H20                       'This account has been temporarily suspended
-    AUTH_PARENTAL_CONTROL = &H21                'Access to this account blocked by parental controls 
+    AUTH_PARENTAL_CONTROL = &H21                'Access to this account blocked by parental controls
     AUTH_LOCKED_ENFORCED = &H22                 'You have applied a lock to your account.
 
     REALM_LIST_IN_PROGRESS = &H23               'Retrieving realm list
@@ -344,7 +343,6 @@ Enum AuthResponseCodes
 End Enum
 
 #Region "Player.Enums"
-
 
 Public Enum Classes As Byte
     CLASS_WARRIOR = 1
@@ -969,7 +967,6 @@ Enum EnviromentalDamage
     DAMAGE_SLIME = 4
     DAMAGE_FIRE = 5
 End Enum
-
 
 Public Enum MapTypes As Integer
     MAP_COMMON = 0

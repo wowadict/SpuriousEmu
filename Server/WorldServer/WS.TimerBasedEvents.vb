@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,6 @@ Public Module WS_TimerBasedEvents
                     'DONE: If dead don't regenerate
                     If (Not Character.Value.DEAD) AndAlso (Character.Value.underWaterTimer Is Nothing) AndAlso (Character.Value.LogoutTimer Is Nothing) AndAlso (Character.Value.Client IsNot Nothing) Then
                         With CType(Character.Value, CharacterObject)
-
 
                             BaseMana = .Mana.Current
                             BaseRage = .Rage.Current
@@ -174,7 +173,6 @@ Public Module WS_TimerBasedEvents
                             If _updateFlag Then .Client.Send(PowerUpdate)
                             PowerUpdate.Dispose()
 
-
                             'DONE: Duel counter
                             If .DuelOutOfBounds <> DUEL_COUNTER_DISABLED Then
                                 .DuelOutOfBounds -= REGENERATION_TIMER
@@ -199,7 +197,6 @@ Public Module WS_TimerBasedEvents
             RegenerationTimer = Nothing
         End Sub
     End Class
-
 
     'NOTE: Manages spell durations and DOT spells
     Public Class TSpellManager
@@ -362,7 +359,6 @@ Public Module WS_TimerBasedEvents
         End Sub
     End Class
 
-
     'NOTE: Manages ai movement
     Public Class TAIManager
         Implements IDisposable
@@ -417,7 +413,6 @@ Public Module WS_TimerBasedEvents
         End Sub
     End Class
 
-
     'NOTE: Manages character savings
     Public Class TCharacterSaver
         Implements IDisposable
@@ -463,5 +458,3 @@ Public Module WS_TimerBasedEvents
     'TODO: Timer for weather change
 
 End Module
-
-

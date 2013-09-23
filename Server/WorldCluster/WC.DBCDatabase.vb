@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@ Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
 Public Module WS_DBCDatabase
- 
 
 #Region "Maps"
-
 
     Public Maps As New Dictionary(Of Integer, MapInfo)
     Public Sub InitializeMaps()
@@ -98,10 +96,8 @@ Public Module WS_DBCDatabase
 
     End Class
 
-
 #End Region
 #Region "WorldMapArea"
-
 
     Public WorldSafeLocs As New Dictionary(Of Integer, TWorldSafeLoc)
     Public Sub InitializeWorldSafeLocs()
@@ -139,10 +135,8 @@ Public Module WS_DBCDatabase
         Public z As Single
     End Class
 
-
 #End Region
 #Region "Battlegrounds"
-
 
     Public Battlegrounds As New Dictionary(Of Byte, TBattleground)
     Public Sub InitializeBattlegrounds()
@@ -193,7 +187,6 @@ Public Module WS_DBCDatabase
         Public IsActive As Byte
     End Class
 
-
 #End Region
 #Region "Chat Channels"
 
@@ -239,7 +232,6 @@ Public Module WS_DBCDatabase
         Public Flags As Integer
         Public Name As String
     End Class
-
 
 #End Region
 #Region "Character"
@@ -337,6 +329,5 @@ Public Module WS_DBCDatabase
         End Sub
     End Class
 #End Region
-
 
 End Module

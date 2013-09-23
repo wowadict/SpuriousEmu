@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,14 +16,11 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports Spurious.Common
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WC_Group
-
 
     Public Const GROUP_SUBGROUPSIZE As Integer = 5
     Public Const GROUP_SIZE As Integer = 4
@@ -36,7 +33,6 @@ Public Module WC_Group
     Public Class Group
         Implements IDisposable
 
-
         Public ID As Long
         Public Type As GroupType = GroupType.PARTY
         Public DungeonDifficulty As GroupDungeonDifficulty = GroupDungeonDifficulty.DIFFICULTY_NORMAL
@@ -46,7 +42,6 @@ Public Module WC_Group
 
         Public Leader As Byte
         Public Members(GROUP_SIZE) As CharacterObject
-
 
         Public Sub New(ByRef c As CharacterObject)
             ID = Interlocked.Increment(GroupCounter)
@@ -187,7 +182,6 @@ Public Module WC_Group
             End Get
         End Property
 
-
         Public Sub ConvertToRaid()
             ReDim Preserve Members(GROUP_RAIDSIZE)
             For i As Byte = GROUP_SIZE + 1 To GROUP_RAIDSIZE
@@ -256,8 +250,6 @@ Public Module WC_Group
             Return list.ToArray
         End Function
 
-
-
         Public Sub Broadcast(ByRef packet As PacketClass)
             For i As Byte = 0 To Members.Length - 1
                 If Members(i) IsNot Nothing AndAlso Members(i).Client IsNot Nothing Then Members(i).Client.SendMultiplyPackets(packet)
@@ -277,7 +269,6 @@ Public Module WC_Group
                 End If
             Next
         End Sub
-
 
         Public Sub SendGroupList()
             Dim GroupCount As Byte = GetMembersCount()
@@ -328,8 +319,5 @@ Public Module WC_Group
         End Sub
 
     End Class
-
-
-
 
 End Module

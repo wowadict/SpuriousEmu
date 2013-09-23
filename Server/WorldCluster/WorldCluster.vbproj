@@ -125,12 +125,12 @@
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Required\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\ServerFiles\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Spurious.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Required\Spurious.Common.dll</HintPath>
+      <HintPath>..\..\ServerFiles\Spurious.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">

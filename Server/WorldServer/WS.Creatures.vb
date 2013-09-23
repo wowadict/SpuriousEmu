@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,11 @@ Imports System.Threading
 Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Creatures
 
 #Region "WS.Creatures.Constants"
 
-
     Public Const SKILL_DETECTION_PER_LEVEL As Integer = 5
-
 
 #End Region
 #Region "WS.Creatures.TypeDef"
@@ -407,7 +404,6 @@ Public Module WS_Creatures
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4, 0)
             'Update.SetUpdateFlag(EUnitFields.UNIT_VIRTUAL_ITEM_INFO + 4 + 1, 0)
 
-
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_BASEATTACKTIME, CREATURESDatabase(ID).BaseAttackTime)
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_OFFHANDATTACKTIME, CREATURESDatabase(ID).BaseAttackTime)
             'Update.SetUpdateFlag(EUnitFields.UNIT_FIELD_RANGEDATTACKTIME, CREATURESDatabase(ID).BaseRangedAttackTime)
@@ -748,7 +744,6 @@ Public Module WS_Creatures
 
             Life.Current += Damage
 
-
             'DONE: Do health update
             If SeenBy.Count > 0 Then
                 Dim packetForNear As New UpdatePacketClass
@@ -768,7 +763,6 @@ Public Module WS_Creatures
 
             Mana.Current += Damage
 
-
             'DONE: Do health update
             If SeenBy.Count > 0 Then
                 Dim packetForNear As New UpdatePacketClass
@@ -787,7 +781,7 @@ Public Module WS_Creatures
                 cDynamicFlags = DynamicFlags.UNIT_DYNFLAG_LOOTABLE
 
                 'ElseIf CType(CREATURESDatabase(ID), CreatureInfo).Loot_Skinning <> 0 Then
-                'GenerateLoot(Character, LootType.LOOTTYPE_SKINNNING) 
+                'GenerateLoot(Character, LootType.LOOTTYPE_SKINNNING)
                 'cUnitFlags += UnitFlags.UNIT_FLAG_SKINNABLE
                 '
                 ''DONE: Send skinnable and exit
@@ -808,7 +802,6 @@ Public Module WS_Creatures
                 Exit Sub
             End If
 
-
             'DONE: Create packet
             Dim packet As New PacketClass(OPCODES.SMSG_UPDATE_OBJECT)
             packet.AddInt32(1)
@@ -818,7 +811,6 @@ Public Module WS_Creatures
             UpdateData.SetUpdateFlag(EUnitFields.UNIT_FIELD_FLAGS, cUnitFlags)
             UpdateData.AddToPacket(packet, ObjectUpdateType.UPDATETYPE_VALUES, Me)
             UpdateData.Dispose()
-
 
             If Character.IsInGroup Then
                 'DONE: Group loot rulles
@@ -832,7 +824,7 @@ Public Module WS_Creatures
                                 CHARACTERs(c).Client.Send(packet)
                             End If
                         Next
-                        
+
                     Case GroupLootMethod.LOOT_MASTER
                         If Character.Group.LocalLootMaster Is Nothing Then
                             LootTable(GUID).LootOwner = Character.GUID
@@ -952,7 +944,6 @@ Public Module WS_Creatures
             If CType(CREATURESDatabase(ID), CreatureInfo).Elite > 0 Then XP *= 2
             'DONE: XP Rate config
             XP *= Config.XPRate
-
 
             If Not Character.IsInGroup Then
                 'DONE: Rested
@@ -1100,7 +1091,7 @@ Public Module WS_Creatures
                 aiScript = AI.Invoke(CREATURESDatabase(ID).AIScriptSource, New Object() {Me})
             End If
 
-            'DONE: Load default AI 
+            'DONE: Load default AI
             If aiScript Is Nothing Then
                 ''''If isWaypoint Then
                 ''''aiScript = New WaypointAI(Me)
@@ -1449,7 +1440,6 @@ Public Module WS_Creatures
         Dim TargetGUID As ULong = packet.GetUInt64
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NPC_TEXT_QUERY [TextID={2}]", Client.IP, Client.Port, TextID)
 
-
         Dim MySQLQuery As New DataTable
         Database.Query(String.Format("SELECT * FROM npcText WHERE entry = {0};", TextID), MySQLQuery)
 
@@ -1622,8 +1612,6 @@ Public Module WS_Creatures
         Client.Character.ApplySpell(15007)
     End Sub
 
-
-
     <MethodImplAttribute(MethodImplOptions.Synchronized)> _
     Private Function GetNewGUID() As ULong
         CreatureGUIDCounter += 1
@@ -1698,10 +1686,7 @@ Public Module WS_Creatures
     End Class
 #End Region
 
-
 End Module
-
-
 
 #Region "WS.Creatures.HelperTypes"
 Public Class TLoot
@@ -1759,7 +1744,6 @@ Public Class TBaseTalk
     End Function
 End Class
 
-
 Public Enum MenuIcon As Integer
     MENUICON_GOSSIP = &H0
     MENUICON_VENDOR = &H1
@@ -1776,5 +1760,3 @@ Public Enum MenuIcon As Integer
     MENUICON_GOSSIP3 = &HC
 End Enum
 #End Region
-
-

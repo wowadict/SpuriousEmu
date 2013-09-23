@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,7 @@ Imports System.Collections.Generic
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WS_Main
-
 
 #Region "Global.Variables"
     'Players' containers
@@ -37,7 +35,7 @@ Public Module WS_Main
     Public CHARACTERs As New Dictionary(Of ULong, CharacterObject)
     Public CHARACTERs_Lock As New ReaderWriterLock
 
-    'Worlds containers    
+    'Worlds containers
     Public WORLD_CREATUREs_Lock As New ReaderWriterLock
     Public WORLD_CREATUREs As New Dictionary(Of ULong, CreatureObject)
     Public WORLD_CREATUREsKeys As New ArrayList()
@@ -152,9 +150,7 @@ Public Module WS_Main
             Config = oXS.Deserialize(oStmR)
             oStmR.Close()
 
-
             Console.WriteLine(".[done]")
-
 
             'DONE: Setting SQL Connection
             Database.SQLDBName = Config.SQLDBName
@@ -185,7 +181,6 @@ Public Module WS_Main
         End Select
     End Sub
 #End Region
-
 
     <System.MTAThreadAttribute()> _
     Sub Main()
@@ -244,7 +239,6 @@ Public Module WS_Main
         Regenerator.Dispose()
         AreaTriggers.Dispose()
     End Sub
-
 
     Public Sub WaitConsoleCommand()
         Dim tmp As String = "", CommandList() As String, cmds() As String
@@ -406,6 +400,5 @@ Public Module WS_Main
         tw.Write(EX.ToString)
         tw.Close()
     End Sub
-
 
 End Module

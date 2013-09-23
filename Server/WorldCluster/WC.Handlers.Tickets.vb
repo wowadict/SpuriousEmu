@@ -1,5 +1,4 @@
-﻿
-' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -28,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers_Tickets
-
 
     Private Enum SuggestionType As Integer
         TYPE_BUG_REPORT = 0
@@ -95,7 +91,6 @@ Public Module WC_Handlers_Tickets
 
         Dim MySQLResult As New DataTable
         Database.Query(String.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", Client.Character.GUID), MySQLResult)
-
 
         Dim SMSG_GMTICKET_CREATE As New PacketClass(OPCODES.SMSG_GMTICKET_CREATE)
         If MySQLResult.Rows.Count > 0 Then
@@ -205,6 +200,5 @@ Public Module WC_Handlers_Tickets
         Client.Send(response)
         response.Dispose()
     End Sub
-
 
 End Module

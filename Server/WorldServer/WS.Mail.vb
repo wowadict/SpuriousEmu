@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -55,10 +55,8 @@ Public Module WS_Mail
         AUCTION = 2
     End Enum
 
-
 #End Region
 #Region "WS.Mail.Handlers"
-
 
     Public Sub On_CMSG_MAIL_RETURN_TO_SENDER(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 17 Then Exit Sub
@@ -535,6 +533,5 @@ Public Module WS_Mail
     End Sub
 
 #End Region
-
 
 End Module

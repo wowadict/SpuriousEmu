@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -19,9 +19,6 @@
 Imports Spurious.Common.BaseWriter
 
 Public Module WS_Handlers_Battleground
-
-
-    
 
     Public Sub On_CMSG_BATTLEMASTER_HELLO(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 13 Then Exit Sub
@@ -63,8 +60,6 @@ Public Module WS_Handlers_Battleground
         Client.Send(response)
         response.Dispose()
     End Sub
-
-
 
     'Not Implement:
     'MSG_BATTLEGROUND_PLAYER_POSITIONS

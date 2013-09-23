@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,7 @@
 
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WC_Handlers_Battleground
-
 
     Public Sub On_CMSG_BATTLEFIELD_PORT(ByRef packet As PacketClass, ByRef Client As ClientClass)
         packet.GetInt16()
@@ -106,7 +104,5 @@ Public Module WC_Handlers_Battleground
         Client.Send(response)
         response.Dispose()
     End Sub
-    
-
 
 End Module

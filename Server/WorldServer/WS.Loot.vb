@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -19,9 +19,7 @@
 Imports System.Threading
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Loot
-
 
     Public LootTable As New Dictionary(Of ULong, LootObject)
     Public Enum LootType As Byte
@@ -291,8 +289,6 @@ Public Module WS_Loot
                     Exit Sub
                 End If
 
-
-
                 Dim maxRoll As Integer = -1
                 Dim looterCharacter As CharacterObject = Nothing
                 For Each looter As KeyValuePair(Of CharacterObject, Integer) In Looters
@@ -317,8 +313,6 @@ Public Module WS_Loot
                         response.Dispose()
                     End If
                 Next
-
-
 
                 Dim tmpItem As New ItemObject(CType(Item, LootItem).ItemID, looterCharacter.GUID)
                 tmpItem.StackCount = CType(Item, LootItem).ItemCount
@@ -429,8 +423,6 @@ Public Module WS_Loot
         Client.Character.SendCharacterUpdate(False)
         Client.Character.SaveCharacter()
 
-
-
         'TODO: Send to party loooters
         Dim response2 As New PacketClass(OPCODES.SMSG_LOOT_CLEAR_MONEY)
         Client.SendMultiplyPackets(response2)
@@ -458,8 +450,6 @@ Public Module WS_Loot
         If LootTable.ContainsKey(GUID) Then
             'DONE: Remove loot owner
             CType(LootTable(GUID), LootObject).LootOwner = 0
-
-
 
             If CType(LootTable(GUID), LootObject).IsEmpty Then
                 'DONE: Delete loot
@@ -548,7 +538,6 @@ Public Module WS_Loot
         Log.WriteLine(LogType.DEBUG, "Generating loot for: {0:X}.", GUID)
 #End If
 
-
         If GuidIsItem(GUID) Then
             '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             If Not WORLD_ITEMs.ContainsKey(GUID) Then Return False
@@ -568,10 +557,6 @@ Public Module WS_Loot
                     Loot.Items.Add(New LootItem(CType(LootRow.Item("loot_item"), Integer), 1))
                 End If
             Next
-
-
-
-
 
         Else
             Log.WriteLine(LogType.WARNING, "Looting Unknown GUID type: {0:X}.", GUID)
@@ -627,7 +612,6 @@ Public Module WS_Loot
 
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_LOOT_ROLL [loot={2} roll={3}]", Client.IP, Client.Port, GUID, rollType)
 
-
         '0 - Pass
         '1 - Need
         '2 - Greed
@@ -655,15 +639,12 @@ Public Module WS_Loot
                 response.AddInt8(2)
         End Select
 
-
-
         CType(CType(LootTable(GUID), LootObject).GroupLootInfo(CType(Slot, Byte)), GroupLootInfo).Broadcast(response)
         response.Dispose()
 
         CType(CType(LootTable(GUID), LootObject).GroupLootInfo(CType(Slot, Byte)), GroupLootInfo).Looters(Client.Character) = rollType
         CType(CType(LootTable(GUID), LootObject).GroupLootInfo(CType(Slot, Byte)), GroupLootInfo).Check()
     End Sub
-
 
     Private Enum LootState As UInteger
         NORMAL = 0
@@ -675,6 +656,5 @@ Public Module WS_Loot
 
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_OPT_OUT_OF_LOOT [{2}]", Client.IP, Client.Port, State)
     End Sub
-
 
 End Module

@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -21,13 +21,11 @@ Imports System.IO
 Imports Spurious.Common
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_DBCLoad
 
     Public Sub InitializeInternalDatabase()
 
         InitializeLoadDBCs()
-
 
         Try
             'Set all characters offline
@@ -46,6 +44,5 @@ Public Module WS_DBCLoad
         InitializeCharRaces()
         InitializeCharClasses()
     End Sub
-
 
 End Module

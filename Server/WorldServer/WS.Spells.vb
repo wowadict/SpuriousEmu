@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -645,7 +645,6 @@ Public Module WS_Spells
         End Select
     End Function
 
-
 #End Region
 #Region "WS.Spells.Framework"
 
@@ -945,7 +944,6 @@ Public Module WS_Spells
                     Log.WriteLine(LogType.DEBUG, "[DEBUG] CASTED A CHANNEL SPELL!")
                 End If
                 'TODO: If ChannelInterruptFlags <>0 then START_CHANNEL
-
 
                 'PREPEARING SPELL
                 Dim tmpRandom As Integer
@@ -1494,8 +1492,6 @@ SkipShapeShift:
                     Exit Sub
             End Select
 
-
-
             If TypeOf Caster Is CharacterObject Then CType(Caster, CharacterObject).Client.SendMultiplyPackets(packet)
             Caster.SendToNearPlayers(packet)
             packet.Dispose()
@@ -1707,7 +1703,6 @@ SkipShapeShift:
         End Sub
     End Class
 
-
     Public Class CastSpellParameters
         Public tmpTargets As SpellTargets
         Public tmpCaster As BaseObject
@@ -1880,7 +1875,6 @@ SkipShapeShift:
 #End Region
 #Region "WS.Spells.Database"
 
-
     Public SPELLs As New Dictionary(Of Integer, SpellInfo)(29000)
 
     Public SpellCastTime As New Dictionary(Of Integer, Integer)
@@ -1889,128 +1883,127 @@ SkipShapeShift:
     Public SpellDuration As New Dictionary(Of Integer, Integer)
     Public SpellFocusObject As New Dictionary(Of Integer, String)
 
-
     Public Sub InitializeSpellDB()
         Dim i As Integer
         For i = 0 To SPELL_EFFECT_COUNT
             SPELL_EFFECTs(i) = AddressOf SPELL_EFFECT_NOTHING
         Next
 
-        SPELL_EFFECTs(0) = AddressOf SPELL_EFFECT_NOTHING                   'None		
-        SPELL_EFFECTs(1) = AddressOf SPELL_EFFECT_INSTAKILL                 'Instakill		
-        SPELL_EFFECTs(2) = AddressOf SPELL_EFFECT_SCHOOL_DAMAGE             'School Damage		
-        SPELL_EFFECTs(3) = AddressOf SPELL_EFFECT_DUMMY                     'Dummy		
-        'SPELL_EFFECTs(4) = AddressOf SPELL_EFFECT_PORTAL_TELEPORT           'Portal Teleport		
-        SPELL_EFFECTs(5) = AddressOf SPELL_EFFECT_TELEPORT_UNITS            'Teleport Units		
-        SPELL_EFFECTs(6) = AddressOf SPELL_EFFECT_APPLY_AURA                'Apply Aura		
-        SPELL_EFFECTs(7) = AddressOf SPELL_EFFECT_ENVIRONMENTAL_DAMAGE      'Environmental Damage		
-        SPELL_EFFECTs(8) = AddressOf SPELL_EFFECT_MANA_DRAIN                'Power Drain		
-        'SPELL_EFFECTs(9) = AddressOf SPELL_EFFECT_HEALTH_LEECH              'Health Leech		
-        SPELL_EFFECTs(10) = AddressOf SPELL_EFFECT_HEAL                     'Heal		
-        SPELL_EFFECTs(11) = AddressOf SPELL_EFFECT_BIND                     'Bind		
-        'SPELL_EFFECTs(12) = AddressOf SPELL_EFFECT_PORTAL                   'Portal		
-        'SPELL_EFFECTs(13) = AddressOf SPELL_EFFECT_RITUAL_BASE              'Ritual Base		
-        'SPELL_EFFECTs(14) = AddressOf SPELL_EFFECT_RITUAL_SPECIALIZE        'Ritual Specialize		
-        'SPELL_EFFECTs(15) = AddressOf SPELL_EFFECT_RITUAL_ACTIVATE_PORTAL   'Ritual Activate Portal		
-        SPELL_EFFECTs(16) = AddressOf SPELL_EFFECT_QUEST_COMPLETE           'Quest Complete		
-        SPELL_EFFECTs(17) = AddressOf SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL   'Weapon Damage + (noschool)		
-        SPELL_EFFECTs(18) = AddressOf SPELL_EFFECT_RESURRECT                'Resurrect		
-        '!! SPELL_EFFECTs(19) = AddressOf SPELL_EFFECT_ADD_EXTRA_ATTACKS        'Extra Attacks		
-        SPELL_EFFECTs(20) = AddressOf SPELL_EFFECT_DODGE                    'Dodge		
-        SPELL_EFFECTs(21) = AddressOf SPELL_EFFECT_EVADE                    'Evade		
-        SPELL_EFFECTs(22) = AddressOf SPELL_EFFECT_PARRY                    'Parry		
-        SPELL_EFFECTs(23) = AddressOf SPELL_EFFECT_BLOCK                    'Block		
-        SPELL_EFFECTs(24) = AddressOf SPELL_EFFECT_CREATE_ITEM              'Create Item		
-        'SPELL_EFFECTs(25) = AddressOf SPELL_EFFECT_WEAPON                   'Weapon		
-        'SPELL_EFFECTs(26) = AddressOf SPELL_EFFECT_DEFENSE                  'Defense		
-        SPELL_EFFECTs(27) = AddressOf SPELL_EFFECT_PERSISTENT_AREA_AURA     'Persistent Area Aura		
-        SPELL_EFFECTs(28) = AddressOf SPELL_EFFECT_SUMMON                   'Summon		
-        SPELL_EFFECTs(29) = AddressOf SPELL_EFFECT_LEAP                     'Leap		
-        SPELL_EFFECTs(30) = AddressOf SPELL_EFFECT_ENERGIZE                 'Energize		
-        'SPELL_EFFECTs(31) = AddressOf SPELL_EFFECT_WEAPON_PERCENT_DAMAGE    'Weapon % Dmg		
-        'SPELL_EFFECTs(32) = AddressOf SPELL_EFFECT_TRIGGER_MISSILE          'Trigger Missile		
-        SPELL_EFFECTs(33) = AddressOf SPELL_EFFECT_OPEN_LOCK                'Open Lock	
-        'SPELL_EFFECTs(34) = AddressOf SPELL_EFFECT_SUMMON_MOUNT_OBSOLETE	
-        SPELL_EFFECTs(35) = AddressOf SPELL_EFFECT_APPLY_AREA_AURA          'Apply Area Aura		
-        SPELL_EFFECTs(36) = AddressOf SPELL_EFFECT_LEARN_SPELL              'Learn Spell		
-        'SPELL_EFFECTs(37) = AddressOf SPELL_EFFECT_SPELL_DEFENSE            'Spell Defense		
-        '! SPELL_EFFECTs(38) = AddressOf SPELL_EFFECT_DISPEL                   'Dispel		
-        'SPELL_EFFECTs(39) = AddressOf SPELL_EFFECT_LANGUAGE                 'Language		
-        SPELL_EFFECTs(40) = AddressOf SPELL_EFFECT_DUAL_WIELD               'Dual Wield		
-        '!! SPELL_EFFECTs(41) = AddressOf SPELL_EFFECT_SUMMON_WILD          'Summon Wild		
-        SPELL_EFFECTs(42) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Guardian		
+        SPELL_EFFECTs(0) = AddressOf SPELL_EFFECT_NOTHING                   'None
+        SPELL_EFFECTs(1) = AddressOf SPELL_EFFECT_INSTAKILL                 'Instakill
+        SPELL_EFFECTs(2) = AddressOf SPELL_EFFECT_SCHOOL_DAMAGE             'School Damage
+        SPELL_EFFECTs(3) = AddressOf SPELL_EFFECT_DUMMY                     'Dummy
+        'SPELL_EFFECTs(4) = AddressOf SPELL_EFFECT_PORTAL_TELEPORT           'Portal Teleport
+        SPELL_EFFECTs(5) = AddressOf SPELL_EFFECT_TELEPORT_UNITS            'Teleport Units
+        SPELL_EFFECTs(6) = AddressOf SPELL_EFFECT_APPLY_AURA                'Apply Aura
+        SPELL_EFFECTs(7) = AddressOf SPELL_EFFECT_ENVIRONMENTAL_DAMAGE      'Environmental Damage
+        SPELL_EFFECTs(8) = AddressOf SPELL_EFFECT_MANA_DRAIN                'Power Drain
+        'SPELL_EFFECTs(9) = AddressOf SPELL_EFFECT_HEALTH_LEECH              'Health Leech
+        SPELL_EFFECTs(10) = AddressOf SPELL_EFFECT_HEAL                     'Heal
+        SPELL_EFFECTs(11) = AddressOf SPELL_EFFECT_BIND                     'Bind
+        'SPELL_EFFECTs(12) = AddressOf SPELL_EFFECT_PORTAL                   'Portal
+        'SPELL_EFFECTs(13) = AddressOf SPELL_EFFECT_RITUAL_BASE              'Ritual Base
+        'SPELL_EFFECTs(14) = AddressOf SPELL_EFFECT_RITUAL_SPECIALIZE        'Ritual Specialize
+        'SPELL_EFFECTs(15) = AddressOf SPELL_EFFECT_RITUAL_ACTIVATE_PORTAL   'Ritual Activate Portal
+        SPELL_EFFECTs(16) = AddressOf SPELL_EFFECT_QUEST_COMPLETE           'Quest Complete
+        SPELL_EFFECTs(17) = AddressOf SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL   'Weapon Damage + (noschool)
+        SPELL_EFFECTs(18) = AddressOf SPELL_EFFECT_RESURRECT                'Resurrect
+        '!! SPELL_EFFECTs(19) = AddressOf SPELL_EFFECT_ADD_EXTRA_ATTACKS        'Extra Attacks
+        SPELL_EFFECTs(20) = AddressOf SPELL_EFFECT_DODGE                    'Dodge
+        SPELL_EFFECTs(21) = AddressOf SPELL_EFFECT_EVADE                    'Evade
+        SPELL_EFFECTs(22) = AddressOf SPELL_EFFECT_PARRY                    'Parry
+        SPELL_EFFECTs(23) = AddressOf SPELL_EFFECT_BLOCK                    'Block
+        SPELL_EFFECTs(24) = AddressOf SPELL_EFFECT_CREATE_ITEM              'Create Item
+        'SPELL_EFFECTs(25) = AddressOf SPELL_EFFECT_WEAPON                   'Weapon
+        'SPELL_EFFECTs(26) = AddressOf SPELL_EFFECT_DEFENSE                  'Defense
+        SPELL_EFFECTs(27) = AddressOf SPELL_EFFECT_PERSISTENT_AREA_AURA     'Persistent Area Aura
+        SPELL_EFFECTs(28) = AddressOf SPELL_EFFECT_SUMMON                   'Summon
+        SPELL_EFFECTs(29) = AddressOf SPELL_EFFECT_LEAP                     'Leap
+        SPELL_EFFECTs(30) = AddressOf SPELL_EFFECT_ENERGIZE                 'Energize
+        'SPELL_EFFECTs(31) = AddressOf SPELL_EFFECT_WEAPON_PERCENT_DAMAGE    'Weapon % Dmg
+        'SPELL_EFFECTs(32) = AddressOf SPELL_EFFECT_TRIGGER_MISSILE          'Trigger Missile
+        SPELL_EFFECTs(33) = AddressOf SPELL_EFFECT_OPEN_LOCK                'Open Lock
+        'SPELL_EFFECTs(34) = AddressOf SPELL_EFFECT_SUMMON_MOUNT_OBSOLETE
+        SPELL_EFFECTs(35) = AddressOf SPELL_EFFECT_APPLY_AREA_AURA          'Apply Area Aura
+        SPELL_EFFECTs(36) = AddressOf SPELL_EFFECT_LEARN_SPELL              'Learn Spell
+        'SPELL_EFFECTs(37) = AddressOf SPELL_EFFECT_SPELL_DEFENSE            'Spell Defense
+        '! SPELL_EFFECTs(38) = AddressOf SPELL_EFFECT_DISPEL                   'Dispel
+        'SPELL_EFFECTs(39) = AddressOf SPELL_EFFECT_LANGUAGE                 'Language
+        SPELL_EFFECTs(40) = AddressOf SPELL_EFFECT_DUAL_WIELD               'Dual Wield
+        '!! SPELL_EFFECTs(41) = AddressOf SPELL_EFFECT_SUMMON_WILD          'Summon Wild
+        SPELL_EFFECTs(42) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Guardian
         '! SPELL_EFFECTs(43) = AddressOf SPELL_EFFECT_TELEPORT_UNITS_FACE_CASTER
-        SPELL_EFFECTs(44) = AddressOf SPELL_EFFECT_SCHOOL_DAMAGE            'Skill Step	
+        SPELL_EFFECTs(44) = AddressOf SPELL_EFFECT_SCHOOL_DAMAGE            'Skill Step
         SPELL_EFFECTs(45) = AddressOf SPELL_EFFECT_HONOR
-        'SPELL_EFFECTs(46) = AddressOf SPELL_EFFECT_SPAWN                    'Spawn		
-        'SPELL_EFFECTs(47) = AddressOf SPELL_EFFECT_TRADE_SKILL              'Spell Cast UI		
-        SPELL_EFFECTs(48) = AddressOf SPELL_EFFECT_STEALTH                  'Stealth		
-        SPELL_EFFECTs(49) = AddressOf SPELL_EFFECT_DETECT                   'Detect		
-        SPELL_EFFECTs(50) = AddressOf SPELL_EFFECT_SUMMON_OBJECT            'Summon Object		
-        'SPELL_EFFECTs(51) = AddressOf SPELL_EFFECT_FORCE_CRITICAL_HIT       'Force Critical Hit		
-        'SPELL_EFFECTs(52) = AddressOf SPELL_EFFECT_GUARANTEE_HIT            'Guarantee Hit		
-        SPELL_EFFECTs(53) = AddressOf SPELL_EFFECT_ENCHANT_ITEM             'Enchant Item Permanent		
-        SPELL_EFFECTs(54) = AddressOf SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY   'Enchant Item Temporary		
-        'SPELL_EFFECTs(55) = AddressOf SPELL_EFFECT_TAMECREATURE             'Tame Creature		
-        'SPELL_EFFECTs(56) = AddressOf SPELL_EFFECT_SUMMON_PET               'Summon Pet		
-        'SPELL_EFFECTs(57) = AddressOf SPELL_EFFECT_LEARN_PET_SPELL          'Learn Pet Spell		
-        SPELL_EFFECTs(58) = AddressOf SPELL_EFFECT_WEAPON_DAMAGE            'Weapon Damage +		
-        SPELL_EFFECTs(59) = AddressOf SPELL_EFFECT_OPEN_LOCK                'Open Lock (Item)		
-        'SPELL_EFFECTs(60) = AddressOf SPELL_EFFECT_PROFICIENCY              'Proficiency		
-        'SPELL_EFFECTs(61) = AddressOf SPELL_EFFECT_SEND_EVENT               'Send Event		
-        'SPELL_EFFECTs(62) = AddressOf SPELL_EFFECT_POWER_BURN               'Power Burn		
-        'SPELL_EFFECTs(63) = AddressOf SPELL_EFFECT_THREAT                   'Threat		
-        SPELL_EFFECTs(64) = AddressOf SPELL_EFFECT_TRIGGER_SPELL            'Trigger Spell		
-        'SPELL_EFFECTs(65) = AddressOf SPELL_EFFECT_HEALTH_FUNNEL            'Health Funnel		
-        'SPELL_EFFECTs(66) = AddressOf SPELL_EFFECT_POWER_FUNNEL             'Power Funnel		
-        SPELL_EFFECTs(67) = AddressOf SPELL_EFFECT_HEAL_MAX_HEALTH          'Heal Max Health		
-        SPELL_EFFECTs(68) = AddressOf SPELL_EFFECT_INTERRUPT_CAST           'Interrupt Cast		
-        'SPELL_EFFECTs(69) = AddressOf SPELL_EFFECT_DISTRACT                 'Distract		
-        'SPELL_EFFECTs(70) = AddressOf SPELL_EFFECT_PULL                     'Pull		
-        'SPELL_EFFECTs(71) = AddressOf SPELL_EFFECT_PICKPOCKET               'Pickpocket		
-        'SPELL_EFFECTs(72) = AddressOf SPELL_EFFECT_ADD_FARSIGHT             'Add Farsight		
-        'SPELL_EFFECTs(73) = AddressOf SPELL_EFFECT_SUMMON_POSSESSED         'Summon Possessed		
-        SPELL_EFFECTs(74) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem		
-        'SPELL_EFFECTs(75) = AddressOf SPELL_EFFECT_HEAL_MECHANICAL          'Heal Mechanical		
-        'SPELL_EFFECTs(76) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_WILD       'Summon Object (Wild)		
-        'SPELL_EFFECTs(77) = AddressOf SPELL_EFFECT_SCRIPT_EFFECT            'Script Effect		
-        'SPELL_EFFECTs(78) = AddressOf SPELL_EFFECT_ATTACK                   'Attack		
-        'SPELL_EFFECTs(79) = AddressOf SPELL_EFFECT_SANCTUARY                'Sanctuary		
-        'SPELL_EFFECTs(80) = AddressOf SPELL_EFFECT_ADD_COMBO_POINTS         'Add Combo Points		
-        'SPELL_EFFECTs(81) = AddressOf SPELL_EFFECT_CREATE_HOUSE             'Create House		
-        'SPELL_EFFECTs(82) = AddressOf SPELL_EFFECT_BIND_SIGHT               'Bind Sight		
-        SPELL_EFFECTs(83) = AddressOf SPELL_EFFECT_DUEL                     'Duel		
-        'SPELL_EFFECTs(84) = AddressOf SPELL_EFFECT_STUCK                    'Stuck		
-        'SPELL_EFFECTs(85) = AddressOf SPELL_EFFECT_SUMMON_PLAYER            'Summon Player		
-        'SPELL_EFFECTs(86) = AddressOf SPELL_EFFECT_ACTIVATE_OBJECT          'Activate Object		
-        SPELL_EFFECTs(87) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 1)		
-        SPELL_EFFECTs(88) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 2)		
-        SPELL_EFFECTs(89) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 3)		
-        SPELL_EFFECTs(90) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 4)		
-        'SPELL_EFFECTs(91) = AddressOf SPELL_EFFECT_THREAT_ALL               'Threat (All)		
-        SPELL_EFFECTs(92) = AddressOf SPELL_EFFECT_ENCHANT_HELD_ITEM        'Enchant Held Item		
-        'SPELL_EFFECTs(93) = AddressOf SPELL_EFFECT_SUMMON_PHANTASM          'Summon Phantasm		
-        'SPELL_EFFECTs(94) = AddressOf SPELL_EFFECT_SELF_RESURRECT           'Self Resurrect		
-        'SPELL_EFFECTs(95) = AddressOf SPELL_EFFECT_SKINNING                 'Skinning		
-        'SPELL_EFFECTs(96) = AddressOf SPELL_EFFECT_CHARGE                   'Charge		
-        'SPELL_EFFECTs(97) = AddressOf SPELL_EFFECT_SUMMON_CRITTER           'Summon Critter		
-        'SPELL_EFFECTs(98) = AddressOf SPELL_EFFECT_KNOCK_BACK               'Knock Back		
-        'SPELL_EFFECTs(99) = AddressOf SPELL_EFFECT_DISENCHANT               'Disenchant		
-        'SPELL_EFFECTs(100) = AddressOf SPELL_EFFECT_INEBRIATE               'Inebriate		
-        'SPELL_EFFECTs(101) = AddressOf SPELL_EFFECT_FEED_PET                'Feed Pet		
-        'SPELL_EFFECTs(102) = AddressOf SPELL_EFFECT_DISMISS_PET             'Dismiss Pet		
-        'SPELL_EFFECTs(103) = AddressOf SPELL_EFFECT_REPUTATION              'Reputation		
-        'SPELL_EFFECTs(104) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT1     'Summon Object (slot 1)		
-        'SPELL_EFFECTs(105) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT2     'Summon Object (slot 2)		
-        'SPELL_EFFECTs(106) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT3     'Summon Object (slot 3)		
-        'SPELL_EFFECTs(107) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT4     'Summon Object (slot 4)		
-        'SPELL_EFFECTs(108) = AddressOf SPELL_EFFECT_DISPEL_MECHANIC         'Dispel Mechanic		
-        'SPELL_EFFECTs(109) = AddressOf SPELL_EFFECT_SUMMON_DEAD_PET         'Summon Dead Pet		
-        'SPELL_EFFECTs(110) = AddressOf SPELL_EFFECT_DESTROY_ALL_TOTEMS      'Destroy All Totems		
-        'SPELL_EFFECTs(111) = AddressOf SPELL_EFFECT_DURABILITY_DAMAGE       'Durability Damage		
-        'SPELL_EFFECTs(112) = AddressOf SPELL_EFFECT_SUMMON_DEMON            'Summon Demon		
-        SPELL_EFFECTs(113) = AddressOf SPELL_EFFECT_RESURRECT_NEW           'Resurrect (Flat)		
-        'SPELL_EFFECTs(114) = AddressOf SPELL_EFFECT_ATTACK_ME               'Attack Me	
+        'SPELL_EFFECTs(46) = AddressOf SPELL_EFFECT_SPAWN                    'Spawn
+        'SPELL_EFFECTs(47) = AddressOf SPELL_EFFECT_TRADE_SKILL              'Spell Cast UI
+        SPELL_EFFECTs(48) = AddressOf SPELL_EFFECT_STEALTH                  'Stealth
+        SPELL_EFFECTs(49) = AddressOf SPELL_EFFECT_DETECT                   'Detect
+        SPELL_EFFECTs(50) = AddressOf SPELL_EFFECT_SUMMON_OBJECT            'Summon Object
+        'SPELL_EFFECTs(51) = AddressOf SPELL_EFFECT_FORCE_CRITICAL_HIT       'Force Critical Hit
+        'SPELL_EFFECTs(52) = AddressOf SPELL_EFFECT_GUARANTEE_HIT            'Guarantee Hit
+        SPELL_EFFECTs(53) = AddressOf SPELL_EFFECT_ENCHANT_ITEM             'Enchant Item Permanent
+        SPELL_EFFECTs(54) = AddressOf SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY   'Enchant Item Temporary
+        'SPELL_EFFECTs(55) = AddressOf SPELL_EFFECT_TAMECREATURE             'Tame Creature
+        'SPELL_EFFECTs(56) = AddressOf SPELL_EFFECT_SUMMON_PET               'Summon Pet
+        'SPELL_EFFECTs(57) = AddressOf SPELL_EFFECT_LEARN_PET_SPELL          'Learn Pet Spell
+        SPELL_EFFECTs(58) = AddressOf SPELL_EFFECT_WEAPON_DAMAGE            'Weapon Damage +
+        SPELL_EFFECTs(59) = AddressOf SPELL_EFFECT_OPEN_LOCK                'Open Lock (Item)
+        'SPELL_EFFECTs(60) = AddressOf SPELL_EFFECT_PROFICIENCY              'Proficiency
+        'SPELL_EFFECTs(61) = AddressOf SPELL_EFFECT_SEND_EVENT               'Send Event
+        'SPELL_EFFECTs(62) = AddressOf SPELL_EFFECT_POWER_BURN               'Power Burn
+        'SPELL_EFFECTs(63) = AddressOf SPELL_EFFECT_THREAT                   'Threat
+        SPELL_EFFECTs(64) = AddressOf SPELL_EFFECT_TRIGGER_SPELL            'Trigger Spell
+        'SPELL_EFFECTs(65) = AddressOf SPELL_EFFECT_HEALTH_FUNNEL            'Health Funnel
+        'SPELL_EFFECTs(66) = AddressOf SPELL_EFFECT_POWER_FUNNEL             'Power Funnel
+        SPELL_EFFECTs(67) = AddressOf SPELL_EFFECT_HEAL_MAX_HEALTH          'Heal Max Health
+        SPELL_EFFECTs(68) = AddressOf SPELL_EFFECT_INTERRUPT_CAST           'Interrupt Cast
+        'SPELL_EFFECTs(69) = AddressOf SPELL_EFFECT_DISTRACT                 'Distract
+        'SPELL_EFFECTs(70) = AddressOf SPELL_EFFECT_PULL                     'Pull
+        'SPELL_EFFECTs(71) = AddressOf SPELL_EFFECT_PICKPOCKET               'Pickpocket
+        'SPELL_EFFECTs(72) = AddressOf SPELL_EFFECT_ADD_FARSIGHT             'Add Farsight
+        'SPELL_EFFECTs(73) = AddressOf SPELL_EFFECT_SUMMON_POSSESSED         'Summon Possessed
+        SPELL_EFFECTs(74) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem
+        'SPELL_EFFECTs(75) = AddressOf SPELL_EFFECT_HEAL_MECHANICAL          'Heal Mechanical
+        'SPELL_EFFECTs(76) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_WILD       'Summon Object (Wild)
+        'SPELL_EFFECTs(77) = AddressOf SPELL_EFFECT_SCRIPT_EFFECT            'Script Effect
+        'SPELL_EFFECTs(78) = AddressOf SPELL_EFFECT_ATTACK                   'Attack
+        'SPELL_EFFECTs(79) = AddressOf SPELL_EFFECT_SANCTUARY                'Sanctuary
+        'SPELL_EFFECTs(80) = AddressOf SPELL_EFFECT_ADD_COMBO_POINTS         'Add Combo Points
+        'SPELL_EFFECTs(81) = AddressOf SPELL_EFFECT_CREATE_HOUSE             'Create House
+        'SPELL_EFFECTs(82) = AddressOf SPELL_EFFECT_BIND_SIGHT               'Bind Sight
+        SPELL_EFFECTs(83) = AddressOf SPELL_EFFECT_DUEL                     'Duel
+        'SPELL_EFFECTs(84) = AddressOf SPELL_EFFECT_STUCK                    'Stuck
+        'SPELL_EFFECTs(85) = AddressOf SPELL_EFFECT_SUMMON_PLAYER            'Summon Player
+        'SPELL_EFFECTs(86) = AddressOf SPELL_EFFECT_ACTIVATE_OBJECT          'Activate Object
+        SPELL_EFFECTs(87) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 1)
+        SPELL_EFFECTs(88) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 2)
+        SPELL_EFFECTs(89) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 3)
+        SPELL_EFFECTs(90) = AddressOf SPELL_EFFECT_SUMMON_TOTEM             'Summon Totem (slot 4)
+        'SPELL_EFFECTs(91) = AddressOf SPELL_EFFECT_THREAT_ALL               'Threat (All)
+        SPELL_EFFECTs(92) = AddressOf SPELL_EFFECT_ENCHANT_HELD_ITEM        'Enchant Held Item
+        'SPELL_EFFECTs(93) = AddressOf SPELL_EFFECT_SUMMON_PHANTASM          'Summon Phantasm
+        'SPELL_EFFECTs(94) = AddressOf SPELL_EFFECT_SELF_RESURRECT           'Self Resurrect
+        'SPELL_EFFECTs(95) = AddressOf SPELL_EFFECT_SKINNING                 'Skinning
+        'SPELL_EFFECTs(96) = AddressOf SPELL_EFFECT_CHARGE                   'Charge
+        'SPELL_EFFECTs(97) = AddressOf SPELL_EFFECT_SUMMON_CRITTER           'Summon Critter
+        'SPELL_EFFECTs(98) = AddressOf SPELL_EFFECT_KNOCK_BACK               'Knock Back
+        'SPELL_EFFECTs(99) = AddressOf SPELL_EFFECT_DISENCHANT               'Disenchant
+        'SPELL_EFFECTs(100) = AddressOf SPELL_EFFECT_INEBRIATE               'Inebriate
+        'SPELL_EFFECTs(101) = AddressOf SPELL_EFFECT_FEED_PET                'Feed Pet
+        'SPELL_EFFECTs(102) = AddressOf SPELL_EFFECT_DISMISS_PET             'Dismiss Pet
+        'SPELL_EFFECTs(103) = AddressOf SPELL_EFFECT_REPUTATION              'Reputation
+        'SPELL_EFFECTs(104) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT1     'Summon Object (slot 1)
+        'SPELL_EFFECTs(105) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT2     'Summon Object (slot 2)
+        'SPELL_EFFECTs(106) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT3     'Summon Object (slot 3)
+        'SPELL_EFFECTs(107) = AddressOf SPELL_EFFECT_SUMMON_OBJECT_SLOT4     'Summon Object (slot 4)
+        'SPELL_EFFECTs(108) = AddressOf SPELL_EFFECT_DISPEL_MECHANIC         'Dispel Mechanic
+        'SPELL_EFFECTs(109) = AddressOf SPELL_EFFECT_SUMMON_DEAD_PET         'Summon Dead Pet
+        'SPELL_EFFECTs(110) = AddressOf SPELL_EFFECT_DESTROY_ALL_TOTEMS      'Destroy All Totems
+        'SPELL_EFFECTs(111) = AddressOf SPELL_EFFECT_DURABILITY_DAMAGE       'Durability Damage
+        'SPELL_EFFECTs(112) = AddressOf SPELL_EFFECT_SUMMON_DEMON            'Summon Demon
+        SPELL_EFFECTs(113) = AddressOf SPELL_EFFECT_RESURRECT_NEW           'Resurrect (Flat)
+        'SPELL_EFFECTs(114) = AddressOf SPELL_EFFECT_ATTACK_ME               'Attack Me
         'SPELL_EFFECTs(115) = AddressOf SPELL_EFFECT_DURABILITY_DAMAGE_PCT
         'SPELL_EFFECTs(116) = AddressOf SPELL_EFFECT_SKIN_PLAYER_CORPSE
         'SPELL_EFFECTs(117) = AddressOf SPELL_EFFECT_SPIRIT_HEAL
@@ -2034,10 +2027,6 @@ SkipShapeShift:
         'SPELL_EFFECTs(135) = AddressOf SPELL_EFFECT_SUMMON_PET_NEW
         'SPELL_EFFECTs(136) = AddressOf SPELL_EFFECT_HEAL_PCT
         SPELL_EFFECTs(137) = AddressOf SPELL_EFFECT_ENERGIZE_PCT
-
-
-
-
 
         For i = 0 To AURAs_COUNT
             AURAs(i) = AddressOf SPELL_AURA_NONE
@@ -2206,7 +2195,7 @@ SkipShapeShift:
         'AURAs(	160 ) = AddressOf 	SPELL_AURA_MOD_AOE_AVOIDANCE		                'Mod Side/Rear PBAE Damage Taken %
         'AURAs(	161 ) = AddressOf 	SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT               'Mod Health Regen In Combat
         'AURAs(	162 ) = AddressOf 	SPELL_AURA_POWER_BURN_MANA                        	'Power Burn (Mana)
-        'AURAs(	163 ) = AddressOf 	SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE              'Mod Critical Damage 
+        'AURAs(	163 ) = AddressOf 	SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE              'Mod Critical Damage
         'AURAs(	164 ) = AddressOf  	SPELL_AURA_164                        			    'TEST
         'AURAs(	165 ) = AddressOf  	SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS        '
         'AURAs(	166 ) = AddressOf 	SPELL_AURA_MOD_ATTACK_POWER_PCT                     'Mod Attack Power %
@@ -2306,7 +2295,6 @@ SkipShapeShift:
         'AURAs( 260 ) = AddressOf   SPELL_AURA_260                                      '
         'AURAs( 261 ) = AddressOf   SPELL_AURA_261                                      '
     End Sub
-
 
 #End Region
 
@@ -3218,7 +3206,6 @@ SkipShapeShift:
         Return SpellFailedReason.CAST_NO_ERROR
     End Function
 
-
     Public Function SPELL_EFFECT_HONOR(ByRef Target As SpellTargets, ByRef Caster As BaseObject, ByRef SpellInfo As SpellEffect, ByVal SpellID As Integer, ByRef Infected As List(Of BaseObject), ByRef Item As ItemObject) As SpellFailedReason
 
         For Each Unit As BaseUnit In Infected
@@ -3233,10 +3220,6 @@ SkipShapeShift:
 
         Return SpellFailedReason.CAST_NO_ERROR
     End Function
-
-
-
-
 
     Private Const SLOT_NOT_FOUND As Integer = -1
     Private Const SLOT_CREATE_NEW As Integer = -2
@@ -3891,7 +3874,6 @@ SkipShapeShift:
                 'CAST_FAIL_CANT_START_DUEL_STEALTHED
                 'CAST_FAIL_NO_DUELING_HERE
 
-
                 'DONE: Get middle coordinate
                 Dim flagX As Single = Caster.positionX + (Target.unitTarget.positionX - Caster.positionX) / 2
                 Dim flagY As Single = Caster.positionY + (Target.unitTarget.positionY - Caster.positionY) / 2
@@ -3931,7 +3913,6 @@ SkipShapeShift:
 
         Return SpellFailedReason.CAST_NO_ERROR
     End Function
-
 
     Public Function GetEnemyAtPoint(ByRef c As BaseUnit, ByVal PosX As Single, ByVal PosY As Single, ByVal PosZ As Single, ByVal Distance As Single) As List(Of BaseUnit)
         Dim result As New List(Of BaseUnit)
@@ -4070,7 +4051,6 @@ SkipShapeShift:
 
 #End Region
 #Region "WS.Spells.SpellAuraEffects"
-
 
     Public Enum AuraAction As Byte
         AURA_ADD
@@ -4580,7 +4560,6 @@ SkipShapeShift:
 
     End Sub
 
-
     Public Sub SPELL_AURA_GHOST(ByRef Target As BaseUnit, ByRef Caster As BaseObject, ByRef EffectInfo As SpellEffect, ByVal SpellID As Integer, ByVal StackCount As Integer, ByVal Action As AuraAction)
         If Not TypeOf Target Is CharacterObject Then Exit Sub
 
@@ -5063,7 +5042,6 @@ SkipShapeShift:
                 Exit Sub
         End Select
     End Sub
-
 
     Public Sub SPELL_AURA_MOUNTED(ByRef Target As BaseUnit, ByRef Caster As BaseObject, ByRef EffectInfo As SpellEffect, ByVal SpellID As Integer, ByVal StackCount As Integer, ByVal Action As AuraAction)
 
@@ -5705,7 +5683,6 @@ SkipShapeShift:
 
     End Sub
 
-
     Public Sub SPELL_AURA_MOD_BASE_RESISTANCE(ByRef Target As BaseUnit, ByRef Caster As BaseObject, ByRef EffectInfo As SpellEffect, ByVal SpellID As Integer, ByVal StackCount As Integer, ByVal Action As AuraAction)
         If Not TypeOf Target Is CharacterObject Then Exit Sub
 
@@ -5932,7 +5909,6 @@ SkipShapeShift:
 
         End Select
 
-
         If TypeOf Target Is CharacterObject Then
             CType(Target, CharacterObject).SetUpdateFlag(EUnitFields.UNIT_FIELD_ATTACK_POWER, CType(Target, CharacterObject).AttackPower)
             CType(Target, CharacterObject).SetUpdateFlag(EUnitFields.UNIT_FIELD_ATTACK_POWER_MODS, CType(Target, CharacterObject).AttackPowerMods)
@@ -5955,7 +5931,6 @@ SkipShapeShift:
                 Target.AttackPowerModsRanged -= EffectInfo.GetValue(CType(Caster, BaseUnit).Level)
 
         End Select
-
 
         If TypeOf Target Is CharacterObject Then
             CType(Target, CharacterObject).SetUpdateFlag(EUnitFields.UNIT_FIELD_RANGED_ATTACK_POWER, CType(Target, CharacterObject).AttackPowerRanged)
@@ -6178,12 +6153,9 @@ SkipShapeShift:
 
                 CType(Target, CreatureObject).aiScript.Reset()
 
-
         End Select
 
     End Sub
-
-
 
     Public Sub SPELL_AURA_MOD_THREAT(ByRef Target As BaseUnit, ByRef Caster As BaseObject, ByRef EffectInfo As SpellEffect, ByVal SpellID As Integer, ByVal StackCount As Integer, ByVal Action As AuraAction)
 
@@ -6224,7 +6196,6 @@ SkipShapeShift:
                 End If
         End Select
 
-
         If TypeOf Target Is CharacterObject Then
             For Each CreatureGUID As ULong In CType(Target, CharacterObject).creaturesNear
                 If Not CType(WORLD_CREATUREs(CreatureGUID), CreatureObject).aiScript Is Nothing AndAlso _
@@ -6255,9 +6226,6 @@ SkipShapeShift:
         End Select
 
     End Sub
-
-
-
 
 #End Region
 
@@ -6336,7 +6304,6 @@ SkipShapeShift:
         End If
         Loser.SendCharacterUpdate(True)
         Winner.SendCharacterUpdate(True)
-
 
         'DONE: Notify client
         Dim packet As New PacketClass(OPCODES.SMSG_DUEL_WINNER)
@@ -6458,7 +6425,6 @@ SkipShapeShift:
 
         Client.Character.Items(CByte(Slot)).RemoveEnchantment(EnchantSlots.ENCHANTMENT_TEMP)
     End Sub
-
 
 #End Region
 #Region "WS.Spells.Handlers"
@@ -6651,7 +6617,6 @@ SkipShapeShift:
         End Try
     End Sub
 
-
 #End Region
 
 #Region "WS.Spells.Loot"
@@ -6676,6 +6641,5 @@ SkipShapeShift:
         CType(WORLD_GAMEOBJECTs(GUID), GameObjectObject).LootObject(CType(Player, CharacterObject), LootingType)
     End Sub
 #End Region
-
 
 End Module

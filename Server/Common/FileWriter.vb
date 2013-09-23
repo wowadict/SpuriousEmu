@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 '
 Imports System.Runtime.CompilerServices
 Imports System.IO
-
 
 'Using this logging type, all logs are saved in files numbered by date.
 'Writting commands is done trought console.
@@ -56,6 +55,5 @@ Public Class FileWriter
 
         Output.WriteLine(L(type) & ":[" & Format(TimeOfDay, "hh:mm:ss") & "] " & formatStr, arg)
     End Sub
-
 
 End Class

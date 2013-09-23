@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -105,7 +105,6 @@ Public Module WS_Items
         EQUIP_ERR_CANNOT_TRADE_THAT = 79
         EQUIP_ERR_PERSONAL_ARENA_RATING_TOO_LOW = 80
     End Enum
-
 
     Public Enum ITEM_DAMAGE_TYPE As Byte
         NORMAL_DAMAGE = 0
@@ -412,7 +411,6 @@ Public Module WS_Items
         MAX_ENCHANTS = 11
     End Enum
 
-
     Public item_weapon_skills() As Integer = New Integer() {SKILL_IDs.SKILL_AXES, _
                                                             SKILL_IDs.SKILL_TWO_HANDED_AXES, _
                                                             SKILL_IDs.SKILL_BOWS, _
@@ -432,7 +430,6 @@ Public Module WS_Items
     Public item_armor_skills() As Integer = New Integer() {0, SKILL_IDs.SKILL_CLOTH, SKILL_IDs.SKILL_LEATHER, SKILL_IDs.SKILL_MAIL, SKILL_IDs.SKILL_PLATE_MAIL, 0, SKILL_IDs.SKILL_SHIELD, 0, 0, 0}
 #End Region
 #Region "WS.Items.TypeDef"
-
 
     'WARNING: Use only with ITEMDatabase()
     Public Class ItemInfo
@@ -471,7 +468,7 @@ Public Module WS_Items
             Model = MySQLQuery.Rows(0).Item("displayid")
             Name = MySQLQuery.Rows(0).Item("name1")
             Quality = MySQLQuery.Rows(0).Item("quality")               '0=Grey-Poor 1=White-Common 2=Green-Uncommon 3=Blue-Rare 4=Purple-Epic 5=Orange-Legendary 6=Red-Artifact
-            Material = MySQLQuery.Rows(0).Item("lock_material")             '-1=Consumables 1=Metal 2=Wood 3=Liquid 4=Jewelry 5=Chain 6=Plate 7=Cloth 8=Leather 
+            Material = MySQLQuery.Rows(0).Item("lock_material")             '-1=Consumables 1=Metal 2=Wood 3=Liquid 4=Jewelry 5=Chain 6=Plate 7=Cloth 8=Leather
             Durability = MySQLQuery.Rows(0).Item("MaxDurability")
             MaxCount = MySQLQuery.Rows(0).Item("maxcount")
             Sheath = MySQLQuery.Rows(0).Item("sheathID")
@@ -507,7 +504,7 @@ Public Module WS_Items
             Description = MySQLQuery.Rows(0).Item("description")
             Block = MySQLQuery.Rows(0).Item("block")
             ItemSet = MySQLQuery.Rows(0).Item("itemset")
-            PageMaterial = MySQLQuery.Rows(0).Item("page_material")     'The background of the page window: 1=Parchment 2=Stone 3=Marble 4=Silver 5=Bronze                
+            PageMaterial = MySQLQuery.Rows(0).Item("page_material")     'The background of the page window: 1=Parchment 2=Stone 3=Marble 4=Silver 5=Bronze
             StartQuest = MySQLQuery.Rows(0).Item("quest_id")
             ContainerSlots = MySQLQuery.Rows(0).Item("ContainerSlots")
             LanguageID = MySQLQuery.Rows(0).Item("page_language")
@@ -1070,7 +1067,6 @@ Public Module WS_Items
                 Next i
             End If
 
-
             'DONE: Load ItemID in cashe if not loaded
             If ITEMDatabase.ContainsKey(ItemEntry) = False Then
                 Dim tmpItem As New ItemInfo(ItemEntry)
@@ -1099,7 +1095,7 @@ Public Module WS_Items
             OwnerGUID = Owner
             Durability = ITEMDatabase(ItemEntry).Durability
 
-            'DONE: Create new GUID 
+            'DONE: Create new GUID
             GUID = GetNewGUID()
             InitializeBag()
             SaveAsNew()
@@ -1129,7 +1125,6 @@ Public Module WS_Items
             tmpCMD = tmpCMD & ", item_flags"
             tmpValues = tmpValues & ", " & Flags
 
-
             'DONE: Saving enchanments
             Dim temp As New ArrayList
             For Each Enchantment As KeyValuePair(Of Byte, TEnchantmentInfo) In Enchantments
@@ -1139,7 +1134,6 @@ Public Module WS_Items
             tmpValues = tmpValues & ", '" & Join(temp.ToArray, " ") & "'"
             tmpCMD = tmpCMD & ", item_textId"
             tmpValues = tmpValues & ", " & ItemText
-
 
             tmpCMD = tmpCMD & ") " & tmpValues & ");"
             Database.Update(tmpCMD)
@@ -1156,7 +1150,6 @@ Public Module WS_Items
             tmp = tmp & ", item_random_properties=" & RandomProperties
             tmp = tmp & ", item_flags=" & Flags
 
-
             'DONE: Saving enchanments
             Dim temp As New ArrayList
             For Each Enchantment As KeyValuePair(Of Byte, TEnchantmentInfo) In Enchantments
@@ -1164,7 +1157,6 @@ Public Module WS_Items
             Next
             tmp = tmp & ", item_enchantment=""" & Join(temp.ToArray, " ") & """"
             tmp = tmp & ", item_textId=" & ItemText
-
 
             tmp = tmp & " WHERE item_guid = """ & (GUID - GUID_ITEM) & """;"
 
@@ -1371,7 +1363,6 @@ Public Module WS_Items
         Public Content As UInteger = 0
     End Class
 
-
 #End Region
 #Region "WS.Items.Handlers"
 
@@ -1515,7 +1506,6 @@ Public Module WS_Items
         Else
             Item = ITEMDatabase(ItemID)
         End If
-
 
         Dim response As New PacketClass(OPCODES.SMSG_ITEM_NAME_QUERY_RESPONSE)
         response.AddInt32(ItemID)
@@ -1715,8 +1705,6 @@ Public Module WS_Items
             SendInventoryChangeFailure(Client.Character, InventoryChangeFailure.EQUIP_ERR_ITEM_NOT_FOUND, 0, 0)
         End If
 
-
-
         'if(item==gift)                                          // not possable with pacjket from real client
         '{
         '    _player->SendEquipError( EQUIP_ERR_WRAPPED_CANT_BE_WRAPPED, item, NULL );
@@ -1852,7 +1840,6 @@ Public Module WS_Items
         End Try
     End Sub
 
-
     Public Sub On_CMSG_DESTROYITEM(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 8 Then Exit Sub
         Try
@@ -1956,7 +1943,6 @@ Public Module WS_Items
             Case Else
                 Log.WriteLine(LogType.WARNING, "Unhandled sheathe state [{0}]", sheathed)
         End Select
-
 
         Client.Character.SendCharacterUpdate(True)
     End Sub
@@ -2085,7 +2071,6 @@ Public Module WS_Items
         SendEmptyLoot(itemGUID, WS_Loot.LootType.LOOTTYPE_CORPSE, Client)
     End Sub
 
-
     Public Sub SendInventoryChangeFailure(ByRef c As CharacterObject, ByVal ErrorCode As InventoryChangeFailure, ByVal GUID1 As ULong, ByVal GUID2 As ULong)
         Dim packet As New PacketClass(OPCODES.SMSG_INVENTORY_CHANGE_FAILURE)
         packet.AddInt8(ErrorCode)
@@ -2118,7 +2103,6 @@ Public Module WS_Items
         c.Client.Send(packet)
         packet.Dispose()
     End Sub
-
 
 #End Region
 

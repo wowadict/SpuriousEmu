@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,6 @@ Namespace WDB
         Public fUnk2 As Integer = 0
 
         Public fIndex As New Hashtable
-
 
         'Default Functions
         <Description("Close file and dispose the wdb reader.")> _
@@ -136,4 +135,3 @@ Namespace WDB
         WDB_FLOAT
     End Enum
 End Namespace
-

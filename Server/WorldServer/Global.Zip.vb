@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@ Imports ICSharpCode.SharpZipLib.Zip.Compression.Streams
 Imports System.IO
 Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
-
 
 Public Module Global_Zip
 
@@ -64,6 +63,5 @@ Public Module Global_Zip
 
         Return buffer2
     End Function
-
 
 End Module

@@ -1,21 +1,20 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
-' the Free Software Foundation; either version 2 of the License or
+' the Free Software Foundation; either version 2 of the License, or
 ' (at your option) any later version.
 '
-' This program is distributed in the hope that it will be useful
+' This program is distributed in the hope that it will be useful,
 ' but WITHOUT ANY WARRANTY; without even the implied warranty of
 ' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ' GNU General Public License for more details.
 '
 ' You should have received a copy of the GNU General Public License
-' along with this program; if not write to the Free Software
-' Foundation Inc. 59 Temple Place Suite 330 Boston MA  02111-1307  USA
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
-
 
 Public Enum OPCODES
     MSG_NULL_ACTION = &H0
@@ -1210,7 +1209,7 @@ Public Enum OPCODES
     CMSG_QUERY_VEHICLE_STATUS = &H4A4 ' not used
     UNKNOWN_1189 = &H4A5
     SMSG_1190 = &H4A6
-    SMSG_VEHICLE_1191 = &H4A7 ' Vehicle Related (Vehicle.dbc)??? 
+    SMSG_VEHICLE_1191 = &H4A7 ' Vehicle Related (Vehicle.dbc)???
     CMSG_1192 = &H4A8
     CMSG_EJECT_PASSENGER = &H4A9 ' GUID (passengerID)
     SMSG_PET_GUIDS = &H4AA
@@ -1280,7 +1279,7 @@ Public Enum OPCODES
     ' cstring
     ' for (19)
     '     pguid itemGuid (corresponds to inventoryslot)
-    ' next 
+    ' next
     CMSG_SET_EQUIPMENT_SET = &H4BD
 
     ' int64 guid
@@ -2424,7 +2423,6 @@ Public Enum OPCODES_OBSOLETE
     SMSG_SUMMON_CANCEL = &H423
 End Enum
 
-
 Public Enum ObjectType
     TYPE_OBJECT = 1
     TYPE_ITEM = 2
@@ -2744,8 +2742,6 @@ Public Enum EUnitFields
     UNIT_FIELD_HOVERHEIGHT = EObjectFields.OBJECT_END + &H8C ' Size: 1 Type: FLOAT Flags: PUBLIC
     UNIT_FIELD_PADDING = EObjectFields.OBJECT_END + &H8D ' Size: 1 Type: INT Flags: NONE
     UNIT_END = EObjectFields.OBJECT_END + &H8E
-
-
 
     UNIT_FIELD_STRENGTH = UNIT_FIELD_STAT0
     UNIT_FIELD_AGILITY = UNIT_FIELD_STAT1

@@ -121,7 +121,7 @@
   <ItemGroup>
     <Reference Include="Spurious.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Required\Spurious.Common.dll</HintPath>
+      <HintPath>..\..\ServerFiles\Spurious.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">

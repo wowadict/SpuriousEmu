@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,8 @@ Imports Spurious.Common.BaseWriter
 
 Public Module WS_Handlers_Instance
 
-
-
     Public Sub InstanceMapUpdate()
+        'TODO: Here we should also respawn bosses
         Dim q As New DataTable
         Dim t As Integer = GetTimestamp(Now)
         Database.Query(String.Format("SELECT * FROM characters_instances WHERE expire < {0};", t), q)
@@ -35,6 +34,8 @@ Public Module WS_Handlers_Instance
     End Sub
     Public Function InstanceMapCreate(ByVal Map As UInteger) As UInteger
         Dim q As New DataTable
+
+        'TODO: Spawn the instance
 
         'TODO: Save instance IDs in MAP class, using current way it may happen 2 groups to be in same instance
         Database.Query(String.Format("SELECT MAX(instance) FROM characters_instances WHERE map = {0};", Map), q)
@@ -78,7 +79,6 @@ Public Module WS_Handlers_Instance
             Next
             If Not empty Then Exit For
         Next
-
 
         If empty Then
             'DONE: Delete the instance if there are no players
@@ -125,7 +125,6 @@ Public Module WS_Handlers_Instance
             Next
         End If
 
-
     End Sub
 
     Public Sub InstanceMapEnter(ByVal c As CharacterObject)
@@ -153,8 +152,6 @@ Public Module WS_Handlers_Instance
                 Exit Sub
             End If
 
-
-
             'DONE: Check if group is already in instance
             If c.IsInGroup Then
                 Database.Query(String.Format("SELECT * FROM characters_instances_group WHERE group_id = {0} AND map = {1};", c.Group.ID, c.MapID), q)
@@ -169,8 +166,6 @@ Public Module WS_Handlers_Instance
                     Exit Sub
                 End If
             End If
-
-
 
             'DONE Create new instance
             Dim instanceNewID As Integer = InstanceMapCreate(c.MapID)
@@ -199,9 +194,7 @@ Public Module WS_Handlers_Instance
         'TODO: Start teleport timer
     End Sub
 
-
     'SMSG_INSTANCE_DIFFICULTY
-
 
     Public Enum ResetFailedReason As UInteger
         INSTANCE_RESET_FAILED_ZONING = 0
@@ -284,7 +277,6 @@ Public Module WS_Handlers_Instance
         p.Dispose()
     End Sub
 
-
     Public Sub On_CMSG_RESET_INSTANCES(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_RESET_INSTANCES", Client.IP, Client.Port)
 
@@ -297,8 +289,5 @@ Public Module WS_Handlers_Instance
         End If
 
     End Sub
-
-
-
 
 End Module

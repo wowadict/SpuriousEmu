@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System
 Imports System.IO
 Imports System.Threading
@@ -28,11 +27,9 @@ Imports System.Security.Permissions
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Network
 
 #Region "WS.Sockets"
-
 
     Public VS As VoiceServerClass
 
@@ -58,7 +55,6 @@ Public Module WC_Network
                 m_LocalURI = String.Format("{0}://{1}:{2}/VoiceServer.rem", Config.ClusterMethod, Config.LocalHost, Config.LocalPort)
                 Cluster = Nothing
 
-
                 'Create sockets
                 m_Socket = New Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
                 m_Socket.Bind(New IPEndPoint(Net.IPAddress.Parse(Config.VSHost), Config.VSPort))
@@ -67,9 +63,6 @@ Public Module WC_Network
                 AsyncBeginReceive()
 
                 Log.WriteLine(LogType.SUCCESS, "Listening on {0} on port {1}", Net.IPAddress.Parse(Config.VSHost), Config.VSPort)
-
-
-
 
                 'Create Remoting Channel
                 Select Case Config.ClusterMethod
@@ -96,7 +89,6 @@ Public Module WC_Network
             m_flagStopListen = True
             m_Socket.Close()
         End Sub
-
 
         Public Sub AsyncBeginReceive()
             Dim p As New PacketClass
@@ -142,20 +134,10 @@ Public Module WC_Network
             End Try
         End Sub
 
-
-
-
-
         Public Sub OnPacket(ByVal p As PacketClass)
             Log.WriteLine(LogType.DEBUG, "Unknown packet from {0}", p.IP.ToString)
             DumpPacket(p)
         End Sub
-
-
-
-
-
-
 
         Public Sub ClusterConnect()
             While Cluster Is Nothing
@@ -197,7 +179,6 @@ Public Module WC_Network
         End Function
     End Class
 
-
     Public Class PacketClass
         Public Const BUFFER_SIZE As Integer = 4096
 
@@ -216,7 +197,6 @@ Public Module WC_Network
         Dim buffer As String = ""
         Try
             buffer = buffer + String.Format("DEBUG: Packet Dump{0}", vbNewLine)
-
 
             If p.Length Mod 16 = 0 Then
                 For j = 0 To p.Length - 1 Step 16
@@ -241,9 +221,7 @@ Public Module WC_Network
             Log.WriteLine(LogType.FAILED, "Error dumping packet: {0}{1}", vbNewLine, e.ToString)
         End Try
     End Sub
-	
 
 #End Region
-
 
 End Module

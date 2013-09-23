@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,16 +16,13 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Collections.Generic
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Handlers_Taxi
-
 
     Private Enum ActivateTaxiReplies As Byte
         ERR_TAXIOK = 0
@@ -90,7 +87,6 @@ Public Module WS_Handlers_Taxi
             SMSG_TAXINODE_STATUS.Dispose()
             Exit Sub
         End If
-
 
         Dim SMSG_SHOWTAXINODES As New PacketClass(OPCODES.SMSG_SHOWTAXINODES)
         SMSG_SHOWTAXINODES.AddInt32(1)
@@ -216,7 +212,6 @@ Public Module WS_Handlers_Taxi
                 Exit Sub
             End If
 
-
             'DONE: Load nodes
             Dim Nodes As New List(Of Integer)
             For i As Integer = 0 To NodeCount - 1
@@ -224,7 +219,6 @@ Public Module WS_Handlers_Taxi
             Next
             Dim srcNode As Integer = Nodes(0)
             Dim dstNode As Integer = Nodes(1)
-
 
             For Each Node As Integer In Client.Character.TaxiNodes
                 If Not TaxiNodes.ContainsKey(Node) Then
@@ -282,7 +276,6 @@ Public Module WS_Handlers_Taxi
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOVE_SPLINE_DONE", Client.IP, Client.Port)
     End Sub
 
-
     Private Sub TaxiLand(ByVal Character As CharacterObject)
         Character.TaxiNodes.Clear()
         Character.Mount = 0
@@ -312,7 +305,6 @@ Public Module WS_Handlers_Taxi
         Dim WaypointPaths As New List(Of Integer)
         Dim WaypointNodes As New Dictionary(Of Integer, TTaxiPathNode)
 
-
         Try
             'DONE: Generate paths
             Dim srcNode As Integer
@@ -328,7 +320,6 @@ Public Module WS_Handlers_Taxi
                     End If
                 Next
             End While
-
 
             'DONE: Do move on paths
             For Each Path As Integer In WaypointPaths
@@ -385,7 +376,6 @@ Public Module WS_Handlers_Taxi
                 Next
                 Character.Client.Send(SMSG_MONSTER_MOVE)
                 SMSG_MONSTER_MOVE.Dispose()
-
 
                 For i As Integer = 0 To WaypointNodes.Count - 1
                     MoveDistance = Math.Sqrt((LastX - WaypointNodes(i).x) ^ 2 + (LastY - WaypointNodes(i).y) ^ 2 + (LastZ - WaypointNodes(i).z) ^ 2)

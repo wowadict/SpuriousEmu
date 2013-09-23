@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -18,18 +18,12 @@
 
 Imports Spurious.Common.BaseWriter
 
-
 Public Module WS_Guilds
-
-
 
     'UMSG_UPDATE_GUILD = 148
     'UMSG_DELETE_GUILD_CHARTER = 704
 
-
-
 #Region "WS.Guilds.Constants"
-
 
     Public Const PETITION_GUILD_PRICE As Integer = 1000
     Public Const PETITION_GUILD As Integer = 5863       'Guild Charter, ItemFlags = &H2000
@@ -43,7 +37,6 @@ Public Module WS_Guilds
     Public Const TABARD_ITEM As Integer = 5976
     Public Const GUILD_RANK_MAX As Integer = 9
     Public Const GUILD_RANK_MIN As Integer = 0
-
 
 #End Region
 #Region "WS.Guilds.Petition"
@@ -273,9 +266,6 @@ Public Module WS_Guilds
         Database.Query("SELECT * FROM petitions WHERE petition_itemGuid = " & ItemGUID - GUID_ITEM & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Exit Sub
 
-
-
-
         Dim response As New PacketClass(OPCODES.SMSG_PETITION_QUERY_RESPONSE)
         response.AddInt32(MySQLQuery.Rows(0).Item("petition_id"))               'PetitionGUID
         response.AddUInt64(MySQLQuery.Rows(0).Item("petition_owner"))            'GuildOwner
@@ -308,7 +298,6 @@ Public Module WS_Guilds
         Client.Send(response)
         response.Dispose()
     End Sub
-
 
     Public Sub On_MSG_PETITION_RENAME(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 14 Then Exit Sub
@@ -407,7 +396,6 @@ Public Module WS_Guilds
                 Exit Sub
             End If
 
-
             'DONE: Add owner to the team
             Database.Update(String.Format("INSERT INTO arena_members (member_id, member_team, member_type) VALUES ({0}, {1}, {2})", Client.Character.GUID, q2.Rows(0).Item("arena_id"), Type))
             Client.Character.ArenaTeamID(Slot) = CUInt(q2.Rows(0).Item("arena_id"))
@@ -493,8 +481,6 @@ Public Module WS_Guilds
         If q.Rows.Count > 0 AndAlso CHARACTERs.ContainsKey(CType(q.Rows(0).Item("petition_owner"), ULong)) Then CHARACTERs(CType(q.Rows(0).Item("petition_owner"), ULong)).Client.SendMultiplyPackets(response)
         response.Dispose()
     End Sub
-
-
 
 #End Region
 #Region "WS.Guilds.Handlers"
@@ -661,7 +647,6 @@ Public Module WS_Guilds
     Public Sub SendGuildRoster(ByRef c As CharacterObject)
         If c.GuildID = 0 Then Exit Sub
 
-
         Dim MySQLQuery As New DataTable
         Database.Query("SELECT * FROM guilds WHERE guild_id = " & c.GuildID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Throw New ApplicationException("GuildID " & c.GuildID & " not found in database.")
@@ -738,7 +723,6 @@ Public Module WS_Guilds
                 End If
             End If
         Next
-
 
         c.Client.Send(response)
         response.Dispose()
@@ -866,8 +850,6 @@ Public Module WS_Guilds
         response.Dispose()
     End Sub
 
-
-
     'Guild Leader Options
     Public Enum GuildRankRights
         GR_RIGHT_EMPTY = &H40
@@ -922,8 +904,6 @@ Public Module WS_Guilds
             Exit Sub
         End If
 
-
-
         Dim MySQLQuery As New DataTable
         Database.Query("SELECT * FROM guilds WHERE guild_id = " & Client.Character.GuildID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Throw New ApplicationException("GuildID " & Client.Character.GuildID & " not found in database.")
@@ -971,7 +951,6 @@ Public Module WS_Guilds
             SendGuildResult(Client, GuildCommand.GUILD_CREATE_S, GuildError.GUILD_PERMISSIONS)
             Exit Sub
         End If
-
 
         Dim MySQLQuery As New DataTable
         Database.Query("SELECT * FROM guilds WHERE guild_id = " & Client.Character.GuildID & ";", MySQLQuery)
@@ -1117,7 +1096,6 @@ Public Module WS_Guilds
             SendGuildResult(Client, GuildCommand.GUILD_CREATE_S, GuildError.GUILD_PERMISSIONS)
             Exit Sub
         End If
-
 
         'DONE: Clear all members
         Dim q As New DataTable
@@ -1319,7 +1297,7 @@ Public Module WS_Guilds
             Exit Sub
         End If
 
-        'DONE: Do the real update            
+        'DONE: Do the real update
         c.GuildRank -= 1
         Database.Update(String.Format("UPDATE characters SET char_guildRank = {0} WHERE char_guid = {1};", c.GuildRank, c.GUID))
         c.SetUpdateFlag(EPlayerFields.PLAYER_GUILDRANK, c.GuildRank)
@@ -1379,7 +1357,6 @@ Public Module WS_Guilds
             Exit Sub
         End If
 
-
         'DONE: Max defined rank check
         q.Clear()
         Database.Query(String.Format("SELECT guild_rank{0} FROM guilds WHERE guild_id = {1} LIMIT 1;", c.GuildRank + 1, c.GuildID), q)
@@ -1391,7 +1368,7 @@ Public Module WS_Guilds
             Exit Sub
         End If
 
-        'DONE: Do the real update            
+        'DONE: Do the real update
         c.GuildRank += 1
         Database.Update(String.Format("UPDATE characters SET char_guildRank = {0} WHERE char_guid = {1};", c.GuildRank, c.GUID))
         c.SetUpdateFlag(EPlayerFields.PLAYER_GUILDRANK, c.GuildRank)
@@ -1454,7 +1431,6 @@ Public Module WS_Guilds
             SendGuildResult(Client, GuildCommand.GUILD_INVITE_S, GuildError.ALREADY_INVITED_TO_GUILD, playerName)
             Exit Sub
         End If
-
 
         'DONE: Get guild info and send invitation
         q.Clear()
@@ -1723,11 +1699,10 @@ Public Module WS_Guilds
         LEFT = 4                'uint8(1), string(name)                                             '<name> has left the guild.
         REMOVED = 5             '??
         LEADER_IS = 6           'uint8(1), string(name                                              '<name> is the leader of your guild.
-        LEADER_CHANGED = 7      'uint8(2), string(oldLeaderName), string(newLeaderName) 
+        LEADER_CHANGED = 7      'uint8(2), string(oldLeaderName), string(newLeaderName)
         DISBANDED = 8           'uint8(0)                                                           'Your guild has been disbanded.
         TABARDCHANGE = 9        '??
     End Enum
-
 
 #End Region
 

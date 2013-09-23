@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,9 @@
 ' along with this program; if not, write to the Free Software
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
 Imports System.Threading
 Imports Spurious.Common
 Imports Spurious.Common.BaseWriter
-
 
 Public Module WC_Battlegrounds
 
@@ -142,7 +140,6 @@ Public Module WC_Battlegrounds
             SendBattlegroundStatus(c, 0)
         End Sub
 
-
         Public Enum BattlegroundStatus
             STATUS_CLEAR = 0
             STATUS_WAIT_QUEUE = 1
@@ -195,7 +192,6 @@ Public Module WC_Battlegrounds
         End Sub
     End Class
 
-
     Public Function GetBattlefield(ByVal MapType As BattlefieldMapType, ByVal Level As Byte) As Battlefield
         Dim Battlefield As Battlefield = Nothing
 
@@ -233,6 +229,5 @@ Public Module WC_Battlegrounds
         c.Client.Send(p)
         p.Dispose()
     End Sub
-
 
 End Module

@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers_Auth
-
 
     Public Sub SendLoginOK(ByRef Client As ClientClass)
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AUTH_SESSION [{2}]", Client.IP, Client.Port, Client.Account)
@@ -51,7 +48,7 @@ Public Module WC_Handlers_Auth
 
         packet.GetInt16()
         Dim clientVersion As Integer = packet.GetInt32
-        Dim clientSesionID As Integer = packet.GetInt32        
+        Dim clientSesionID As Integer = packet.GetInt32
         Dim clientAccount As String = packet.GetString
         Dim clientWoTLKUnk As String = packet.GetInt32
         Dim clientSalt As Integer = packet.GetInt32
@@ -82,7 +79,6 @@ Public Module WC_Handlers_Auth
         Next
         Client.Account = tmp
 
-
         'DONE: Set Client.SS_Hash
         Dim result As New DataTable
         Dim query As String
@@ -105,18 +101,12 @@ Public Module WC_Handlers_Auth
         Next
         Client.Encryption = True
 
-
-
-
         'DONE: If server full then queue, If GM/Admin let in
         If CLIENTs.Count > Config.ServerLimit And Client.Access <= AccessLevel.Player Then
             ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf Client.EnQueue))
         Else
             SendLoginOK(Client)
         End If
-
-
-
 
         'DONE: Addons info reading
         Dim decompressBuffer(packet.Data.Length - packet.Offset) As Byte
@@ -199,7 +189,6 @@ Public Module WC_Handlers_Auth
         Client.Send(response)
         response.Dispose()
     End Sub
-
 
     Public Sub On_CMSG_UPDATE_ACCOUNT_DATA(ByRef packet As PacketClass, ByRef Client As ClientClass)
         Try
@@ -303,8 +292,6 @@ Public Module WC_Handlers_Auth
         response.Dispose()
     End Sub
 
-
-
     <Flags()> _
     Private Enum CharacterFlagState
         CHARACTER_FLAG_NONE = &H0
@@ -361,7 +348,6 @@ Public Module WC_Handlers_Auth
             Account_ID = CType(MySQLQuery.Rows(0).Item("account_id"), Integer)
             MySQLQuery.Clear()
             Database.Query(String.Format("SELECT * FROM characters WHERE account_id = ""{0}"" ORDER BY char_guid;", Account_ID), MySQLQuery)
-
 
             'DONE: Make The Packet
             response.AddInt8(MySQLQuery.Rows.Count)
@@ -462,7 +448,7 @@ Public Module WC_Handlers_Auth
 
         Dim response As New PacketClass(OPCODES.SMSG_CHAR_DELETE)
         Dim guid As Long = 0
-        guid = packet.GetInt16()
+        guid = packet.GetInt16()    'int16 unknown
         guid = packet.GetInt64()    'int64 guid
 
         Try
@@ -602,7 +588,6 @@ Public Module WC_Handlers_Auth
                 End If
             End If
 
-
             If WS.InstanceCheck(Client, Client.Character.Map) Then
                 Client.Character.GetWorld.ClientConnect(Client.Index, Client.GetClientInfo)
                 Client.Character.IsInWorld = True
@@ -650,7 +635,6 @@ Public Module WC_Handlers_Auth
         Try
             If Not WS.InstanceCheck(Client, Client.Character.Map) Then Exit Sub
 
-
             If Client.Character.IsInWorld Then
                 'Inside server transfer
                 Client.Character.GetWorld.ClientLogin(Client.Index, Client.Character.GUID)
@@ -666,8 +650,6 @@ Public Module WC_Handlers_Auth
             Log.WriteLine(LogType.CRITICAL, "{0}", ex.ToString)
         End Try
 
-
     End Sub
-
 
 End Module

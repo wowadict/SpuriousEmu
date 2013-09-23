@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System.Threading
 Imports System.Net.Sockets
 Imports System.Xml.Serialization
@@ -27,9 +26,7 @@ Imports System.Runtime.CompilerServices
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Handlers
-
 
     Public Sub IntializePacketHandlers()
         'NOTE: These opcodes are not used in any way
@@ -46,14 +43,10 @@ Public Module WC_Handlers
         PacketHandlers(OPCODES.CMSG_TIME_SYNC_RESP) = CType(AddressOf On_CMSG_TIME_SYNC_RESP, HandlePacket)
         PacketHandlers(OPCODES.CMSG_REALM_SPLIT) = CType(AddressOf On_CMSG_REALM_SPLIT, HandlePacket)
 
-
-
         'NOTE: These opcodes are only partialy handled by Cluster and must be handled by WorldServer
         PacketHandlers(OPCODES.MSG_MOVE_HEARTBEAT) = CType(AddressOf On_MSG_MOVE_HEARTBEAT, HandlePacket)
         PacketHandlers(OPCODES.CMSG_OPT_OUT_OF_LOOT) = CType(AddressOf On_CMSG_OPT_OUT_OF_LOOT, HandlePacket)
         PacketHandlers(OPCODES.CMSG_CANCEL_TRADE) = CType(AddressOf On_CMSG_CANCEL_TRADE, HandlePacket)
-
-
 
         'NOTE: These opcodes below must be exluded form WorldServer
         PacketHandlers(OPCODES.CMSG_PING) = CType(AddressOf On_CMSG_PING, HandlePacket)
@@ -147,7 +140,6 @@ Public Module WC_Handlers
         PacketHandlers(OPCODES.CMSG_SET_CHANNEL_WATCH) = CType(AddressOf On_CMSG_SET_CHANNEL_WATCH, HandlePacket)
         PacketHandlers(OPCODES.CMSG_CLEAR_CHANNEL_WATCH) = CType(AddressOf On_CMSG_CLEAR_CHANNEL_WATCH, HandlePacket)
 
-
         'NOTE: TODO Opcodes
         '   none
 
@@ -167,12 +159,5 @@ Public Module WC_Handlers
             Client.Character.GetWorld.ClientPacket(Client.Index, packet.Data)
         End If
     End Sub
-
-
-
-
-
-
-
 
 End Module

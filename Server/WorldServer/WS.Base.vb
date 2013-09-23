@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,6 @@ Public Module WS_Base
             Next
         End Sub
     End Class
-
 
     Public Class BaseUnit
         Inherits BaseObject
@@ -397,7 +396,7 @@ Public Module WS_Base
 
         Public Flags As Byte = 0
         Public Level As Byte = 0
-        Public StackCount As integer = 0
+        Public StackCount As Integer = 0
 
         Public Aura() As ApplyAuraHandler = {Nothing, Nothing, Nothing}
         Public Aura_Info() As SpellEffect = {Nothing, Nothing, Nothing}

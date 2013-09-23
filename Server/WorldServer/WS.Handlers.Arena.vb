@@ -1,4 +1,4 @@
-﻿' 
+﻿'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 Imports Spurious.Common.BaseWriter
 
 Public Module WS_Handlers_Arena
-
 
     Public Enum ArenaTeamCommandTypes As Byte
         ERR_ARENA_TEAM_CREATE_S = &H0
@@ -144,8 +143,6 @@ NextMember:
         response.Dispose()
     End Sub
 
-
-
     Public Sub On_CMSG_ARENA_TEAM_QUERY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub
         packet.GetInt16()
@@ -195,6 +192,5 @@ NextMember:
             End If
         Next i
     End Sub
-
 
 End Module

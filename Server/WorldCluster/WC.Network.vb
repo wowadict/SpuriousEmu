@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 ' Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '
 
-
 Imports System
 Imports System.IO
 Imports System.Threading
@@ -28,11 +27,9 @@ Imports System.Security.Permissions
 Imports Spurious.Common.BaseWriter
 Imports Spurious.Common
 
-
 Public Module WC_Network
 
 #Region "WS.Sockets"
-
 
     Public WS As WorldServerClass
 
@@ -60,7 +57,6 @@ Public Module WC_Network
 
                 Log.WriteLine(LogType.SUCCESS, "Listening on {0} on port {1}", Net.IPAddress.Parse(Config.WSHost), Config.WSPort)
 
-
                 'Create Remoting Channel
                 Select Case Config.ClusterMethod
                     Case "ipc"
@@ -72,7 +68,6 @@ Public Module WC_Network
                 RemotingServices.Marshal(CType(Me, ICluster), "Cluster.rem")
 
                 Log.WriteLine(LogType.INFORMATION, "Interface UP at: {0}://{1}:{2}/Cluster.rem", Config.ClusterMethod, Config.ClusterHost, Config.ClusterPort)
-
 
                 'Creating ping timer
                 m_TimerPing = New Timer(AddressOf Ping, Nothing, 0, 15000)
@@ -273,7 +268,6 @@ Public Module WC_Network
             CLIENTs(ID).Character.ChatFlag = Flag
         End Sub
 
-
         Public Sub Broadcast(ByVal p As PacketClass)
             CHARACTERs_Lock.AcquireReaderLock(DEFAULT_LOCK_TIMEOUT)
             For Each c As KeyValuePair(Of ULong, CharacterObject) In CHARACTERs
@@ -322,7 +316,6 @@ Public Module WC_Network
         Public Sub BroadcastGuildOfficers(ByVal GuildID As Long, ByVal Data() As Byte) Implements Common.ICluster.BroadcastRaid
             'TODO: Not implement yet
         End Sub
-
 
         Public Function InstanceCheck(ByVal Client As ClientClass, ByVal MapID As UInteger) As Boolean
             If (Not WS.Worlds.ContainsKey(MapID)) Then
@@ -475,8 +468,6 @@ Public Module WC_Network
             End SyncLock
         End Sub
 
-
-
         Public Sub VoiceConnect(ByVal URI As String, ByVal Host As UInteger, ByVal Port As UShort, ByVal Key As Byte()) Implements Common.ICluster.VoiceConnect
             Try
                 VoiceDisconnect()
@@ -520,10 +511,8 @@ Public Module WC_Network
         Public MemoryUsage As ULong
     End Class
 
-
 #End Region
 #Region "WS.Analyzer"
-
 
     Public Enum AccessLevel As Byte
         Trial = 0
@@ -536,7 +525,6 @@ Public Module WC_Network
     Class ClientClass
         Inherits ClientInfo
         Implements IDisposable
-
 
         Public Socket As Socket = Nothing
         Public Queue As New Queue
@@ -563,7 +551,6 @@ Public Module WC_Network
 
             Return ci
         End Function
-
 
         Public Sub OnConnect(ByVal state As Object)
             IP = CType(Socket.RemoteEndPoint, IPEndPoint).Address
@@ -791,10 +778,7 @@ Public Module WC_Network
             SendLoginOK(Me)
         End Sub
     End Class
-    
-
 
 #End Region
-
 
 End Module

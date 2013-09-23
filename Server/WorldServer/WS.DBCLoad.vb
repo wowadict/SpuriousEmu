@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -81,7 +81,6 @@ Public Module WS_DBCLoad
             Console.ForegroundColor = System.ConsoleColor.Gray
         End Try
     End Sub
-
 
 #End Region
 #Region "Spells"

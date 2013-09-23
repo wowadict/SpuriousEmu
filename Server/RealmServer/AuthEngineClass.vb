@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,6 @@ Public Class AuthEngineClass
         Me.b = New Byte(20 - 1) {}
     End Sub
 
-
     Public Declare Function BN_add Lib "LIBEAY32" (ByVal r As IntPtr, ByVal a As IntPtr, ByVal b As IntPtr) As Integer
     Public Declare Function BN_bin2bn Lib "LIBEAY32" (ByVal ByteArrayIn As Byte(), ByVal length As Integer, ByVal [to] As IntPtr) As IntPtr
     Public Declare Function BN_bn2bin Lib "LIBEAY32" (ByVal a As IntPtr, ByVal [to] As Byte()) As Integer
@@ -51,7 +50,6 @@ Public Class AuthEngineClass
     Public Declare Function BN_mod_exp Lib "LIBEAY32" (ByVal res As IntPtr, ByVal a As IntPtr, ByVal p As IntPtr, ByVal m As IntPtr, ByVal ctx As IntPtr) As IntPtr
     Public Declare Function BN_mul Lib "LIBEAY32" (ByVal r As IntPtr, ByVal a As IntPtr, ByVal b As IntPtr, ByVal ctx As IntPtr) As Integer
     Public Declare Function BN_new Lib "LIBEAY32" () As IntPtr
-
 
     Public Sub Dispose() Implements System.IDisposable.Dispose
     End Sub
@@ -159,7 +157,6 @@ Public Class AuthEngineClass
         Array.Reverse(Me.N)
         Me.CalculateV()
     End Sub
-
 
     Public Sub CalculateM1()
         Dim algorithm1 As New SHA1Managed
@@ -373,7 +370,6 @@ Public Class AuthEngineClass
             Counter += 2
         Next
 
-
         ReturnList.Add(SplitBuffer1)
         ReturnList.Add(SplitBuffer2)
 
@@ -383,7 +379,6 @@ Public Class AuthEngineClass
 #End Region
 
 #Region "AuthEngine.Variables"
-
 
     Private A As Byte()
     Private b As Byte()

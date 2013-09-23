@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 '
 Imports Meebey.SmartIrc4net
 Imports System.Threading
-
 
 Public Class IrcWriter
     Inherits BaseWriter
@@ -50,7 +49,6 @@ Public Class IrcWriter
     Public Overrides Sub Dispose()
         conn.Disconnect()
     End Sub
-
 
     Public Overrides Sub Write(ByVal type As LogType, ByVal formatStr As String, ByVal ParamArray arg() As Object)
         If LogLevel > type Then Return

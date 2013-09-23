@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -123,8 +123,6 @@ Public Module WS_Corpses
             Next
             tmpCMD = tmpCMD & ", corpse_items"
             tmpValues = tmpValues & ", """ & Join(temp, " ") & """"
-
-
 
             tmpCMD = tmpCMD & ") " & tmpValues & ");"
             Database.Update(tmpCMD)

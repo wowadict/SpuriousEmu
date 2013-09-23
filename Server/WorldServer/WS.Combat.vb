@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,7 @@ Imports Spurious.Common.BaseWriter
 
 Public Module WS_Combat
 
-
 #Region "WS.Combat.Constants"
-
 
     Public Enum ProcFlags
         PROC_FLAG_NONE = &H0                            ' None
@@ -70,7 +68,6 @@ Public Module WS_Combat
 
 #End Region
 #Region "WS.Combat.Calculations"
-
 
     Public Sub DoEmote(ByVal AnimationID As Integer, ByRef Unit As BaseObject)
         'EMOTE_ONESHOT_WOUNDCRITICAL
@@ -331,7 +328,7 @@ Public Module WS_Combat
             Case Is < chanceToMiss + chanceToDodge + chanceToParry + chanceToGlancingBlow + chanceToBlock
                 'DONE: Block (http://www.wowwiki.com/Formulas:Block)
                 If TypeOf Victim Is CharacterObject Then
-                    result.Blocked = CType(Victim, CharacterObject).combatBlockValue + (CType(Victim, CharacterObject).Strength.Base / 20)     '... hits you for 60. (40 blocked) 
+                    result.Blocked = CType(Victim, CharacterObject).combatBlockValue + (CType(Victim, CharacterObject).Strength.Base / 20)     '... hits you for 60. (40 blocked)
                     result.Damage -= result.Blocked
                     If result.Damage < 0 Then result.Damage = 0 '... attacks. You block
                     If CType(Victim, CharacterObject).combatBlockValue <> 0 Then
@@ -455,7 +452,6 @@ Public Module WS_Combat
                     Else
                         Return 5 - skillDiference * 0.2F
                     End If
-
 
                 End If
             End With
@@ -586,8 +582,6 @@ Public Module WS_Combat
                     Return CType(.Skills(tmpSkill), TSkill).Current
                 End If
 
-
-
             End With
         End If
 
@@ -644,10 +638,8 @@ Public Module WS_Combat
         End If
     End Sub
 
-
 #End Region
 #Region "WS.Combat.Framework"
-
 
     Public Enum AttackVictimState As Byte
         'ATTACK_HIT = 1
@@ -680,7 +672,6 @@ Public Module WS_Combat
         HIT_RESIST = HITINFO_RESIST
         HIT_CRUSHING_BLOW = HITINFO_CRUSHING
         HIT_GLANCING_BLOW = HITINFO_GLANCING
-
 
         HITINFO_NORMALSWING = &H0
         HITINFO_UNK = &H1
@@ -1140,8 +1131,6 @@ Public Module WS_Combat
         packet.Dispose()
     End Sub
 
-
 #End Region
-
 
 End Module

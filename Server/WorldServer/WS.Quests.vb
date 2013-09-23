@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 '
 
 Imports Spurious.Common.BaseWriter
-
 
 Public Module WS_Quests
 #Region "WS.Quests.Enums"
@@ -114,7 +113,6 @@ Public Module WS_Quests
         QUEST_PARTY_MSG_FINISH_QUEST = 8
     End Enum
 #End Region
-
 
 #Region "Quests.DataTypes"
 
@@ -292,8 +290,6 @@ Public Module WS_Quests
             IsActive = MySQLQuery.Rows(0).Item("IsActive")
         End Sub
     End Class
-
-
 
     'WARNING: These are used only for CharManagment
     Public Class BaseQuest
@@ -535,7 +531,6 @@ Public Module WS_Quests
 
 #End Region
 #Region "Quests.HelpingSubs"
-
 
     Public Function GetQuestMenu(ByRef c As CharacterObject, ByVal GUID As ULong) As QuestMenu
         Dim QuestMenu As New QuestMenu
@@ -988,7 +983,6 @@ Public Module WS_Quests
         packet.Dispose()
     End Sub
 
-
     Public Sub LoadQuests(ByRef c As CharacterObject)
         Dim cQuests As New DataTable
         Database.Query(String.Format("SELECT * FROM characters_quests q WHERE q.char_guid = {0} AND q.quest_status > -1 LIMIT 25;", c.GUID), cQuests)
@@ -1015,7 +1009,6 @@ Public Module WS_Quests
 
 #End Region
 #Region "Quests.Events"
-
 
     'DONE: Kill quest events
     Public Sub OnQuestKill(ByRef c As CharacterObject, ByRef Creature As CreatureObject)
@@ -1044,7 +1037,6 @@ Public Module WS_Quests
                 End If
             End If
         Next i
-
 
         Exit Sub  'For now next is disabled
 
@@ -1212,7 +1204,6 @@ Public Module WS_Quests
         If Count = 0 Then Count = 1
         Dim i As Integer, j As Byte
 
-
         'DONE: Check quests needing that item
         For i = 0 To QUEST_SLOTS
             If (Not c.TalkQuests(i) Is Nothing) AndAlso (c.TalkQuests(i).ObjectiveFlags And QuestObjectiveFlag.QUEST_OBJECTIVE_ITEM) Then
@@ -1238,7 +1229,6 @@ Public Module WS_Quests
 
         If Count = 0 Then Count = 1
         Dim i As Integer, j As Byte
-
 
         'DONE: Check quests needing that item
         For i = 0 To QUEST_SLOTS
@@ -1284,10 +1274,8 @@ Public Module WS_Quests
         Next i
     End Sub
 
-
 #End Region
 #Region "Quests.OpcodeHandlers"
-
 
     Public Function GetQuestgiverStatus(ByVal c As CharacterObject, ByVal cGUID As ULong) As QuestgiverStatus
         'DONE: Invoke scripted quest status
@@ -1577,7 +1565,6 @@ Public Module WS_Quests
                     If c.TalkCurrentQuest Is Nothing Then c.TalkCurrentQuest = New QuestInfo(QuestID)
                     If c.TalkCurrentQuest.ID <> QuestID Then c.TalkCurrentQuest = New QuestInfo(QuestID)
 
-
                     If c.TalkQuests(i).Complete Then
                         'DONE: Show completion dialog
                         If (c.TalkQuests(i).ObjectiveFlags And QuestObjectiveFlag.QUEST_OBJECTIVE_ITEM) Then
@@ -1590,7 +1577,6 @@ Public Module WS_Quests
                         'DONE: Just show incomplete text with disabled complete button
                         SendQuestRequireItems(c.Client, c.TalkCurrentQuest, QuestGiverGUID, c.TalkQuests(i))
                     End If
-
 
                     Exit For
                 End If
@@ -1673,7 +1659,6 @@ Public Module WS_Quests
                 End If
             Next
 
-
             'DONE: Adding reward choice
             If Client.Character.TalkCurrentQuest.RewardItems(RewardIndex) <> 0 Then
                 Dim tmpItem As New ItemObject(Client.Character.TalkCurrentQuest.RewardItems(RewardIndex), Client.Character.GUID)
@@ -1754,8 +1739,6 @@ Public Module WS_Quests
         End Try
     End Sub
 
-
-
     Const QUEST_SHARING_DISTANCE As Integer = 10
     Public Sub On_CMSG_PUSHQUESTTOPARTY(ByRef packet As PacketClass, ByRef Client As ClientClass)
         If (packet.Data.Length - 1) < 9 Then Exit Sub
@@ -1795,7 +1778,6 @@ Public Module WS_Quests
                         End If
                     End If
 
-
                     'DONE: Send error if present
                     If message <> QuestPartyPushError.QUEST_PARTY_MSG_SHARRING_QUEST Then
                         Dim errorPacket As New PacketClass(OPCODES.MSG_QUEST_PUSH_RESULT)
@@ -1827,9 +1809,6 @@ Public Module WS_Quests
         'response.Dispose()
     End Sub
 
-
 #End Region
-
-
 
 End Module

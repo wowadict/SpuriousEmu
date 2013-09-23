@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@ Imports System.IO
 Imports Spurious.Common.BaseWriter
 
 Public Module Packets
-
 
     Public Sub DumpPacket(ByVal data() As Byte, Optional ByRef Client As ClientClass = Nothing)
         '#If DEBUG Then
@@ -193,7 +192,6 @@ Public Module Packets
 
                 packet.AddUInt32(GuidLOW(updateObject.GUID))
             End If
-
 
             If updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT OrElse updateType = ObjectUpdateType.UPDATETYPE_VALUES OrElse updateType = ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF Then
                 Dim UpdateCount As Integer = 0
@@ -403,7 +401,6 @@ Public Module Packets
     End Class
 
 #Region "Packets.ArrayBased"
-
 
     Public Class PacketClass
         Implements IDisposable
@@ -779,7 +776,6 @@ Public Module Packets
             Return CType(BitConverter.ToUInt64(GUID, 0), ULong)
         End Function
 
-
         Public Sub Dispose() Implements System.IDisposable.Dispose
         End Sub
     End Class
@@ -808,10 +804,8 @@ Public Module Packets
         End Sub
     End Class
 
-
 #End Region
 #Region "Packets.MemoryStreamBased"
-
 
     Public Class PacketClassNew
         Implements IDisposable
@@ -1114,12 +1108,6 @@ Public Module Packets
         End Sub
     End Class
 
-
 #End Region
-
-
-
-
-
 
 End Module

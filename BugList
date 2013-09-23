@@ -1,0 +1,16 @@
+A list of known bugs by the developers.
+
+Most area's show up as "City"
+Very buggy creature AI system.
+Only LAN Networking is supported at the moment.
+
+--- Make sure to extract maps/dbc with a compiled ad.exe, NOT ad_debug.exe, otherwise you'll get big errors when logging in
+
+
+Fixed bugs
+Deathknights no longer start with 80 HP
+Creatures work now. ( Don't attack though).
+GM commands work.
+Instances work (Forgot to change the BugList though=o.
+
+Maybe this project shall live on. Who knows?

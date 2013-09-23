@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,6 @@ Imports System.Reflection
 Imports System.CodeDom
 Imports System.CodeDom.Compiler
 Imports Spurious.Common.BaseWriter
-
-
 
 'NOTE: How to use ScriptedObject as Function
 '   Dim test As New ScriptedObject("scripts\test.vb", "test.dll")
@@ -64,7 +62,6 @@ Public Class ScriptedObject
             Dim cParameters As New CompilerParameters
             Dim cResults As CompilerResults
 
-
             For Each Include As String In Config.CompilerInclude
                 cParameters.ReferencedAssemblies.Add(Include)
             Next
@@ -77,8 +74,6 @@ Public Class ScriptedObject
 #Else
             cParameters.IncludeDebugInformation = false
 #End If
-
-
 
             cResults = VBcp.CompileAssemblyFromFile(cParameters, AssemblySources)
 
@@ -123,7 +118,6 @@ Public Class ScriptedObject
             cParameters.IncludeDebugInformation = false
 #End If
 
-
             If AssemblySourceFile.IndexOf(".cs") <> -1 Then
                 cResults = CScp.CompileAssemblyFromFile(cParameters, System.AppDomain.CurrentDomain.BaseDirectory() & AssemblySourceFile)
             ElseIf AssemblySourceFile.IndexOf(".vb") <> -1 Then
@@ -132,7 +126,6 @@ Public Class ScriptedObject
                 WorldServer.Log.WriteLine(LogType.FAILED, "Compiling: Unsupported file type: {0}", AssemblySourceFile)
                 Return
             End If
-
 
             If cResults.Errors.HasErrors = True Then
                 For Each err As System.CodeDom.Compiler.CompilerError In cResults.Errors
@@ -191,18 +184,3 @@ Public Class ScriptedObject
     Public Sub Dispose() Implements System.IDisposable.Dispose
     End Sub
 End Class
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

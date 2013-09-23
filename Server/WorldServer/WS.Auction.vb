@@ -1,4 +1,4 @@
-' 
+'
 ' Copyright (C) 2008 Spurious <http://SpuriousEmu.com>
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 Imports Spurious.Common.BaseWriter
 
 Module WS_Auction
-
 
 #Region "WS.Auction.Constants"
     Public AuctionID As Integer
@@ -71,7 +70,6 @@ Module WS_Auction
         End Select
     End Function
 
-
     'Auction Mail Format:
     '
     'Outbid
@@ -81,11 +79,11 @@ Module WS_Auction
     'Auction won
     '       Subject -> ItemID:0:1
     '       Body    -> FFFFFFFF:Bid:Buyout
-    '       Item received    
+    '       Item received
     'Auction Successful
     '       Subject -> ItemID:0:2
     '       Body    -> FFFFFFFF:Bid:Buyout:0:0
-    '       Money received   
+    '       Money received
     'Auction Canceled
     '       Subject -> ItemID:0:4
     '       Body    -> ""
@@ -282,7 +280,6 @@ Module WS_Auction
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] SMSG_AUCTION_BIDDER_LIST_RESULT", Client.IP, Client.Port)
     End Sub
 
-
 #End Region
 #Region "WS.Auction.Handlers"
 
@@ -355,7 +352,6 @@ Module WS_Auction
         Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
         If MySQLQuery.Rows.Count = 0 Then Exit Sub
 
-
         'DONE: Return item to owner
         Database.Update(String.Format("INSERT INTO characters_mail (mail_sender, mail_receiver, mail_type, mail_stationary, mail_subject, mail_body, mail_money, mail_COD, mail_time, mail_read) VALUES ({0},{1},{2},62,'{3}','{4}',{5},{6},{7},{8});", AuctionID, MySQLQuery.Rows(0).Item("auction_owner"), 2, MySQLQuery.Rows(0).Item("auction_itemId") & ":0:4", "", 0, 0, MailTime, 0))
 
@@ -382,11 +378,9 @@ Module WS_Auction
         Dim Bid As Integer = packet.GetInt32
         Dim MailTime As Integer = GetTimestamp(Now) + (86400 * 30)
 
-
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AUCTION_PLACE_BID [AuctionID={2} Bid={3}]", Client.IP, Client.Port, AuctionID, Bid)
 
         If Client.Character.Copper < Bid Then Exit Sub
-
 
         Dim MySQLQuery As New DataTable
         Database.Query("SELECT * FROM auctionhouse WHERE auction_id = " & AuctionID & ";", MySQLQuery)
@@ -460,10 +454,6 @@ Module WS_Auction
         Dim mustBeUsable As Integer = packet.GetInt8
 
         Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AUCTION_LIST_ITEMS [{2} ({3}-{4})]", Client.IP, Client.Port, Name, LevelMIN, LevelMAX)
-
-
-
-
 
         Dim response As New PacketClass(OPCODES.SMSG_AUCTION_LIST_RESULT)
         Dim QueryString As String = "SELECT auctionhouse.* FROM auctionhouse, items WHERE items.entry = auctionhouse.auction_itemId"
