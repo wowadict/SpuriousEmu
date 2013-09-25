@@ -2,6 +2,11 @@ A list of known bugs by the developers.
 
 Most area's show up as "City"
 Very buggy creature AI system.
+Very buggy Combat system.  One get me by, after you cast a spell, you can click off the enemy and back on to resume
+melee, otherwise you just stand there in combat stance.
+Could NOT loot a game object. (Tried to loot Solanian's Journal) Goes through the opening bar then nothing.
+Quest log shows slain #/# for all quests, like collect 8 quest items shows as slain 0/8, although the quest
+will complete and allow turn in if you collect all the objects.
 Only LAN Networking is supported at the moment.
 
 --- Make sure to extract maps/dbc with a compiled ad.exe, NOT ad_debug.exe, otherwise you'll get big errors when logging in
