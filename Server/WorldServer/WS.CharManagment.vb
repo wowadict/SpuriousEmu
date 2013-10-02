@@ -216,6 +216,15 @@ Public Module WS_CharManagment
                 c.Agility.Base += gainStat(c.Level, 0.000022, 0.0046, 0.655333, -0.600356)
                 c.Stamina.Base += gainStat(c.Level, 0.000059, 0.004044, 1.04, -1.488504)
                 c.Spirit.Base += gainStat(c.Level, 0.000006, 0.002031, 0.27836, -0.340077)
+            Case Classes.CLASS_DEATH_KNIGHT 'Deathknight stats will need to be changed once we learn what this stuff is
+                If c.Level <= 55 Then
+                  c.Life.Base += c.Level + 10
+             End If
+              c.Strength.Base += gainStat(c.Level, 0.00039, 0.006902, 1.08004, -1.051701)
+            c.Intellect.Base += gainStat(c.Level, 0.000002, 0.001003, 0.10089, -0.076055)
+             c.Agility.Base += gainStat(c.Level, 0.000022, 0.0046, 0.655333, -0.600356)
+            c.Stamina.Base += gainStat(c.Level, 0.000059, 0.004044, 1.04, -1.488504)
+            c.Spirit.Base += gainStat(c.Level, 0.000006, 0.002031, 0.27836, -0.340077)
         End Select
 
         'Calculate new spi/int gain
